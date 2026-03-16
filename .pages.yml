@@ -8,8 +8,9 @@ content:
   - name: projects
     label: Projects
     type: collection
-    path: src/content/projects.json
+    path: src/content/projects
     format: json
+    filename: "{slug}"
     view:
       primary: title
       fields: [title, category, year, hidden]

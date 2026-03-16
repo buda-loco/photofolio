@@ -1,6 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import projects from '../content/projects.json'
+
+const files = import.meta.glob('../content/projects/*.json', { eager: true })
+const projects: any[] = Object.values(files)
+  .map((m: any) => m.default)
+  .sort((a: any, b: any) => b.year - a.year)
 
 const visible = projects.filter((p: any) => !p.hidden)
 ---

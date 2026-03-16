@@ -1,0 +1,33 @@
+{
+  "slug": "urban-silence",
+  "title": "Urban Silence",
+  "category": "Photography",
+  "year": 2024,
+  "cover": "/images/projects/urban-silence/cover.jpg",
+  "coverAspect": "4/3",
+  "gridSize": "medium",
+  "gridOffset": 2,
+  "hidden": false,
+  "blocks": [
+    {
+      "type": "hero",
+      "src": "/images/projects/urban-silence/01.jpg",
+      "alt": "Hero",
+      "aspectRatio": "16/9"
+    },
+    {
+      "type": "gallery",
+      "columns": 2,
+      "images": [
+        { "src": "/images/projects/urban-silence/02.jpg", "alt": "" },
+        { "src": "/images/projects/urban-silence/03.jpg", "alt": "" }
+      ]
+    },
+    {
+      "type": "hero",
+      "src": "/images/projects/urban-silence/04.jpg",
+      "alt": "Closing hero",
+      "aspectRatio": "3/2"
+    }
+  ]
+}
