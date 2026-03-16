@@ -12,5 +12,11 @@
     "date": "Feb, 2026",
     "place": "Dickson, Canberra",
     "client": "City Renewal Canberra"
-  }
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg"
+    }
+  ]
 }
