@@ -1,0 +1,16 @@
+{
+  "slug": "lny-2026",
+  "title": "Lunar New Year 2026",
+  "category": "Events",
+  "year": 2026,
+  "cover": "/images/projects/lny2026/cover.jpg",
+  "coverAspect": "16/9",
+  "gridSize": "large",
+  "hidden": false,
+  "info": {
+    "about": "All about the LNY.",
+    "date": "Feb, 2026",
+    "place": "Dickson, Canberra",
+    "client": "City Renewal Canberra"
+  }
+}
