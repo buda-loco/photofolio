@@ -65,6 +65,75 @@
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg"
         }
       ]
+    },
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-28.jpg"
+    },
+    {
+      "type": "gallery",
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-46.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-233.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-175.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg"
+        }
+      ]
+    },
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-2.jpg"
+    },
+    {
+      "type": "gallery",
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-105.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-19.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-10.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-7.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Food-5.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg"
+        }
+      ]
+    },
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-11.jpg"
+    },
+    {
+      "type": "gallery",
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-57.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-33.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg"
+        }
+      ]
     }
   ]
 }
