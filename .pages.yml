@@ -139,6 +139,7 @@ content:
               - name: parallax
                 label: Parallax strength
                 type: number
+                default: 0.2
                 comment: "0 = none, 0.2 = subtle (recommended), 0.4 = strong"
 
           - name: gallery
