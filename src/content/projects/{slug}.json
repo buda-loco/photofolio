@@ -45,7 +45,8 @@
     },
     {
       "type": "hero",
-      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg"
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg",
+      "parallax": 0.2
     }
   ]
 }
