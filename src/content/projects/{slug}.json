@@ -1,0 +1,52 @@
+{
+  "slug": "lny-2026",
+  "title": "Lunar New Year 2026",
+  "category": "Events",
+  "year": 2026,
+  "cover": "/images/projects/lny2026/cover.jpg",
+  "coverAspect": "16/9",
+  "gridSize": "large",
+  "hidden": false,
+  "info": {
+    "about": "All about the LNY.",
+    "date": "Feb, 2026",
+    "place": "Dickson, Canberra",
+    "client": "City Renewal Canberra"
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg",
+      "parallax": 0.5
+    },
+    {
+      "type": "gallery",
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg"
+        }
+      ]
+    },
+    {
+      "type": "hero",
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg",
+      "parallax": 2
+    }
+  ]
+}
