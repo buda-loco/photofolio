@@ -39,6 +39,7 @@ content:
         label: Year
         type: number
         required: true
+        default: 2026
 
       - name: cover
         label: Cover image
