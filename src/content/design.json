@@ -1,0 +1,51 @@
+{
+  "_note": "Edit this file to change the visual design. Run npm run build after saving.",
+
+  "colors": {
+    "background":  "#0f0f0f",
+    "text":        "#b8c0b6",
+    "textMuted":   "#4a524a",
+    "textBright":  "#d8e0d6",
+    "border":      "rgba(184, 192, 182, 0.10)"
+  },
+
+  "typography": {
+    "serif": "'Cormorant Garamond', Georgia, serif",
+    "sans":  "'Inter', system-ui, -apple-system, sans-serif",
+
+    "headings": {
+      "weight":        "300",
+      "letterSpacing": "0.01em",
+      "lineHeight":    "1.05"
+    },
+
+    "labels": {
+      "size":          "0.6875rem",
+      "letterSpacing": "0.15em"
+    },
+
+    "body": {
+      "size":       "0.8125rem",
+      "lineHeight": "1.8"
+    }
+  },
+
+  "textBlock": {
+    "_note": "Controls the 'text' block type inside project pages",
+    "headingSize":          "clamp(2.5rem, 5vw, 5.5rem)",
+    "headingWeight":        "300",
+    "headingLetterSpacing": "0em",
+    "headingLineHeight":    "1.0",
+    "bodySize":             "1rem",
+    "bodyLineHeight":       "1.85",
+    "maxWidth":             "52ch",
+    "gap":                  "2.5rem"
+  },
+
+  "buttons": {
+    "fontSize":      "0.6875rem",
+    "letterSpacing": "0.15em",
+    "paddingV":      "0.7rem",
+    "paddingH":      "1.75rem"
+  }
+}

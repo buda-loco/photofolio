@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro'
+import projects from '../content/projects.json'
+
+const visible = projects.filter((p: any) => !p.hidden)
+---
+
+<Layout>
+  <div class="page">
+
+    <section class="home-intro">
+      <p class="home-intro-name" data-animate="fade-up">Benjamin Arnedo</p>
+      <h1 class="home-intro-tagline" data-animate="fade-up">Photographer &amp;<br>Cinematographer</h1>
+      <div class="btn-row home-intro-actions" data-animate="fade-up">
+        <a href="/about" class="btn">About me</a>
+        <a href="/how-i-work" class="btn btn--ghost">How I work &rarr;</a>
+      </div>
+    </section>
+
+    <section class="work-grid" aria-label="Selected work">
+      {visible.map((project: any) => (
+        <a
+          href={`/work/${project.slug}`}
+          class="grid-item"
+          data-size={project.gridSize ?? 'medium'}
+          data-offset={project.gridOffset ? String(project.gridOffset) : undefined}
+          style={`--aspect: ${project.coverAspect ?? '3/2'}`}
+          data-animate="fade-up"
+        >
+          <div class="img-container">
+            <img
+              src={project.cover}
+              alt={project.title}
+              loading="lazy"
+              decoding="async"
+              transition:name={`cover-${project.slug}`}
+            />
+          </div>
+          <div class="grid-item-info">
+            <span class="grid-item-title">{project.title}</span>
+            <span class="grid-item-meta">{project.category}&thinsp;—&thinsp;{project.year}</span>
+          </div>
+        </a>
+      ))}
+    </section>
+
+  </div>
+</Layout>

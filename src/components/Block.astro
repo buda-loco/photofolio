@@ -1,0 +1,94 @@
+---
+const { block } = Astro.props
+
+function dropboxUrl(src: string): string {
+  if (!src?.includes('dropbox.com')) return src
+  const base = src.replace(/[?&]dl=\d/, '').replace(/\?$/, '')
+  return base + (src.includes('?') ? '&raw=1' : '?raw=1')
+}
+
+// Split heading into individual word spans for clip-mask animation
+function splitWords(text: string) {
+  return text.split(' ')
+}
+---
+
+{block.type === 'hero' && (
+  <div class="block-hero img-reveal" style={block.aspectRatio ? `--aspect: ${block.aspectRatio}` : undefined}>
+    <div class="img-container">
+      <img
+        src={block.src}
+        alt={block.alt ?? ''}
+        loading="lazy"
+        decoding="async"
+        data-parallax={block.parallax ?? undefined}
+      />
+    </div>
+    {block.caption && <p class="block-caption label">{block.caption}</p>}
+  </div>
+)}
+
+{block.type === 'gallery' && (
+  <div class="block-gallery" data-cols={String(block.columns ?? 2)}>
+    {block.images.map((img: any) => (
+      <div class="gallery-item img-reveal" style={img.aspectRatio ? `--aspect: ${img.aspectRatio}` : undefined}>
+        <div class="img-container">
+          <img
+            src={img.src}
+            alt={img.alt ?? ''}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
+{block.type === 'video' && (
+  <div class="block-video">
+    <div class="video-container">
+      {block.provider === 'youtube' ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${block.id}?rel=0`}
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      ) : (
+        <video
+          src={dropboxUrl(block.src)}
+          poster={block.poster ?? undefined}
+          controls
+          playsinline
+          preload="metadata"
+        ></video>
+      )}
+    </div>
+    {block.caption && <p class="block-caption label">{block.caption}</p>}
+  </div>
+)}
+
+{block.type === 'text' && (
+  <div class="block-text">
+
+    {block.heading && (
+      <h2 class="block-heading" data-animate="word-reveal">
+        {splitWords(block.heading).map((word: string, i: number, arr: string[]) => (
+          <span class="word-clip">
+            <span class="word-inner">{word}{i < arr.length - 1 ? '\u00A0' : ''}</span>
+          </span>
+        ))}
+      </h2>
+    )}
+
+    {block.body && (
+      <div class="block-body" data-animate="line-reveal">
+        {block.body.split('\n').filter((l: string) => l.trim()).map((line: string) => (
+          <p class="text-line">{line}</p>
+        ))}
+      </div>
+    )}
+
+  </div>
+)}

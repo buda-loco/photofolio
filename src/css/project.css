@@ -1,0 +1,289 @@
+/* ── Project page shell ─────────────────────────────────────── */
+.project-page {
+  padding-top: var(--nav-height);
+}
+
+/* Cover image transition hero — appears via view transition from grid */
+.cover-transition {
+  aspect-ratio: var(--aspect, 16/9);
+  width: 100%;
+  overflow: hidden;
+}
+
+.cover-transition .img-container {
+  aspect-ratio: var(--aspect, 16/9);
+  height: 100%;
+}
+
+.project-header {
+  padding: var(--sp-12) var(--page-margin) var(--sp-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--sp-4);
+}
+
+.project-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, var(--text-4xl));
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.project-meta {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.project-meta .label + .label {
+  margin-top: 0.3rem;
+}
+
+.project-content {
+  padding: 0 var(--page-margin) var(--sp-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+}
+
+/* ── Blocks ─────────────────────────────────────────────────── */
+
+/* Hero — full-width single image */
+.block-hero .img-container {
+  aspect-ratio: var(--aspect, 16/9);
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Gallery — grid of images */
+.block-gallery {
+  display: grid;
+  gap: var(--grid-gap);
+}
+
+.block-gallery[data-cols="1"] { grid-template-columns: 1fr; }
+.block-gallery[data-cols="2"] { grid-template-columns: repeat(2, 1fr); }
+.block-gallery[data-cols="3"] { grid-template-columns: repeat(3, 1fr); }
+
+.block-gallery .gallery-item .img-container {
+  aspect-ratio: var(--aspect, 3/2);
+  overflow: hidden;
+}
+
+/* Video */
+.block-video .video-container {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.block-video .video-container iframe,
+.block-video .video-container video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Text block ─────────────────────────────────────────────── */
+.block-text {
+  padding: var(--sp-8) 0;
+}
+
+/* Heading — large serif, left-aligned, word-by-word clip reveal */
+.block-heading {
+  font-family: var(--font-serif);
+  font-size: var(--tb-heading-size, clamp(2.5rem, 5vw, 5.5rem));
+  font-weight: var(--tb-heading-weight, 300);
+  letter-spacing: var(--tb-heading-letter-spacing, 0em);
+  line-height: var(--tb-heading-line-height, 1.0);
+  margin-bottom: var(--tb-gap, 2.5rem);
+}
+
+/* Word clip — overflow:hidden container, one per word */
+.word-clip {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Extra bottom space so descenders aren't clipped during animation */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.word-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Body lines — each <p> is a separate animated line */
+.block-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.text-line {
+  font-family: var(--font-sans);
+  font-size: var(--tb-body-size, 1rem);
+  line-height: var(--tb-body-line-height, 1.85);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  max-width: var(--tb-max-width, 52ch);
+  hyphens: auto;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+/* ── Project info section ────────────────────────────────────── */
+.project-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+  padding: var(--sp-6) var(--page-margin);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-info-item {}
+
+.project-info-label {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.project-info-value {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  color: var(--color-text);
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 768px) {
+  .project-info {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: var(--sp-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .project-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--font-sans);
+  font-size: var(--btn-font-size, 0.6875rem);
+  font-weight: 400;
+  letter-spacing: var(--btn-letter-spacing, 0.15em);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: var(--btn-padding-v, 0.7rem) var(--btn-padding-h, 1.75rem);
+  border: 1px solid var(--color-border);
+  transition:
+    color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out),
+    background 0.25s var(--ease-out);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  color: var(--color-bg);
+  background: var(--color-text);
+  border-color: var(--color-text);
+}
+
+/* Ghost variant — no border, left-flush */
+.btn--ghost {
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.btn--ghost:hover {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-text);
+}
+
+/* Back button area on project pages */
+.project-back {
+  padding: var(--sp-4) var(--page-margin) 0;
+}
+
+/* Buttons row — used on homepage and elsewhere */
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+/* Caption */
+.block-caption {
+  margin-top: 0.65rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Next project ───────────────────────────────────────────── */
+.project-next {
+  border-top: 1px solid var(--color-border);
+  padding: var(--sp-8) var(--page-margin);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.project-next:hover {
+  opacity: 0.65;
+}
+
+.project-next-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.project-next-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, var(--text-2xl));
+  font-weight: 300;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-meta { text-align: left; }
+
+  .block-gallery[data-cols="3"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .block-gallery[data-cols="2"],
+  .block-gallery[data-cols="3"] {
+    grid-template-columns: 1fr;
+  }
+}

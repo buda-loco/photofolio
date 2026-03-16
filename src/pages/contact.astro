@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro'
+import about from '../content/about.json'
+---
+
+<Layout title="Contact — Benjamin Arnedo">
+  <div class="page">
+    <div class="contact-layout">
+
+      <h1 data-animate="fade-up">
+        Let's work<br>together.
+      </h1>
+
+      <a
+        href={`mailto:${about.email}`}
+        class="contact-email"
+        data-animate="fade-up"
+      >
+        {about.email}
+      </a>
+
+      <div class="contact-social" data-animate="fade-up">
+        {about.instagram && (
+          <a href={about.instagram} class="nav-link" target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        )}
+        {about.vimeo && (
+          <a href={about.vimeo} class="nav-link" target="_blank" rel="noopener noreferrer">
+            Vimeo
+          </a>
+        )}
+      </div>
+
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,162 @@
+[
+  {
+    "slug": "dickson-shop-photos",
+    "title": "Dickson Shop Photos",
+    "category": "Photography",
+    "year": 2026,
+    "cover": "/images/projects/dickson/cover.jpg",
+    "coverAspect": "16/9",
+    "gridSize": "large",
+    "hidden": false,
+    "info": {
+      "about": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre.",
+      "date": "February 2026",
+      "place": "Canberra, Australia",
+      "client": "Dickson Shopping Centre"
+    },
+    "blocks": [
+      {
+        "type": "hero",
+        "src": "/images/projects/dickson/dickson_shops_photos_7.jpg",
+        "alt": "Opening hero",
+        "aspectRatio": "16/9",
+        "parallax": 0.2
+      },
+      {
+        "type": "gallery",
+        "columns": 2,
+        "images": [
+          { "src": "/images/projects/dickson/dickson_shops_photos_2.jpg", "alt": "" },
+          { "src": "/images/projects/dickson/dickson_shops_photos_3.jpg", "alt": "" }, 
+          { "src": "/images/projects/dickson/dickson_shops_photos_4.jpg", "alt": "" },
+          { "src": "/images/projects/dickson/dickson_shops_photos_5.jpg", "alt": "" }
+        ]
+      },
+      {
+        "type": "text",
+        "heading": "More than just pretty photos  ",
+        "body": "Despite the inherent disruption of a photographer moving through a working shop floor, every business owner at Dickson welcomed me with remarkable warmth — a generosity that occasionally extended to treats and genuine smiles I wasn't expecting. There's something quietly profound about being invited, however briefly, into the rhythm of someone's livelihood. It also raises a question I find myself returning to: how much visual documentation do businesses like these actually have of themselves? Some operators understand instinctively that strong imagery is an asset — that it shapes how the world perceives them before a single word is spoken. For others, it remains an afterthought, easily deferred. My hope is that work like this shifts that equation — that when people see what's possible, and receive something they're genuinely proud of, the value of that investment becomes self-evident."
+      },
+      {
+        "type": "hero",
+        "src": "/images/projects/dickson/dickson_shops_photos_6.jpg",
+        "alt": "Mid hero",
+        "aspectRatio": "3/2"
+      },
+      {
+        "type": "gallery",
+        "columns": 2,
+        "images": [
+          { "src": "/images/projects/dickson/dickson_shops_photos_1.jpg", "alt": "" },
+          { "src": "/images/projects/dickson/dickson_shops_photos_8.jpg", "alt": "" },
+          { "src": "/images/projects/dickson/dickson_shops_photos_9.jpg", "alt": "" },
+          { "src": "/images/projects/dickson/dickson_shops_photos_10.jpg", "alt": "" }
+        ]
+      },
+      {
+        "type": "hero",
+        "src": "/images/projects/dickson/dickson_shops_photos_12.jpg",
+        "alt": "Mid hero",
+        "aspectRatio": "3/2"
+      }
+    ]
+  },
+  {
+    "slug": "golden-hour",
+    "title": "Golden Hour",
+    "category": "Cinematography",
+    "year": 2025,
+    "cover": "/images/projects/golden-hour/cover.jpg",
+    "coverAspect": "16/9",
+    "gridSize": "small",
+    "hidden": false,
+    "blocks": [
+      {
+        "type": "hero",
+        "src": "/images/projects/golden-hour/01.jpg",
+        "alt": "Hero",
+        "aspectRatio": "16/9"
+      },
+      {
+        "type": "video",
+        "provider": "vimeo",
+        "id": "YOUR_VIMEO_ID",
+        "caption": "Golden Hour — Full film, 2025"
+      },
+      {
+        "type": "gallery",
+        "columns": 2,
+        "images": [
+          { "src": "/images/projects/golden-hour/02.jpg", "alt": "" },
+          { "src": "/images/projects/golden-hour/03.jpg", "alt": "" }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "urban-silence",
+    "title": "Urban Silence",
+    "category": "Photography",
+    "year": 2024,
+    "cover": "/images/projects/urban-silence/cover.jpg",
+    "coverAspect": "4/3",
+    "gridSize": "medium",
+    "gridOffset": 2,
+    "hidden": false,
+    "blocks": [
+      {
+        "type": "hero",
+        "src": "/images/projects/urban-silence/01.jpg",
+        "alt": "Hero",
+        "aspectRatio": "16/9"
+      },
+      {
+        "type": "gallery",
+        "columns": 2,
+        "images": [
+          { "src": "/images/projects/urban-silence/02.jpg", "alt": "" },
+          { "src": "/images/projects/urban-silence/03.jpg", "alt": "" }
+        ]
+      },
+      {
+        "type": "hero",
+        "src": "/images/projects/urban-silence/04.jpg",
+        "alt": "Closing hero",
+        "aspectRatio": "3/2"
+      }
+    ]
+  },
+  {
+    "slug": "after-light",
+    "title": "After Light",
+    "category": "Photography & Film",
+    "year": 2024,
+    "cover": "/images/projects/after-light/cover.jpg",
+    "coverAspect": "3/4",
+    "gridSize": "small",
+    "hidden": false,
+    "blocks": [
+      {
+        "type": "hero",
+        "src": "/images/projects/after-light/01.jpg",
+        "alt": "Hero",
+        "aspectRatio": "4/3"
+      },
+      {
+        "type": "gallery",
+        "columns": 3,
+        "images": [
+          { "src": "/images/projects/after-light/02.jpg", "alt": "" },
+          { "src": "/images/projects/after-light/03.jpg", "alt": "" },
+          { "src": "/images/projects/after-light/04.jpg", "alt": "" }
+        ]
+      },
+      {
+        "type": "video",
+        "provider": "vimeo",
+        "id": "YOUR_VIMEO_ID",
+        "caption": "After Light — Short film, 2024"
+      }
+    ]
+  }
+]

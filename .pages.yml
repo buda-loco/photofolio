@@ -1,0 +1,292 @@
+media:
+  input: public/images
+  output: /images
+
+content:
+
+  # ── Projects (collection) ────────────────────────────────────────
+  - name: projects
+    label: Projects
+    type: collection
+    path: src/content/projects.json
+    format: json
+    view:
+      primary: title
+      fields: [title, category, year, hidden]
+      sort: [year, title]
+      default:
+        sort: year
+        order: desc
+    fields:
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        comment: URL-safe identifier, e.g. "dickson-shop-photos"
+
+      - name: title
+        label: Title
+        type: string
+        required: true
+
+      - name: category
+        label: Category
+        type: string
+        comment: e.g. Photography, Cinematography, Photography & Film
+
+      - name: year
+        label: Year
+        type: number
+        required: true
+
+      - name: cover
+        label: Cover image
+        type: image
+
+      - name: coverAspect
+        label: Cover aspect ratio
+        type: select
+        options:
+          values:
+            - value: "16/9"
+              label: Landscape 16:9
+            - value: "3/2"
+              label: Landscape 3:2
+            - value: "4/3"
+              label: Landscape 4:3
+            - value: "1/1"
+              label: Square
+            - value: "3/4"
+              label: Portrait 3:4
+            - value: "2/3"
+              label: Portrait 2:3
+
+      - name: gridSize
+        label: Grid size
+        type: select
+        options:
+          values:
+            - value: large
+              label: Large
+            - value: medium
+              label: Medium
+            - value: small
+              label: Small
+
+      - name: gridOffset
+        label: Grid column offset
+        type: number
+        comment: Optional — shifts the card right by N columns
+
+      - name: hidden
+        label: Hidden from homepage
+        type: boolean
+
+      # ── Project info strip ──────────────────────────────────────
+      - name: info
+        label: Project info
+        type: object
+        fields:
+          - name: about
+            label: About
+            type: text
+          - name: date
+            label: Date
+            type: string
+            comment: e.g. February 2026
+          - name: place
+            label: Place
+            type: string
+          - name: client
+            label: Client
+            type: string
+
+      # ── Content blocks ──────────────────────────────────────────
+      - name: blocks
+        label: Content blocks
+        type: block
+        list: true
+        blockKey: type
+        blocks:
+
+          - name: hero
+            label: Hero image
+            fields:
+              - name: src
+                label: Image
+                type: image
+                required: true
+              - name: alt
+                label: Alt text
+                type: string
+              - name: aspectRatio
+                label: Aspect ratio
+                type: select
+                options:
+                  values:
+                    - value: "16/9"
+                      label: Landscape 16:9
+                    - value: "3/2"
+                      label: Landscape 3:2
+                    - value: "4/3"
+                      label: Landscape 4:3
+                    - value: "1/1"
+                      label: Square
+                    - value: "3/4"
+                      label: Portrait 3:4
+              - name: parallax
+                label: Parallax strength
+                type: number
+                comment: "0 = none, 0.2 = subtle (recommended), 0.4 = strong"
+
+          - name: gallery
+            label: Gallery
+            fields:
+              - name: columns
+                label: Columns
+                type: select
+                options:
+                  values:
+                    - value: 1
+                      label: "1 column"
+                    - value: 2
+                      label: "2 columns"
+                    - value: 3
+                      label: "3 columns"
+              - name: images
+                label: Images
+                type: object
+                list:
+                  collapsible:
+                    collapsed: false
+                    summary: "{src}"
+                fields:
+                  - name: src
+                    label: Image
+                    type: image
+                    required: true
+                  - name: alt
+                    label: Alt text
+                    type: string
+                  - name: aspectRatio
+                    label: Aspect ratio (optional override)
+                    type: string
+                    comment: e.g. 3/2 — leave blank to use default
+
+          - name: video
+            label: Video
+            fields:
+              - name: provider
+                label: Provider
+                type: select
+                options:
+                  values:
+                    - value: dropbox
+                      label: Dropbox
+                    - value: vimeo
+                      label: Vimeo
+                    - value: youtube
+                      label: YouTube
+              - name: src
+                label: Dropbox URL
+                type: string
+                comment: Dropbox share link (dl=0 is fine, auto-converted)
+              - name: id
+                label: Vimeo / YouTube ID
+                type: string
+                comment: Only needed for Vimeo or YouTube
+              - name: poster
+                label: Poster image
+                type: image
+              - name: caption
+                label: Caption
+                type: string
+
+          - name: text
+            label: Text block
+            fields:
+              - name: heading
+                label: Heading
+                type: string
+                comment: Large animated serif heading
+              - name: body
+                label: Body text
+                type: text
+                comment: "Use a blank line between paragraphs"
+
+  # ── About page (single file) ─────────────────────────────────────
+  - name: about
+    label: About
+    type: file
+    path: src/content/about.json
+    format: json
+    fields:
+      - name: name
+        label: Name
+        type: string
+      - name: title
+        label: Tagline
+        type: string
+      - name: bio
+        label: Bio paragraphs
+        type: text
+        list: true
+        comment: Each entry is one paragraph
+      - name: portrait
+        label: Portrait photo
+        type: image
+      - name: clients
+        label: Clients
+        type: string
+        list: true
+      - name: email
+        label: Email
+        type: string
+      - name: instagram
+        label: Instagram URL
+        type: string
+      - name: vimeo
+        label: Vimeo URL
+        type: string
+
+  # ── How I Work page (single file) ────────────────────────────────
+  - name: how-i-work
+    label: How I Work
+    type: file
+    path: src/content/how-i-work.json
+    format: json
+    fields:
+      - name: title
+        label: Page title
+        type: string
+      - name: intro
+        label: Intro text
+        type: text
+      - name: steps
+        label: Steps
+        type: object
+        list: true
+        fields:
+          - name: number
+            label: Number
+            type: string
+            comment: e.g. 01
+          - name: title
+            label: Title
+            type: string
+          - name: body
+            label: Body
+            type: text
+      - name: cta
+        label: Call to action
+        type: object
+        fields:
+          - name: text
+            label: Text
+            type: string
+          - name: link
+            label: Link
+            type: string
+          - name: label
+            label: Button label
+            type: string

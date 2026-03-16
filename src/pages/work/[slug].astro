@@ -1,0 +1,93 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Block from '../../components/Block.astro'
+import projects from '../../content/projects.json'
+
+export function getStaticPaths() {
+  return projects.map((project: any) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }))
+}
+
+const { project } = Astro.props as { project: any }
+const idx = projects.findIndex((p: any) => p.slug === project.slug)
+const nextProject = projects[(idx + 1) % projects.length] as any
+const info = project.info ?? {}
+---
+
+<Layout title={`${project.title} — Benjamin Arnedo`}>
+  <div class="page project-page">
+
+    <!-- Back button -->
+    <div class="project-back" data-animate="fade-up">
+      <a href="/" class="btn btn--ghost">&larr; All projects</a>
+    </div>
+
+    <!-- Cover image — morphs from grid thumbnail via view transition -->
+    <div class="cover-transition" style={`--aspect: ${project.coverAspect ?? '16/9'}`}>
+      <div class="img-container">
+        <img
+          src={project.cover}
+          alt={project.title}
+          loading="eager"
+          decoding="async"
+          transition:name={`cover-${project.slug}`}
+        />
+      </div>
+    </div>
+
+    <!-- Title + category -->
+    <header class="project-header" data-animate="fade-up">
+      <h1 class="project-title">{project.title}</h1>
+      <div class="project-meta">
+        <p class="label">{project.category}</p>
+        <p class="label">{project.year}</p>
+      </div>
+    </header>
+
+    <!-- Project info strip -->
+    {(info.about || info.date || info.place || info.client) && (
+      <div class="project-info" data-animate="fade-up">
+        {info.about && (
+          <div class="project-info-item">
+            <span class="project-info-label">About</span>
+            <span class="project-info-value">{info.about}</span>
+          </div>
+        )}
+        {info.date && (
+          <div class="project-info-item">
+            <span class="project-info-label">Date</span>
+            <span class="project-info-value">{info.date}</span>
+          </div>
+        )}
+        {info.place && (
+          <div class="project-info-item">
+            <span class="project-info-label">Place</span>
+            <span class="project-info-value">{info.place}</span>
+          </div>
+        )}
+        {info.client && (
+          <div class="project-info-item">
+            <span class="project-info-label">Client</span>
+            <span class="project-info-value">{info.client}</span>
+          </div>
+        )}
+      </div>
+    )}
+
+    <!-- Content blocks -->
+    <div class="project-content">
+      {project.blocks.map((block: any) => (
+        <Block block={block} />
+      ))}
+    </div>
+
+    <!-- Next project -->
+    <a href={`/work/${nextProject.slug}`} class="project-next">
+      <span class="project-next-label label">Next project</span>
+      <span class="project-next-title serif">{nextProject.title}</span>
+    </a>
+
+  </div>
+</Layout>

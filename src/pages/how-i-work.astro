@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro'
+import data from '../content/how-i-work.json'
+---
+
+<Layout title="Process — Benjamin Arnedo">
+  <div class="page">
+    <div class="how-layout">
+
+      <h1 data-animate="fade-up">{data.title}</h1>
+      <p class="how-intro body-text" data-animate="fade-up">{data.intro}</p>
+
+      <div class="how-steps">
+        {data.steps.map((step: any) => (
+          <div class="how-step" data-animate="fade-up">
+            <span class="step-number serif">{step.number}</span>
+            <div class="step-content">
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {data.cta && (
+        <div class="how-cta" data-animate="fade-up">
+          <span class="how-cta-text serif">{data.cta.text}</span>
+          <a href={data.cta.link} class="nav-link">{data.cta.label}&thinsp;&rarr;</a>
+        </div>
+      )}
+
+    </div>
+  </div>
+</Layout>

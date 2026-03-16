@@ -1,0 +1,22 @@
+{
+  "name": "Benjamin Arnedo",
+  "title": "Photographer & Cinematographer",
+  "bio": [
+    "Based in [City], Benjamin Arnedo captures the intersection of light, motion, and stillness. With a background spanning editorial photography and narrative filmmaking, his work exists at the boundary between the decisive moment and the carefully composed frame.",
+    "His approach is rooted in observation — finding the image that already exists within a scene rather than constructing one. Whether on set or in the field, he brings the same quiet intensity to every project."
+  ],
+  "portrait": "/images/about/portrait.jpg",
+  "clients": [
+    "Client One",
+    "Client Two",
+    "Client Three",
+    "Client Four",
+    "Client Five",
+    "Client Six",
+    "Client Seven",
+    "Client Eight"
+  ],
+  "email": "hello@benjaminarnedo.com",
+  "instagram": "https://instagram.com/benjaminarnedo",
+  "vimeo": "https://vimeo.com/benjaminarnedo"
+}

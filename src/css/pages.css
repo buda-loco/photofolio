@@ -1,0 +1,207 @@
+/* ── Home ───────────────────────────────────────────────────── */
+.home-intro {
+  padding: var(--sp-16) var(--page-margin) var(--sp-8);
+}
+
+.home-intro-actions {
+  margin-top: var(--sp-6);
+}
+
+.home-intro-name {
+  font-family: var(--font-serif);
+  font-size: clamp(0.875rem, 1.5vw, var(--text-base));
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--sp-2);
+}
+
+.home-intro-tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, var(--text-3xl));
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  max-width: 16ch;
+}
+
+/* ── About ──────────────────────────────────────────────────── */
+.about-layout {
+  padding: var(--sp-16) var(--page-margin);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-16);
+  align-items: start;
+}
+
+.about-text h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, var(--text-3xl));
+  font-weight: 300;
+  margin-bottom: var(--sp-6);
+  line-height: 1;
+}
+
+.about-image .img-container {
+  aspect-ratio: 3/4;
+}
+
+.clients-section {
+  padding: var(--sp-8) var(--page-margin) var(--sp-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.clients-section .label {
+  margin-bottom: var(--sp-4);
+  display: block;
+}
+
+.clients-list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--sp-8);
+  row-gap: var(--sp-2);
+}
+
+.clients-list li {
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+}
+
+.clients-list li:hover {
+  color: var(--color-text);
+}
+
+/* ── How I Work ─────────────────────────────────────────────── */
+.how-layout {
+  padding: var(--sp-16) var(--page-margin) var(--sp-24);
+  max-width: 920px;
+}
+
+.how-layout h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, var(--text-3xl));
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: var(--sp-4);
+}
+
+.how-intro {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  max-width: 55ch;
+  margin-bottom: var(--sp-12);
+}
+
+.how-steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.how-step {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: var(--sp-6);
+  padding: var(--sp-6) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.how-step:first-child {
+  border-top: 1px solid var(--color-border);
+}
+
+.step-number {
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  padding-top: 0.15em;
+}
+
+.step-content h3 {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  margin-bottom: var(--sp-2);
+  line-height: 1.1;
+}
+
+.step-content p {
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  max-width: 55ch;
+}
+
+.how-cta {
+  margin-top: var(--sp-12);
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-6);
+}
+
+.how-cta-text {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  color: var(--color-text);
+}
+
+/* ── Contact ────────────────────────────────────────────────── */
+.contact-layout {
+  padding: var(--sp-8) var(--page-margin);
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contact-layout h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 9vw, var(--text-5xl));
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--sp-8);
+}
+
+.contact-email {
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 2.5vw, var(--text-2xl));
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  transition: opacity 0.3s var(--ease-out);
+  display: inline-block;
+}
+
+.contact-email:hover {
+  opacity: 0.55;
+}
+
+.contact-social {
+  display: flex;
+  gap: var(--sp-6);
+  margin-top: var(--sp-6);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: var(--sp-8);
+  }
+
+  .about-image { order: -1; }
+
+  .how-step {
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--sp-3);
+  }
+
+  .how-cta { flex-direction: column; gap: var(--sp-3); }
+}

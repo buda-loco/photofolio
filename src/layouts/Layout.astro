@@ -1,0 +1,98 @@
+---
+import { ViewTransitions } from 'astro:transitions'
+import design from '../content/design.json'
+import '../css/tokens.css'
+import '../css/base.css'
+import '../css/typography.css'
+import '../css/nav.css'
+import '../css/grid.css'
+import '../css/project.css'
+import '../css/pages.css'
+import '../css/transitions.css'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = 'Benjamin Arnedo — Photographer & Cinematographer',
+  description = 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
+} = Astro.props
+
+// Generate CSS custom properties from design.json.
+// These override the defaults in tokens.css.
+const designCss = `
+:root {
+  /* ── Colors ────────────────────────── */
+  --color-bg:          ${design.colors.background};
+  --color-text:        ${design.colors.text};
+  --color-text-muted:  ${design.colors.textMuted};
+  --color-text-bright: ${design.colors.textBright};
+  --color-border:      ${design.colors.border};
+
+  /* ── Typography ─────────────────────── */
+  --font-serif: ${design.typography.serif};
+  --font-sans:  ${design.typography.sans};
+
+  --heading-weight:         ${design.typography.headings.weight};
+  --heading-letter-spacing: ${design.typography.headings.letterSpacing};
+  --heading-line-height:    ${design.typography.headings.lineHeight};
+
+  --label-size:          ${design.typography.labels.size};
+  --label-letter-spacing:${design.typography.labels.letterSpacing};
+
+  --body-size:       ${design.typography.body.size};
+  --body-line-height:${design.typography.body.lineHeight};
+
+  /* ── Text block ─────────────────────── */
+  --tb-heading-size:          ${design.textBlock.headingSize};
+  --tb-heading-weight:        ${design.textBlock.headingWeight};
+  --tb-heading-letter-spacing:${design.textBlock.headingLetterSpacing};
+  --tb-heading-line-height:   ${design.textBlock.headingLineHeight};
+  --tb-body-size:             ${design.textBlock.bodySize};
+  --tb-body-line-height:      ${design.textBlock.bodyLineHeight};
+  --tb-max-width:             ${design.textBlock.maxWidth};
+  --tb-gap:                   ${design.textBlock.gap};
+
+  /* ── Buttons ────────────────────────── */
+  --btn-font-size:      ${design.buttons.fontSize};
+  --btn-letter-spacing: ${design.buttons.letterSpacing};
+  --btn-padding-v:      ${design.buttons.paddingV};
+  --btn-padding-h:      ${design.buttons.paddingH};
+}
+`
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <meta name="theme-color" content={design.colors.background}>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <ViewTransitions />
+  <!-- Design tokens from design.json — override tokens.css defaults -->
+  <style set:html={designCss}></style>
+</head>
+<body>
+
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="/" class="nav-logo">Benjamin Arnedo</a>
+    <ul class="nav-links" role="list">
+      <li><a href="/" class="nav-link">Work</a></li>
+      <li><a href="/about" class="nav-link">About</a></li>
+      <li><a href="/how-i-work" class="nav-link">Process</a></li>
+      <li><a href="/contact" class="nav-link">Contact</a></li>
+    </ul>
+  </nav>
+
+  <slot />
+
+  <script src="../js/app.js"></script>
+
+</body>
+</html>

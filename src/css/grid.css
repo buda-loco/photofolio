@@ -1,0 +1,83 @@
+/* ── Home grid ──────────────────────────────────────────────── */
+.work-grid {
+  padding: var(--sp-8) var(--page-margin) var(--sp-16);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* Grid item sizes — set via data-size attribute in JS */
+.grid-item[data-size="large"]  { grid-column: span 8; }
+.grid-item[data-size="medium"] { grid-column: span 6; }
+.grid-item[data-size="small"]  { grid-column: span 4; }
+
+/* Optional column offsets for asymmetry */
+.grid-item[data-offset="2"] { grid-column-start: 3; }
+.grid-item[data-offset="4"] { grid-column-start: 5; }
+.grid-item[data-offset="6"] { grid-column-start: 7; }
+
+.grid-item {
+  display: block;
+  position: relative;
+}
+
+.grid-item .img-container {
+  /* --aspect is set per-item from JSON (e.g. 4/3, 3/4, 16/9) */
+  aspect-ratio: var(--aspect, 3/2);
+  overflow: hidden;
+}
+
+.grid-item img {
+  transition: transform 0.9s var(--ease-out);
+}
+
+.grid-item:hover img {
+  transform: scale(1.04);
+}
+
+/* Project info below thumbnail */
+.grid-item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.7rem 0 0;
+  gap: 1rem;
+}
+
+.grid-item-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.grid-item:hover .grid-item-title {
+  opacity: 0.6;
+}
+
+.grid-item-meta {
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .grid-item[data-size="large"]  { grid-column: span 12; }
+  .grid-item[data-size="medium"] { grid-column: span 12; }
+  .grid-item[data-size="small"]  { grid-column: span 6; }
+  .grid-item[data-offset="2"],
+  .grid-item[data-offset="4"],
+  .grid-item[data-offset="6"] { grid-column-start: auto; }
+}
+
+@media (max-width: 640px) {
+  .grid-item[data-size="small"] { grid-column: span 12; }
+}
