@@ -16,7 +16,7 @@
   "blocks": [
     {
       "type": "hero",
-      "src": "/images/projects/dickson/dickson_shops_photos_7.jpg",
+      "src": "/images/projects/dickson/cover.jpg",
       "alt": "Dickson Shopping Centre",
       "aspectRatio": "16/9",
       "parallax": 0.2
