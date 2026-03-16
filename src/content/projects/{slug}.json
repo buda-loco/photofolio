@@ -17,7 +17,7 @@
     {
       "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg",
-      "parallax": 0.5
+      "parallax": 0.03
     },
     {
       "type": "gallery",
@@ -46,7 +46,7 @@
     {
       "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg",
-      "parallax": 2
+      "parallax": 1
     }
   ]
 }
