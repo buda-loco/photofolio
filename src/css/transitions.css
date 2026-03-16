@@ -1,9 +1,9 @@
-/* Page fade */
+/* Page fade — kept short so the shared-element morph dominates */
 ::view-transition-old(root) {
-  animation: 260ms ease-in both vt-fade-out;
+  animation: 80ms ease-in both vt-fade-out;
 }
 ::view-transition-new(root) {
-  animation: 500ms ease-out 60ms both vt-fade-in;
+  animation: 220ms ease-out 80ms both vt-fade-in;
 }
 
 /* Shared element morph (cover images) — control timing only,

@@ -6,7 +6,12 @@ gsap.registerPlugin(ScrollTrigger)
 export function initAnimations() {
 
   // ── Fade + rise ───────────────────────────────────────────────
+  // Skip elements already in viewport — they may have just been placed
+  // there by a view-transition morph and must not be reset to opacity:0.
   gsap.utils.toArray('[data-animate="fade-up"]').forEach(el => {
+    const { top, bottom } = el.getBoundingClientRect()
+    if (top < window.innerHeight && bottom > 0) return
+
     gsap.fromTo(
       el,
       { opacity: 0, y: 36 },
