@@ -17,6 +17,30 @@
     {
       "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg"
+    },
+    {
+      "type": "gallery",
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg"
+        }
+      ]
     }
   ]
 }
