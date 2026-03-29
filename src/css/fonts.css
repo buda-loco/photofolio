@@ -1,0 +1,163 @@
+/* Adrianna — self-hosted WOFF2 */
+
+/* Standard widths */
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Thin Italic.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Light Italic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Bold Italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Demibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Demibold Italic.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna';
+  src: url('/fonts/Adrianna Extrabold Italic.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Condensed widths */
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Thin Italic.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Light Italic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed DemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adrianna Condensed';
+  src: url('/fonts/Adrianna Condensed DemiBold Italic.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}

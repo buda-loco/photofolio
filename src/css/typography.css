@@ -1,9 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+@import './fonts.css';
 
-h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  line-height: 1.05;
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: 0.01em;
 }
 
@@ -14,24 +22,24 @@ h1, h2, h3 {
 
 /* Display sizes */
 .display-xl {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(3rem, 8vw, var(--text-5xl));
-  font-weight: 300;
+  font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.01em;
 }
 
 .display-lg {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, var(--text-4xl));
-  font-weight: 300;
+  font-weight: 700;
   line-height: 1;
 }
 
 .display-md {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: clamp(1.5rem, 3vw, var(--text-2xl));
-  font-weight: 300;
+  font-weight: 700;
   line-height: 1.1;
 }
 
