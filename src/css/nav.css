@@ -31,16 +31,19 @@
 }
 
 .nav-logo {
-  font-family: var(--font-serif);
-  font-size: var(--text-base);
-  font-weight: 300;
-  letter-spacing: 0.06em;
-  color: var(--color-text);
+  display: flex;
+  align-items: center;
   transition: opacity 0.3s var(--ease-out);
 }
 
 .nav-logo:hover {
   opacity: 0.55;
+}
+
+.nav-logo-img {
+  height: 1.125rem;
+  width: auto;
+  display: block;
 }
 
 .nav-links {
@@ -51,5 +54,5 @@
 
 @media (max-width: 640px) {
   .nav-links { gap: var(--sp-3); }
-  .nav-logo { font-size: var(--text-sm); }
+  .nav-logo-img { height: 0.9rem; }
 }
