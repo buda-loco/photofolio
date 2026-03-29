@@ -15,13 +15,33 @@ interface Props {
   title?: string
   description?: string
   pageBackground?: string
+  jsonLd?: Record<string, unknown>
 }
 
 const {
   title = 'Benjamin Arnedo — Photographer & Cinematographer',
   description = 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
   pageBackground,
+  jsonLd,
 } = Astro.props
+
+const siteUrl = 'https://benjaminarnedo.com'
+
+// Base Person schema — included on every page
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Benjamin Arnedo',
+  jobTitle: 'Photographer & Cinematographer',
+  url: siteUrl,
+  email: 'hello@benjaminarnedo.com',
+  sameAs: [
+    'https://instagram.com/benjaminarnedo',
+    'https://vimeo.com/benjaminarnedo',
+  ],
+}
+
+const schemas = [personSchema, ...(jsonLd ? [jsonLd] : [])]
 
 // ── Color utilities ──────────────────────────────────────────────
 
@@ -197,6 +217,14 @@ const designCss = `
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
 
+  <!-- Canonical -->
+  <link rel="canonical" href={`${siteUrl}${Astro.url.pathname}`}>
+
+  <!-- JSON-LD structured data -->
+  {schemas.map(schema => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))}
+
   <!-- Font preloads — the 3 faces used most -->
   <link rel="preload" href="/fonts/Adrianna Light.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/Adrianna Extended Light.woff2" as="font" type="font/woff2" crossorigin>
@@ -222,6 +250,8 @@ const designCss = `
 </head>
 <body>
 
+  <a href="#main-content" class="skip-nav">Skip to content</a>
+
   <nav class="site-nav" aria-label="Main navigation">
     <a href="/" class="nav-logo">
       <img src="/logo.svg" alt="Benjamin Arnedo" class="nav-logo-img" width="200" height="50" />
@@ -239,7 +269,9 @@ const designCss = `
     </ul>
   </nav>
 
-  <slot />
+  <main id="main-content">
+    <slot />
+  </main>
 
   <!-- Accessibility widget -->
   <div class="a11y-widget" aria-label="Accessibility options">

@@ -4,7 +4,7 @@
   "colors": {
     "background":  "#000000",
     "text":        "#ffffff",
-    "textMuted":   "#666666",
+    "textMuted":   "#767676",
     "textBright":  "#ffffff",
     "border":      "rgba(255, 255, 255, 0.1)",
     "labelColor":  "#f4ff26"

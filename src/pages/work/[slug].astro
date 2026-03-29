@@ -20,9 +20,20 @@ const { project } = Astro.props as { project: any }
 const idx = projects.findIndex((p: any) => p.slug === project.slug)
 const nextProject = projects.length > 1 ? projects[(idx + 1) % projects.length] as any : null
 const info = project.info ?? {}
+
+const projectSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.title,
+  creator: { '@type': 'Person', name: 'Benjamin Arnedo' },
+  ...(project.info?.about ? { description: project.info.about } : {}),
+  ...(project.year ? { dateCreated: String(project.year) } : {}),
+  ...(project.cover ? { image: `https://benjaminarnedo.com${project.cover}` } : {}),
+  ...(info.client ? { sponsor: { '@type': 'Organization', name: info.client } } : {}),
+}
 ---
 
-<Layout title={`${project.title} — Benjamin Arnedo`} pageBackground={project.backgroundColor}>
+<Layout title={`${project.title} — Benjamin Arnedo`} pageBackground={project.backgroundColor} jsonLd={projectSchema}>
   <div class="page project-page" style={project.backgroundColor ? `--color-bg: ${project.backgroundColor}; background: ${project.backgroundColor}` : ''}>
 
     <!-- Back button -->

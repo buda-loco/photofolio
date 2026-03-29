@@ -56,6 +56,14 @@ function splitWords(text: string) {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
+      ) : block.provider === 'vimeo' ? (
+        <iframe
+          src={`https://player.vimeo.com/video/${block.id}?badge=0&autopause=0`}
+          title={block.caption ?? 'Project video'}
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+        ></iframe>
       ) : (
         <video
           src={dropboxUrl(block.src)}
