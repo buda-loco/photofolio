@@ -10,7 +10,7 @@ content:
     type: collection
     path: src/content/projects
     format: json
-    filename: "{primary}.json"
+    filename: "{slug}.json"
     view:
       primary: slug
       fields: [title, category, year, hidden]
