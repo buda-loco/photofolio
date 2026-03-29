@@ -357,12 +357,10 @@ const designCss = `
       <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="32" height="32" />
     </a>
     <p class="footer-copy">&copy; {new Date().getFullYear()} Benjamin Arnedo</p>
+    <button class="a11y-fab" aria-label="Accessibility options" aria-expanded="false">
+      <SlidersHorizontal size={18} />
+    </button>
   </footer>
-
-  <!-- A11y floating action button -->
-  <button class="a11y-fab" aria-label="Accessibility options" aria-expanded="false">
-    <SlidersHorizontal size={18} />
-  </button>
 
   <!-- Backdrop — closes drawer on click -->
   <div class="a11y-backdrop" aria-hidden="true"></div>

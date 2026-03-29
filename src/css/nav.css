@@ -97,29 +97,28 @@
 
 /* ── Mobile nav bar ─────────────────────────────────────────── */
 
-/* Hide desktop elements on mobile */
+/* Default: hide mobile-only elements (must come before the media query) */
+.nav-logo-mobile,
+.nav-hamburger {
+  display: none;
+}
+
+/* On mobile: swap desktop elements for mobile ones */
 @media (max-width: 768px) {
   .nav-logo,
   .nav-links {
     display: none;
   }
 
-  /* Show mobile-only elements */
   .nav-logo-mobile,
   .nav-hamburger {
     display: flex;
   }
 
-  /* Hide desktop mini-logo bounce on mobile (mobile nav is always visible) */
+  /* Desktop mini-logo not needed — mobile nav is always visible */
   .nav-mini {
     display: none;
   }
-}
-
-/* Hide mobile-only elements on desktop */
-.nav-logo-mobile,
-.nav-hamburger {
-  display: none;
 }
 
 /* Mobile: mini logo centered */

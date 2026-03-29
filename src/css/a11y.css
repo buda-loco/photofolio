@@ -1,21 +1,17 @@
-/* ── A11y FAB — floating circular button ─────────────────────── */
+/* ── A11y button — sits in the footer flow ───────────────────── */
 .a11y-fab {
-  position: fixed;
-  bottom: var(--sp-6);
-  right: var(--sp-6);
-  z-index: calc(var(--z-nav) + 5);
-  width: 48px;
-  height: 48px;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-muted);
+  flex-shrink: 0;
   transition:
     background 0.25s var(--ease-out),
     color 0.25s var(--ease-out),
