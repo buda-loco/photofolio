@@ -1,6 +1,5 @@
 /* ── A11y button — sits in the footer flow ───────────────────── */
 .a11y-fab {
-  margin-left: auto;
   width: 36px;
   height: 36px;
   border-radius: 50%;
