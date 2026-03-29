@@ -40,7 +40,7 @@ function splitTitle(title: string): [string[], string[]] {
     </section>
 
     <section class="work-grid" aria-label="Selected work">
-      {visible.map((project: any) => (
+      {visible.map((project: any, i: number) => (
         <a
           href={`/work/${project.slug}`}
           class="grid-item"
@@ -53,8 +53,9 @@ function splitTitle(title: string): [string[], string[]] {
             <img
               src={project.cover}
               alt={project.title}
-              loading="lazy"
-              decoding="async"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              decoding={i === 0 ? 'sync' : 'async'}
               transition:name={`cover-${project.slug}`}
             />
             <div class="grid-item-overlay-bg"></div>

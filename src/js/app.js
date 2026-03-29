@@ -1,5 +1,5 @@
 import { initSmoothScroll, destroySmoothScroll, getLenis } from './smooth-scroll.js'
-import { initAnimations } from './animations.js'
+import { initAnimations, fitGridTitles } from './animations.js'
 import { initA11y, cleanupA11y } from './a11y.js'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import gsap from 'gsap'
@@ -192,12 +192,22 @@ function init() {
   initScrollNav()
   initMobileMenu()
   initA11yDrawer()
-  // Wait for fonts before initialising — fit-text needs accurate measurements
+
+  // Run animations IMMEDIATELY — this sets the GSAP initial states (opacity:0,
+  // y:36) before the browser has a chance to paint, preventing the FOUC where
+  // elements briefly appear visible then snap to hidden.
+  initAnimations()
+
+  // Title fitting needs accurate font metrics (probe element widths change with
+  // the loaded typeface). Defer only this part — after fitting, refresh all
+  // ScrollTrigger positions in case titles changed container heights.
+  const doFit = () => { fitGridTitles(); ScrollTrigger.refresh() }
   if (document.fonts?.ready) {
-    document.fonts.ready.then(() => initAnimations())
+    document.fonts.ready.then(doFit)
   } else {
-    initAnimations()
+    doFit()
   }
+
   updateNavActive()
 }
 

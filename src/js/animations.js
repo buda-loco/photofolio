@@ -114,21 +114,22 @@ export function initAnimations() {
     )
   })
 
-  // ── Grid title fit + hover reveal ────────────────────────────
-  fitGridTitles()
+  // ── Grid hover reveal ────────────────────────────────────────
   initGridHovers()
 
   // ── Widescreen video click-to-play ────────────────────────────
   initWidescreenVideos()
 
-  ScrollTrigger.refresh()
+  // NOTE: fitGridTitles() is NOT called here — it needs accurate font
+  // metrics and is called separately by app.js after document.fonts.ready.
+  // ScrollTrigger.refresh() is also deferred until after title fitting.
 }
 
 // ── Fit grid titles to fill container width ───────────────────────
 let _resizeTimer
 let _resizeListenerAttached = false
 
-function fitGridTitles() {
+export function fitGridTitles() {
   document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
 
   if (!_resizeListenerAttached) {

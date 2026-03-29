@@ -17,6 +17,7 @@ interface Props {
   description?: string
   pageBackground?: string
   jsonLd?: Record<string, unknown>
+  ogImage?: string   // absolute path e.g. /images/projects/foo/cover.jpg
 }
 
 const {
@@ -24,9 +25,14 @@ const {
   description = 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
   pageBackground,
   jsonLd,
+  ogImage,
 } = Astro.props
 
 const siteUrl = 'https://benjaminarnedo.com'
+
+// Absolute URLs for social sharing and canonical
+const canonicalUrl = `${siteUrl}${Astro.url.pathname}`
+const socialImage = ogImage ? `${siteUrl}${ogImage}` : null
 
 // Base Person schema — included on every page
 const personSchema = {
@@ -267,8 +273,30 @@ const designCss = `
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
 
-  <!-- Canonical -->
-  <link rel="canonical" href={`${siteUrl}${Astro.url.pathname}`}>
+  <!-- Canonical + locale -->
+  <link rel="canonical" href={canonicalUrl}>
+  <meta property="og:locale" content="en_AU">
+
+  <!-- Crawlers: allow full indexing + large image previews (important for portfolio SEO) -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Benjamin Arnedo">
+
+  <!-- Open Graph — enhanced -->
+  <meta property="og:url" content={canonicalUrl}>
+  {socialImage && <meta property="og:image" content={socialImage}>}
+  {socialImage && <meta property="og:image:width" content="1200">}
+  {socialImage && <meta property="og:image:height" content="630">}
+  {socialImage && <meta property="og:image:alt" content={title}>}
+
+  <!-- Twitter / X — creator tag enables rich cards on profile -->
+  <meta name="twitter:creator" content="@buda_loco">
+  <meta name="twitter:site" content="@buda_loco">
+  {socialImage && <meta name="twitter:image" content={socialImage}>}
+  {socialImage && <meta name="twitter:image:alt" content={title}>}
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/logo-mini.svg">
+  <link rel="apple-touch-icon" href="/logo-mini.svg">
 
   <!-- JSON-LD structured data -->
   {schemas.map(schema => (
