@@ -61,6 +61,9 @@ public/
   fonts/                  # WOFF2 font files (served statically)
   images/                 # project images
   logo.svg                # site logo
+tina/
+  config.ts               # Tina CMS schema (parked — not active, see below)
+  __generated__/          # gitignored — never commit (contains live token)
 ```
 
 ---
@@ -184,6 +187,27 @@ Editable collections:
 - **Design** — site-wide colours including `labelColor` (supports gradients)
 
 See `CONTENT.md` for the full block/field reference.
+
+### Block discriminator field
+Content blocks in project JSON use `"type"` as the discriminator key — this is what Pages CMS reads and writes (`blockKey: type` in `.pages.yml`). Do not use `"_template"` (that was Tina CMS's convention). `Block.astro` accepts both via `block._template ?? block.type` but new content should always use `"type"`.
+
+---
+
+## Tina CMS — parked, do not use
+
+Tina CMS was evaluated as a replacement for Pages CMS and abandoned. `tina/config.ts` remains in the repo as a reference in case it's revisited later (e.g. after an Astro 5 upgrade).
+
+**Why it was abandoned:** Tina Cloud's branch indexing never worked — the webhook fires 200 OK but the content branch stays unindexed. Likely requires a paid plan or specific GitHub App configuration that wasn't worth debugging.
+
+**What's left in the repo:**
+- `tina/config.ts` — full schema, safe to keep, not used at runtime
+- `tina/__generated__/` — **gitignored**. Never commit this directory. It contains a generated `client.ts` with a hardcoded live token.
+
+**To revisit Tina later:**
+1. Upgrade to Astro 5+
+2. Run `npm run dev` (Tina wraps it: `tinacms dev -c 'astro dev'`)
+3. Re-connect a Tina Cloud project — use a **public repo** on the free plan
+4. Blocks in project JSON will need `"_template"` instead of `"type"` (or keep the `??` fallback in `Block.astro`)
 
 ---
 
