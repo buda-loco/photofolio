@@ -54,7 +54,7 @@ h3, h4, h5, h6 {
 /* Body */
 .body-text {
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
+  font-size: 1rem;
   font-weight: 300;
   line-height: 1.8;
   color: var(--color-text);

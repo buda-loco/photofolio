@@ -14,6 +14,26 @@ function dropboxUrl(src: string): string {
 function splitWords(text: string) {
   return text.split(' ')
 }
+
+// Build a OneLinePlayer iframe src from a video URL + options
+function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
+  const params = new URLSearchParams({
+    url,
+    autoplay:        opts.autoplay        ?? 'false',
+    autopause:       'true',
+    muted:           opts.muted           ?? 'false',
+    loop:            opts.loop            ?? 'false',
+    progressBar:     'true',
+    overlay:         'true',
+    muteButton:      'true',
+    fullscreenButton:'true',
+    style:           'dark',
+    quality:         'auto',
+    playButton:      'true',
+    ...(opts.poster  ? { poster: opts.poster } : {}),
+  })
+  return `https://onelineplayer.com/player.html?${params}`
+}
 ---
 
 {blockType === 'hero' && (
@@ -67,6 +87,15 @@ function splitWords(text: string) {
           allow="autoplay; fullscreen; picture-in-picture"
           allowfullscreen
         ></iframe>
+      ) : block.provider === 'onelineplayer' ? (
+        <iframe
+          src={onelinerSrc(block.src, { poster: block.poster })}
+          title={block.caption ?? 'Project video'}
+          frameborder="0"
+          scrolling="no"
+          allow="autoplay;fullscreen"
+          allowfullscreen
+        ></iframe>
       ) : (
         <video
           src={dropboxUrl(block.src)}
@@ -78,6 +107,36 @@ function splitWords(text: string) {
       )}
     </div>
     {block.caption && <p class="block-caption label">{block.caption}</p>}
+  </div>
+)}
+
+{blockType === 'vertical-reel' && (
+  <div class="block-vertical-reel">
+    <div class="reel-video">
+      <div class="video-container">
+        <iframe
+          src={onelinerSrc(block.video.url, {
+            poster:   block.video.poster   ?? '',
+            loop:     block.video.loop     ? 'true' : 'false',
+            muted:    block.video.muted    ? 'true' : 'false',
+            autoplay: block.video.autoplay ? 'true' : 'false',
+          })}
+          title={block.caption ?? 'Project video'}
+          frameborder="0"
+          scrolling="no"
+          allow="autoplay;fullscreen"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+    <div class="reel-images">
+      {(block.images ?? []).slice(0, 2).map((img: any) => (
+        <div class="img-container img-reveal">
+          <img src={img.src} alt={img.alt ?? ''} loading="lazy" decoding="async" />
+        </div>
+      ))}
+    </div>
+    {block.caption && <p class="block-caption label" style="grid-column: 1 / -1">{block.caption}</p>}
   </div>
 )}
 

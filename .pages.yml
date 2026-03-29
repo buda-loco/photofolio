@@ -232,6 +232,53 @@ content:
                 label: Caption
                 type: string
 
+          - name: vertical-reel
+            label: Vertical reel (9:16 video + 2 square images)
+            fields:
+              - name: video
+                label: Video
+                type: object
+                fields:
+                  - name: url
+                    label: Video URL
+                    type: string
+                    required: true
+                    comment: "Dropbox share link, direct .mp4 URL, or Vimeo URL"
+                  - name: poster
+                    label: Poster image URL
+                    type: string
+                    comment: "Optional — shown before playback starts"
+                  - name: loop
+                    label: Loop
+                    type: boolean
+                    default: false
+                  - name: muted
+                    label: Start muted
+                    type: boolean
+                    default: false
+                  - name: autoplay
+                    label: Autoplay
+                    type: boolean
+                    default: false
+              - name: images
+                label: Images (2 square images)
+                type: object
+                list:
+                  collapsible:
+                    collapsed: false
+                    summary: "{src}"
+                fields:
+                  - name: src
+                    label: Image
+                    type: image
+                    required: true
+                  - name: alt
+                    label: Alt text
+                    type: string
+              - name: caption
+                label: Caption
+                type: string
+
           - name: text
             label: Text block
             fields:

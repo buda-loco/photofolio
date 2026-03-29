@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import about from '../content/about.json'
+import { Mail, Instagram, ArrowUpRight } from 'lucide-astro'
 ---
 
 <Layout title="Contact — Benjamin Arnedo">
@@ -16,18 +17,18 @@ import about from '../content/about.json'
         class="contact-email"
         data-animate="fade-up"
       >
-        {about.email}
+        <Mail size={20} class="contact-icon" />{about.email}
       </a>
 
       <div class="contact-social" data-animate="fade-up">
         {about.instagram && (
           <a href={about.instagram} class="nav-link" target="_blank" rel="noopener noreferrer">
-            Instagram
+            <Instagram size={14} style="display:inline;vertical-align:middle;margin-right:0.35em" />Instagram <ArrowUpRight size={11} style="display:inline;vertical-align:middle;opacity:0.5" />
           </a>
         )}
         {about.vimeo && (
           <a href={about.vimeo} class="nav-link" target="_blank" rel="noopener noreferrer">
-            Vimeo
+            Vimeo <ArrowUpRight size={11} style="display:inline;vertical-align:middle;opacity:0.5" />
           </a>
         )}
       </div>

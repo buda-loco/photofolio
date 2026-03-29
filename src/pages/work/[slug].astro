@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import Block from '../../components/Block.astro'
+import { CalendarDays, MapPin, User, Info, ArrowLeft, ArrowRight } from 'lucide-astro'
 
 const files = import.meta.glob('../../content/projects/*.json', { eager: true })
 const projects: any[] = Object.values(files)
@@ -58,7 +59,7 @@ const projectSchema = {
       </div>
       <!-- Back button — overlaid top-left of cover image -->
       <div class="project-back" data-animate="fade-up">
-        <a href="/" class="nav-link" style="--pill-bg: var(--pill-base-bg); --pill-text: var(--pill-base-text)">&larr; All projects</a>
+        <a href="/" class="nav-link"><ArrowLeft size={13} style="display:inline;vertical-align:middle;margin-right:0.3em" /> All projects</a>
       </div>
     </div>
 
@@ -92,25 +93,25 @@ const projectSchema = {
       <div class="project-info" data-animate="fade-up">
         {info.about && (
           <div class="project-info-item project-info-item--about">
-            <span class="project-info-label">About</span>
+            <span class="project-info-label"><Info size={11} class="info-icon" /> About</span>
             <span class="project-info-value">{info.about}</span>
           </div>
         )}
         {info.date && (
           <div class="project-info-item">
-            <span class="project-info-label">Date</span>
+            <span class="project-info-label"><CalendarDays size={11} class="info-icon" /> Date</span>
             <span class="project-info-value">{info.date}</span>
           </div>
         )}
         {info.place && (
           <div class="project-info-item">
-            <span class="project-info-label">Place</span>
+            <span class="project-info-label"><MapPin size={11} class="info-icon" /> Place</span>
             <span class="project-info-value">{info.place}</span>
           </div>
         )}
         {info.client && (
           <div class="project-info-item">
-            <span class="project-info-label">Client</span>
+            <span class="project-info-label"><User size={11} class="info-icon" /> Client</span>
             <span class="project-info-value">{info.client}</span>
           </div>
         )}
@@ -131,6 +132,7 @@ const projectSchema = {
           <span class="project-next-label">Next</span>
           <span class="project-next-sep">/</span>
           <span class="project-next-title">{nextProject.title}</span>
+          <ArrowRight size={13} />
         </a>
       </div>
     )}

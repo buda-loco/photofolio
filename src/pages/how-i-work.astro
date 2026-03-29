@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import data from '../content/how-i-work.json'
+import { ArrowRight } from 'lucide-astro'
 ---
 
 <Layout title="Process — Benjamin Arnedo">
@@ -25,7 +26,7 @@ import data from '../content/how-i-work.json'
       {data.cta && (
         <div class="how-cta" data-animate="fade-up">
           <span class="how-cta-text serif">{data.cta.text}</span>
-          <a href={data.cta.link} class="nav-link">{data.cta.label}&thinsp;&rarr;</a>
+          <a href={data.cta.link} class="nav-link">{data.cta.label}&thinsp;<ArrowRight size={13} style="display:inline;vertical-align:middle" /></a>
         </div>
       )}
 
