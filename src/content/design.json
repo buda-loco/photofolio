@@ -24,7 +24,7 @@
     },
 
     "body": {
-      "size":       "0.8125rem",
+      "size":       "1rem",
       "lineHeight": "1.8"
     }
   },

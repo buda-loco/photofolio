@@ -28,7 +28,7 @@
   font-family: 'Adrianna Extended', var(--font-display);
   font-size: clamp(2.5rem, 6vw, var(--text-4xl));
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: -0.015em;
   line-height: 1;
 }
 
@@ -239,7 +239,7 @@
 
 /* Heading — large serif, left-aligned, word-by-word clip reveal */
 .block-heading {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: var(--tb-heading-size, clamp(2.5rem, 5vw, 5.5rem));
   font-weight: var(--tb-heading-weight, 300);
   letter-spacing: var(--tb-heading-letter-spacing, 0em);

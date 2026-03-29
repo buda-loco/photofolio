@@ -12,11 +12,13 @@
   /* Typography */
   --font-sans: 'Adrianna', system-ui, -apple-system, sans-serif;
   --font-display: 'Adrianna Extended', system-ui, sans-serif;
+  /* Serif alias — Adrianna Extended serves as the display/editorial face */
+  --font-serif: var(--font-display);
 
-  /* Type scale */
-  --text-xs: 0.6875rem;    /* 11px */
-  --text-sm: 0.8125rem;    /* 13px */
-  --text-base: 1rem;       /* 16px */
+  /* Type scale — modular, base 16px */
+  --text-xs: 0.75rem;      /* 12px — labels, captions, pills */
+  --text-sm: 0.875rem;     /* 14px — secondary body, step numbers */
+  --text-base: 1rem;       /* 16px — body text */
   --text-lg: 1.25rem;      /* 20px */
   --text-xl: 1.75rem;      /* 28px */
   --text-2xl: 2.5rem;      /* 40px */

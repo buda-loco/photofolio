@@ -65,18 +65,4 @@ h3, h4, h5, h6 {
   margin-top: var(--sp-3);
 }
 
-/* Nav links */
-.nav-link {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  transition: color 0.25s var(--ease-out);
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-text);
-}
+/* nav-link pill styles live in nav.css */
