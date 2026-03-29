@@ -198,9 +198,11 @@ const labelColorValue = labelSecondary
   : labelPrimary
 
 // Per-page text colours — explicit prop > computed from background > site default
+// isLightBg is always derived from the background (autoText), not the user override,
+// so muted/border palette stays correct even when textColor is a custom hex.
 const autoText = pageBackground ? accessibleText(bgSource) : design.colors.text
 const pageText = textColorProp ?? autoText
-const isLightBg = pageText === '#000000'
+const isLightBg = autoText === '#000000'
 const pageTextMuted = pageBackground
   ? (isLightBg ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.55)')
   : design.colors.textMuted
@@ -216,7 +218,6 @@ const pageLabelColor = highlightColorProp ?? autoLabelColor
 const basePill = highlightColorProp
   ? { bg: highlightColorProp, text: accessibleText(highlightColorProp) }
   : pillColors(bgSource, 0)
-const navPills = navItems.map(item => ({ ...item, pill: basePill }))
 
 // Generate CSS custom properties from design.json.
 // These override the defaults in tokens.css.
@@ -369,12 +370,12 @@ const designCss = `
     </a>
     <!-- Desktop nav links -->
     <ul class="nav-links" role="list">
-      {navPills.map(({ href, label, pill }, i) => (
+      {navItems.map(({ href, label }, i) => (
         <li style={`--i:${i}`}>
           <a
             href={href}
             class="nav-link"
-            style={`--pill-bg:${pill.bg};--pill-text:${pill.text}`}
+            style={`--pill-bg:${basePill.bg};--pill-text:${basePill.text}`}
           >{label}</a>
         </li>
       ))}
