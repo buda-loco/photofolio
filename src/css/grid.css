@@ -7,7 +7,7 @@
   align-items: start;
 }
 
-/* Grid item sizes — set via data-size attribute in JS */
+/* Grid item sizes — set via data-size attribute */
 .grid-item[data-size="large"]  { grid-column: span 8; }
 .grid-item[data-size="medium"] { grid-column: span 6; }
 .grid-item[data-size="small"]  { grid-column: span 4; }
@@ -44,40 +44,54 @@
   align-items: flex-end;
   padding: 1.25rem 1.5rem;
   overflow: hidden;
+  pointer-events: none;
 }
 
-/* Animated rectangle — builds up from bottom on hover */
+/* Rectangle — animates up from bottom via GSAP */
 .grid-item-overlay-bg {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(0, 0, 0, 0.82);
   transform: scaleY(0);
   transform-origin: bottom;
-  transition: transform 0.55s var(--ease-out);
+  will-change: transform;
 }
 
-.grid-item:hover .grid-item-overlay-bg {
-  transform: scaleY(1);
-}
-
-/* Title — readable via blend mode by default */
+/* Title — Adrianna Extended Light, fills container width */
 .grid-item-title {
   position: relative;
   z-index: 1;
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 2.5vw, var(--text-xl));
-  font-weight: 700;
-  line-height: 1.05;
+  display: block;
+  width: 100%;
+  font-family: 'Adrianna Extended', 'Adrianna', system-ui, sans-serif;
+  font-weight: 300;
+  line-height: 0.95;
   letter-spacing: -0.01em;
   color: #ffffff;
-  mix-blend-mode: difference;
-  transition: mix-blend-mode 0s 0.3s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
-.grid-item:hover .grid-item-title {
-  mix-blend-mode: normal;
-  transition: none;
+/* Word split structure */
+.grid-item-title .word-clip {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1;
+  margin-right: 0.22em;
 }
+
+.grid-item-title .word-clip:last-child {
+  margin-right: 0;
+}
+
+.grid-item-title .word-inner {
+  display: block;
+  transform: translateY(110%);
+  will-change: transform;
+}
+
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {

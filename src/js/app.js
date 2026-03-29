@@ -4,7 +4,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 function init() {
   initSmoothScroll()
-  initAnimations()
+  // Wait for fonts before initialising — fit-text needs accurate measurements
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => initAnimations())
+  } else {
+    initAnimations()
+  }
   updateNavActive()
 }
 

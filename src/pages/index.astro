@@ -41,7 +41,11 @@ const visible = projects.filter((p: any) => !p.hidden)
             />
             <div class="grid-item-overlay">
               <div class="grid-item-overlay-bg"></div>
-              <span class="grid-item-title">{project.title}</span>
+              <p class="grid-item-title" data-title={project.title}>
+                {project.title.split(' ').map((word: string) => (
+                  <span class="word-clip"><span class="word-inner">{word}</span></span>
+                ))}
+              </p>
             </div>
           </div>
         </a>

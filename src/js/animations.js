@@ -113,7 +113,85 @@ export function initAnimations() {
     )
   })
 
+  // ── Grid title fit + hover reveal ────────────────────────────
+  fitGridTitles()
+  initGridHovers()
+
   ScrollTrigger.refresh()
+}
+
+// ── Fit grid titles to fill container width ───────────────────────
+function fitGridTitles() {
+  document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
+
+  // Re-fit on resize
+  let resizeTimer
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
+    }, 100)
+  })
+}
+
+function fitOneTitle(titleEl) {
+  const container = titleEl.closest('.img-container')
+  if (!container) return
+
+  const text = titleEl.dataset.title || titleEl.textContent.trim()
+  const cs   = getComputedStyle(titleEl)
+
+  const probe = document.createElement('span')
+  Object.assign(probe.style, {
+    position:      'fixed',
+    visibility:    'hidden',
+    pointerEvents: 'none',
+    whiteSpace:    'nowrap',
+    fontFamily:    cs.fontFamily,
+    fontWeight:    cs.fontWeight,
+    letterSpacing: cs.letterSpacing,
+    fontSize:      '100px',
+  })
+  probe.textContent = text
+  document.body.appendChild(probe)
+
+  const probeW = probe.offsetWidth
+  document.body.removeChild(probe)
+
+  if (!probeW) return
+
+  const padding   = 48 // 1.5rem * 2 sides from overlay padding
+  const available = container.offsetWidth - padding
+  titleEl.style.fontSize = Math.max(12, Math.floor(100 * (available / probeW))) + 'px'
+}
+
+// ── Grid hover timelines ──────────────────────────────────────────
+function initGridHovers() {
+  document.querySelectorAll('.grid-item').forEach(item => {
+    const bg    = item.querySelector('.grid-item-overlay-bg')
+    const words = item.querySelectorAll('.word-inner')
+    if (!bg || !words.length) return
+
+    const tl = gsap.timeline({ paused: true })
+
+    // 1 — rectangle builds up from bottom
+    tl.to(bg, {
+      scaleY:          1,
+      duration:        0.42,
+      ease:            'power3.out',
+      transformOrigin: 'bottom',
+    })
+
+    // 2 — words clip-reveal, staggered (starts just before rect finishes)
+    tl.fromTo(words,
+      { y: '110%' },
+      { y: '0%', duration: 0.52, ease: 'power3.out', stagger: 0.065 },
+      '-=0.08'
+    )
+
+    item.addEventListener('mouseenter', () => tl.play())
+    item.addEventListener('mouseleave', () => tl.reverse())
+  })
 }
 
 // Entry animation — initial page load only
