@@ -8,7 +8,6 @@
   "gridSize": "large",
   "hidden": false,
   "backgroundColor": "#CD000C",
-  "services": ["Photography", "Videography", "Event Visuals", "Editing", "Social Media Ads", "Animation"],
   "info": {
     "about": "Lunar new year celebrations in Dickson, Canberra. I was tasked with capturing the 12-hour event and deliver high quality images and video for all stakeholders.",
     "date": "Feb, 2026",
@@ -25,12 +24,24 @@
       "type": "gallery",
       "columns": "3",
       "images": [
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg" }
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg"
+        }
       ]
     },
     {
@@ -42,10 +53,18 @@
       "type": "gallery",
       "columns": "2",
       "images": [
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-7.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-3.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Shops-4.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg" }
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-7.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-3.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Shops-4.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg"
+        }
       ]
     },
     {
@@ -57,10 +76,18 @@
       "type": "gallery",
       "columns": "2",
       "images": [
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-46.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-233.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-175.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg" }
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-46.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-233.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-175.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg"
+        }
       ]
     },
     {
@@ -72,12 +99,24 @@
       "type": "gallery",
       "columns": "2",
       "images": [
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-105.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-19.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-10.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-7.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Food-5.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg" }
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-105.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-19.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-10.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-7.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Food-5.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg"
+        }
       ]
     },
     {
@@ -89,10 +128,23 @@
       "type": "gallery",
       "columns": "3",
       "images": [
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-57.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-33.jpg" },
-        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg" }
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-57.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-33.jpg"
+        },
+        {
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg"
+        }
       ]
+    },
+    {
+      "type": "video",
+      "provider": "dropbox",
+      "src": "https://www.dropbox.com/scl/fi/y8at5vnzdaj0k7v7wqenm/voiceover-buda.mov?rlkey=12cvjeos0y5cjjlu6a862vrht&dl=0",
+      "poster": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2.jpg",
+      "caption": "I usually don't do voice overs, but this particular event really inspired me to write and edit a special edit."
     }
   ]
 }
