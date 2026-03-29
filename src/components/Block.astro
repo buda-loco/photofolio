@@ -103,6 +103,9 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
           controls
           playsinline
           preload="metadata"
+          autoplay={block.autoplay || undefined}
+          muted={block.muted || undefined}
+          loop={block.loop || undefined}
         ></video>
       )}
     </div>
@@ -117,7 +120,11 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
         <button
           class="widescreen-poster"
           aria-label="Play video"
-          data-src={onelinerSrc(dropboxUrl(block.url), { autoplay: 'true' })}
+          data-src={onelinerSrc(dropboxUrl(block.url), {
+            autoplay: block.autoplay === false ? 'false' : 'true',
+            muted:    block.muted    ? 'true' : 'false',
+            loop:     block.loop     ? 'true' : 'false',
+          })}
         >
           <img src={block.poster} alt="" loading="lazy" decoding="async" />
           <span class="widescreen-play" aria-hidden="true">
@@ -130,7 +137,11 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
         </button>
       ) : (
         <iframe
-          src={onelinerSrc(dropboxUrl(block.url))}
+          src={onelinerSrc(dropboxUrl(block.url), {
+            autoplay: block.autoplay === false ? 'false' : 'true',
+            muted:    block.muted ? 'true' : 'false',
+            loop:     block.loop  ? 'true' : 'false',
+          })}
           title={block.caption ?? 'Project video'}
           frameborder="0"
           scrolling="no"

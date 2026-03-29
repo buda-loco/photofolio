@@ -239,6 +239,18 @@ content:
               - name: poster
                 label: Poster image
                 type: image
+              - name: autoplay
+                label: Autoplay
+                type: boolean
+                default: false
+              - name: muted
+                label: Start muted
+                type: boolean
+                default: false
+              - name: loop
+                label: Loop
+                type: boolean
+                default: false
               - name: caption
                 label: Caption
                 type: string
@@ -255,6 +267,19 @@ content:
                 label: Poster image
                 type: image
                 comment: "Shown before play — recommended. Click reveals the player."
+              - name: autoplay
+                label: Autoplay on click
+                type: boolean
+                default: true
+                comment: "Start playing as soon as the poster is clicked"
+              - name: muted
+                label: Start muted
+                type: boolean
+                default: false
+              - name: loop
+                label: Loop
+                type: boolean
+                default: false
               - name: aspectRatio
                 label: Aspect ratio
                 type: select
