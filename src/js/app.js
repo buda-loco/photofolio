@@ -2,8 +2,11 @@ import { initSmoothScroll, destroySmoothScroll, getLenis } from './smooth-scroll
 import { initAnimations } from './animations.js'
 import { initA11y, cleanupA11y } from './a11y.js'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import gsap from 'gsap'
 
 let destroyScrollNav = null
+let destroyMobileMenu = null
+let destroyA11yDrawer = null
 
 function initScrollNav() {
   const nav = document.querySelector('.site-nav')
@@ -40,10 +43,122 @@ function initScrollNav() {
   destroyScrollNav = () => lenis?.off('scroll', onScroll)
 }
 
+function initMobileMenu() {
+  const hamburger = document.querySelector('.nav-hamburger')
+  const menu = document.querySelector('.mobile-menu')
+  const closeBtn = document.querySelector('.mobile-menu-close')
+  if (!hamburger || !menu) return
+
+  const items = menu.querySelectorAll('.mobile-menu-item')
+  let isOpen = false
+
+  // Set GSAP initial states
+  gsap.set(items, { opacity: 0, y: 48 })
+
+  function open() {
+    isOpen = true
+    menu.classList.add('is-open')
+    menu.setAttribute('aria-hidden', 'false')
+    hamburger.setAttribute('aria-expanded', 'true')
+    document.body.style.overflow = 'hidden'
+
+    gsap.to(items, {
+      opacity: 1,
+      y: 0,
+      duration: 0.55,
+      stagger: 0.07,
+      ease: 'power3.out',
+      delay: 0.1,
+    })
+  }
+
+  function close() {
+    if (!isOpen) return
+    isOpen = false
+    hamburger.setAttribute('aria-expanded', 'false')
+    document.body.style.overflow = ''
+
+    gsap.to(items, {
+      opacity: 0,
+      y: 24,
+      duration: 0.28,
+      stagger: 0.04,
+      ease: 'power2.in',
+      onComplete: () => {
+        menu.classList.remove('is-open')
+        menu.setAttribute('aria-hidden', 'true')
+      },
+    })
+  }
+
+  hamburger.addEventListener('click', () => (isOpen ? close() : open()))
+  closeBtn?.addEventListener('click', close)
+
+  // Close when a nav item is clicked (navigation will follow)
+  items.forEach(item => item.addEventListener('click', close))
+
+  function onKeyDown(e) {
+    if (e.key === 'Escape' && isOpen) close()
+  }
+  document.addEventListener('keydown', onKeyDown)
+
+  destroyMobileMenu = () => {
+    // Force-close without animation on page transition
+    menu.classList.remove('is-open')
+    menu.setAttribute('aria-hidden', 'true')
+    hamburger.setAttribute('aria-expanded', 'false')
+    document.body.style.overflow = ''
+    document.removeEventListener('keydown', onKeyDown)
+    destroyMobileMenu = null
+  }
+}
+
+function initA11yDrawer() {
+  const fab = document.querySelector('.a11y-fab')
+  const drawer = document.querySelector('.a11y-drawer')
+  const backdrop = document.querySelector('.a11y-backdrop')
+  if (!fab || !drawer) return
+
+  let isOpen = false
+
+  function open() {
+    isOpen = true
+    drawer.classList.add('is-open')
+    drawer.setAttribute('aria-hidden', 'false')
+    backdrop?.classList.add('is-open')
+    fab.setAttribute('aria-expanded', 'true')
+  }
+
+  function close() {
+    if (!isOpen) return
+    isOpen = false
+    drawer.classList.remove('is-open')
+    drawer.setAttribute('aria-hidden', 'true')
+    backdrop?.classList.remove('is-open')
+    fab.setAttribute('aria-expanded', 'false')
+  }
+
+  fab.addEventListener('click', () => (isOpen ? close() : open()))
+  backdrop?.addEventListener('click', close)
+
+  function onKeyDown(e) {
+    if (e.key === 'Escape' && isOpen) close()
+  }
+  document.addEventListener('keydown', onKeyDown)
+
+  destroyA11yDrawer = () => {
+    close()
+    document.removeEventListener('keydown', onKeyDown)
+    destroyA11yDrawer = null
+  }
+}
+
 function init() {
   initSmoothScroll()
   initA11y()
   initScrollNav()
+  initMobileMenu()
+  initA11yDrawer()
   // Wait for fonts before initialising — fit-text needs accurate measurements
   if (document.fonts?.ready) {
     document.fonts.ready.then(() => initAnimations())
@@ -56,6 +171,8 @@ function init() {
 function cleanup() {
   ScrollTrigger.getAll().forEach(t => t.kill())
   if (destroyScrollNav) { destroyScrollNav(); destroyScrollNav = null }
+  if (destroyMobileMenu) { destroyMobileMenu() }
+  if (destroyA11yDrawer) { destroyA11yDrawer() }
   destroySmoothScroll()
   cleanupA11y()
 }

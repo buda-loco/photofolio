@@ -1,5 +1,6 @@
 ---
 import { ViewTransitions } from 'astro:transitions'
+import { SlidersHorizontal, X } from 'lucide-astro'
 import design from '../content/design.json'
 import '../css/tokens.css'
 import '../css/base.css'
@@ -139,6 +140,19 @@ function pillColors(bgCss: string, offset: number = 0): {bg:string, text:string}
 }
 
 /**
+ * Very dark tint of the page background — used for the mobile menu overlay.
+ * Near-black pages get nudged slightly lighter so it reads as a surface.
+ */
+function menuBg(bgCss: string): string {
+  const hex = extractHex(bgCss)
+  if (!hex) return '#0d0d0d'
+  const { r, g, b } = hexToRgb(hex)
+  const { h, s, l } = rgbToHsl(r, g, b)
+  const newL = l < 5 ? 8 : Math.max(l * 0.18, 6)
+  return hslToHex(h, s, newL)
+}
+
+/**
  * Darken the page background by ~12 lightness points.
  * If it's already near-black (l < 8), nudge it slightly lighter instead
  * so the container reads as a distinct surface.
@@ -189,6 +203,9 @@ const designCss = `
   /* ── Widescreen video block surface ─────────────────────────── */
   --widescreen-bg:   ${darkenBg(bgSource)};
   --widescreen-text: ${accessibleText(darkenBg(bgSource))};
+
+  /* ── Mobile menu background ──────────────────────────────────── */
+  --menu-bg: ${menuBg(bgSource)};
 
   /* ── Typography ─────────────────────── */
   --font-sans:     ${design.typography.sans};
@@ -286,9 +303,15 @@ const designCss = `
   </a>
 
   <nav class="site-nav" aria-label="Main navigation">
+    <!-- Desktop logo -->
     <a href="/" class="nav-logo">
       <img src="/logo.svg" alt="Benjamin Arnedo" class="nav-logo-img" width="200" height="50" />
     </a>
+    <!-- Mobile: centered mini logo -->
+    <a href="/" class="nav-logo-mobile" aria-label="Home">
+      <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="36" height="36" />
+    </a>
+    <!-- Desktop nav links -->
     <ul class="nav-links" role="list">
       {navPills.map(({ href, label, pill }, i) => (
         <li style={`--i:${i}`}>
@@ -300,7 +323,30 @@ const designCss = `
         </li>
       ))}
     </ul>
+    <!-- Mobile: hamburger -->
+    <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-header">
+      <a href="/" class="mobile-menu-logo" aria-label="Home">
+        <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="36" height="36" />
+      </a>
+      <button class="mobile-menu-close" aria-label="Close menu">
+        <X size={22} />
+      </button>
+    </div>
+    <nav class="mobile-menu-nav" aria-label="Mobile navigation">
+      {navItems.map(({ href, label }) => (
+        <a href={href} class="mobile-menu-item">{label}</a>
+      ))}
+    </nav>
+  </div>
 
   <main id="main-content">
     <slot />
@@ -311,15 +357,39 @@ const designCss = `
       <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="32" height="32" />
     </a>
     <p class="footer-copy">&copy; {new Date().getFullYear()} Benjamin Arnedo</p>
-    <div class="a11y-widget" aria-label="Accessibility options">
-      <button class="a11y-btn" id="a11y-motion" aria-pressed="false" title="Toggle reduced motion">
-        Motion
-      </button>
-      <button class="a11y-btn" id="a11y-contrast" aria-pressed="false" title="Toggle high contrast">
-        Contrast
+  </footer>
+
+  <!-- A11y floating action button -->
+  <button class="a11y-fab" aria-label="Accessibility options" aria-expanded="false">
+    <SlidersHorizontal size={18} />
+  </button>
+
+  <!-- Backdrop — closes drawer on click -->
+  <div class="a11y-backdrop" aria-hidden="true"></div>
+
+  <!-- A11y bottom drawer -->
+  <div class="a11y-drawer" role="dialog" aria-label="Accessibility options" aria-hidden="true">
+    <div class="a11y-drawer-handle"></div>
+    <p class="a11y-drawer-title">Accessibility</p>
+    <div class="a11y-row">
+      <div class="a11y-row-label">
+        <span class="a11y-row-name">Reduce Motion</span>
+        <span class="a11y-row-desc">Disable animations</span>
+      </div>
+      <button class="a11y-toggle-btn" id="a11y-motion" aria-pressed="false" aria-label="Toggle reduced motion">
+        <span class="a11y-toggle-thumb"></span>
       </button>
     </div>
-  </footer>
+    <div class="a11y-row">
+      <div class="a11y-row-label">
+        <span class="a11y-row-name">High Contrast</span>
+        <span class="a11y-row-desc">Increase text contrast</span>
+      </div>
+      <button class="a11y-toggle-btn" id="a11y-contrast" aria-pressed="false" aria-label="Toggle high contrast">
+        <span class="a11y-toggle-thumb"></span>
+      </button>
+    </div>
+  </div>
 
   <script src="../js/app.js"></script>
 
