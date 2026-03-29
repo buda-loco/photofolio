@@ -2,19 +2,20 @@
   "_note": "Edit this file to change the visual design. Run npm run build after saving.",
 
   "colors": {
-    "background":  "#0f0f0f",
-    "text":        "#b8c0b6",
-    "textMuted":   "#4a524a",
-    "textBright":  "#d8e0d6",
-    "border":      "rgba(184, 192, 182, 0.10)"
+    "background":  "#000000",
+    "text":        "#ffffff",
+    "textMuted":   "#666666",
+    "textBright":  "#ffffff",
+    "border":      "rgba(255, 255, 255, 0.1)"
   },
 
   "typography": {
     "serif": "'Cormorant Garamond', Georgia, serif",
-    "sans":  "'Inter', system-ui, -apple-system, sans-serif",
+    "sans":  "'Adrianna', system-ui, -apple-system, sans-serif",
+    "display": "'Adrianna Condensed', 'Adrianna', system-ui, sans-serif",
 
     "headings": {
-      "weight":        "300",
+      "weight":        "700",
       "letterSpacing": "0.01em",
       "lineHeight":    "1.05"
     },

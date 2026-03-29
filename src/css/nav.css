@@ -41,7 +41,7 @@
 }
 
 .nav-logo-img {
-  height: 1.125rem;
+  height: 80px;
   width: auto;
   display: block;
 }
@@ -54,5 +54,5 @@
 
 @media (max-width: 640px) {
   .nav-links { gap: var(--sp-3); }
-  .nav-logo-img { height: 0.9rem; }
+  .nav-logo-img { height: 56px; }
 }
