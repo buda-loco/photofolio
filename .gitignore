@@ -6,3 +6,4 @@ dist
 .astro
 public/admin
 .vercel
+tina/__generated__
