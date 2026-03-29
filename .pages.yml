@@ -232,6 +232,33 @@ content:
                 label: Caption
                 type: string
 
+          - name: widescreen-video
+            label: Widescreen video (full-width on tinted background)
+            fields:
+              - name: url
+                label: Video URL
+                type: string
+                required: true
+                comment: "Dropbox share link, direct .mp4, or Vimeo URL — played via OneLinePlayer"
+              - name: poster
+                label: Poster image
+                type: image
+                comment: "Shown before play — recommended. Click reveals the player."
+              - name: aspectRatio
+                label: Aspect ratio
+                type: select
+                options:
+                  values:
+                    - value: "16/9"
+                      label: Landscape 16:9 (default)
+                    - value: "21/9"
+                      label: Ultrawide 21:9
+                    - value: "4/3"
+                      label: Standard 4:3
+              - name: caption
+                label: Caption
+                type: string
+
           - name: vertical-reel
             label: Vertical reel (9:16 video + 2 square images)
             fields:

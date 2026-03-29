@@ -118,6 +118,9 @@ export function initAnimations() {
   fitGridTitles()
   initGridHovers()
 
+  // ── Widescreen video click-to-play ────────────────────────────
+  initWidescreenVideos()
+
   ScrollTrigger.refresh()
 }
 
@@ -202,6 +205,25 @@ function initGridHovers() {
     item.addEventListener('mouseleave', () => tl.reverse())
     item.addEventListener('focusin',    () => tl.play())
     item.addEventListener('focusout',   () => tl.reverse())
+  })
+}
+
+// ── Widescreen video click-to-play ───────────────────────────────
+function initWidescreenVideos() {
+  document.querySelectorAll('.widescreen-poster').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.src
+      const container = btn.closest('.widescreen-container')
+      if (!src || !container) return
+
+      const iframe = document.createElement('iframe')
+      iframe.src = src
+      iframe.setAttribute('frameborder', '0')
+      iframe.setAttribute('scrolling', 'no')
+      iframe.setAttribute('allow', 'autoplay;fullscreen')
+      iframe.setAttribute('allowfullscreen', '')
+      container.replaceChildren(iframe)
+    }, { once: true })
   })
 }
 

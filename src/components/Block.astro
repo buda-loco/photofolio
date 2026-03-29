@@ -110,6 +110,39 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
   </div>
 )}
 
+{blockType === 'widescreen-video' && (
+  <div class="block-widescreen-video" data-animate="fade-up" style={block.aspectRatio ? `--aspect: ${block.aspectRatio}` : undefined}>
+    <div class="widescreen-container">
+      {block.poster ? (
+        <button
+          class="widescreen-poster"
+          aria-label="Play video"
+          data-src={onelinerSrc(block.url, { autoplay: 'true' })}
+        >
+          <img src={block.poster} alt="" loading="lazy" decoding="async" />
+          <span class="widescreen-play" aria-hidden="true">
+            <span class="widescreen-play-btn">
+              <svg viewBox="0 0 24 24" class="widescreen-play-icon" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </span>
+        </button>
+      ) : (
+        <iframe
+          src={onelinerSrc(block.url)}
+          title={block.caption ?? 'Project video'}
+          frameborder="0"
+          scrolling="no"
+          allow="autoplay;fullscreen"
+          allowfullscreen
+        ></iframe>
+      )}
+    </div>
+    {block.caption && <p class="block-caption label">{block.caption}</p>}
+  </div>
+)}
+
 {blockType === 'vertical-reel' && (
   <div class="block-vertical-reel">
     <div class="reel-video">
