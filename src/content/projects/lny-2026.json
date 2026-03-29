@@ -8,6 +8,7 @@
   "gridSize": "large",
   "hidden": false,
   "backgroundColor": "#CD000C",
+  "services": ["Photography", "Videography", "Event Visuals", "Editing", "Post-production"],
   "info": {
     "about": "Lunar new year celebrations in Dickson, Canberra. I was tasked with capturing the 12-hour event and deliver high quality images and video for all stakeholders.",
     "date": "Feb, 2026",

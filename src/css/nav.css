@@ -386,3 +386,12 @@
   .nav-mini img { height: 30px; }
   .nav-mini { top: calc((var(--nav-height) - 30px) / 2); }
 }
+
+/* Force-hide mini logo on mobile — base rule above has display:block
+   which wins over the earlier 768px query due to cascade order */
+@media (max-width: 768px) {
+  .nav-mini,
+  .nav-mini.is-visible {
+    display: none !important;
+  }
+}
