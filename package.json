@@ -4,9 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tinacms dev -c 'astro dev'",
+    "dev": "astro dev",
     "build": "astro build",
-    "build:cms": "tinacms build && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
