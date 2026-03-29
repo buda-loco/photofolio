@@ -50,10 +50,42 @@ function initMobileMenu() {
   if (!hamburger || !menu) return
 
   const items = menu.querySelectorAll('.mobile-menu-item')
+  const workEl = menu.querySelector('.mobile-menu-work')
   let isOpen = false
+  let lastPickIndex = -1
+
+  // Parse project list embedded at build time
+  let projects = []
+  try { projects = JSON.parse(menu.dataset.projects || '[]') } catch {}
 
   // Set GSAP initial states
   gsap.set(items, { opacity: 0, y: 48 })
+
+  function renderWorkPreview() {
+    if (!workEl || !projects.length) return
+
+    // Pick random, avoid repeating the same project twice in a row
+    let idx
+    do { idx = Math.floor(Math.random() * projects.length) }
+    while (projects.length > 1 && idx === lastPickIndex)
+    lastPickIndex = idx
+    const p = projects[idx]
+
+    workEl.innerHTML = `
+      <span class="mobile-menu-work-label">Latest Work</span>
+      <a href="/work/${p.slug}" class="mobile-menu-work-card">
+        <div class="mobile-menu-work-img">
+          <img src="${p.cover}" alt="${p.title}" loading="lazy" />
+        </div>
+        <div class="mobile-menu-work-info">
+          <span class="mobile-menu-work-cat">${p.category || ''}</span>
+          <span class="mobile-menu-work-title">${p.title}</span>
+        </div>
+      </a>
+    `
+    // Card click also closes the menu
+    workEl.querySelector('a')?.addEventListener('click', close)
+  }
 
   function open() {
     isOpen = true
@@ -61,6 +93,8 @@ function initMobileMenu() {
     menu.setAttribute('aria-hidden', 'false')
     hamburger.setAttribute('aria-expanded', 'true')
     document.body.style.overflow = 'hidden'
+
+    renderWorkPreview()
 
     gsap.to(items, {
       opacity: 1,
@@ -103,7 +137,6 @@ function initMobileMenu() {
   document.addEventListener('keydown', onKeyDown)
 
   destroyMobileMenu = () => {
-    // Force-close without animation on page transition
     menu.classList.remove('is-open')
     menu.setAttribute('aria-hidden', 'true')
     hamburger.setAttribute('aria-expanded', 'false')

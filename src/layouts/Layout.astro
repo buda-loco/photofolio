@@ -168,6 +168,12 @@ function darkenBg(bgCss: string): string {
 
 // ── Nav pill colours — all items same colour (offset: 0) ────────
 const bgSource = pageBackground ?? design.colors.background ?? '#000000'
+
+// ── Projects for mobile menu work preview ────────────────────────
+const projectFiles = await Astro.glob('../content/projects/*.json')
+const menuProjects = projectFiles
+  .filter((p: any) => !p.hidden)
+  .map((p: any) => ({ slug: p.slug, title: p.title, category: p.category, cover: p.cover }))
 const navItems = [
   { href: '/',           label: 'Work'    },
   { href: '/about',      label: 'About'   },
@@ -332,20 +338,25 @@ const designCss = `
   </nav>
 
   <!-- Mobile menu overlay -->
-  <div class="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu" aria-hidden="true" data-projects={JSON.stringify(menuProjects)}>
+    <!-- Header: close left · logo centered · spacer right -->
     <div class="mobile-menu-header">
-      <a href="/" class="mobile-menu-logo" aria-label="Home">
-        <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="36" height="36" />
-      </a>
       <button class="mobile-menu-close" aria-label="Close menu">
         <X size={22} />
       </button>
+      <a href="/" class="mobile-menu-logo" aria-label="Home">
+        <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="36" height="36" />
+      </a>
+      <div class="mobile-menu-header-end" aria-hidden="true"></div>
     </div>
+    <!-- Nav links with dividers -->
     <nav class="mobile-menu-nav" aria-label="Mobile navigation">
       {navItems.map(({ href, label }) => (
         <a href={href} class="mobile-menu-item">{label}</a>
       ))}
     </nav>
+    <!-- Latest work preview — JS populates on each open -->
+    <div class="mobile-menu-work"></div>
   </div>
 
   <main id="main-content">
