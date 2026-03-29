@@ -8,6 +8,8 @@
   "gridSize": "large",
   "hidden": false,
   "backgroundColor": "#6C5A44",
+  "textColor": "#ffffff",
+  "highlightColor": "#000000",
   "services": ["Photography", "Editing", "Direction"],
   "info": {
     "about": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre.",

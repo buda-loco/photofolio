@@ -93,6 +93,16 @@ content:
         label: Background colour (secondary — creates a diagonal gradient)
         type: color
 
+      - name: textColor
+        label: Text colour (overrides auto-computed)
+        type: color
+        comment: "Leave blank to auto-compute from background. Set explicitly e.g. #000000 for black text on bright backgrounds."
+
+      - name: highlightColor
+        label: Highlight colour (labels, pills — overrides auto-computed)
+        type: color
+        comment: "Leave blank to auto-compute. Set explicitly e.g. #FB5292 to use a specific accent colour."
+
       - name: services
         label: Services
         type: select

@@ -16,6 +16,8 @@ interface Props {
   title?: string
   description?: string
   pageBackground?: string
+  textColor?: string       // explicit override e.g. '#000000'
+  highlightColor?: string  // explicit override for labels/pills e.g. '#FB5292'
   jsonLd?: Record<string, unknown>
   ogImage?: string   // absolute path e.g. /images/projects/foo/cover.jpg
 }
@@ -24,6 +26,8 @@ const {
   title = 'Benjamin Arnedo — Photographer & Cinematographer',
   description = 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
   pageBackground,
+  textColor: textColorProp,
+  highlightColor: highlightColorProp,
   jsonLd,
   ogImage,
 } = Astro.props
@@ -186,9 +190,6 @@ const navItems = [
   { href: '/how-i-work', label: 'Process' },
   { href: '/contact',    label: 'Contact' },
 ]
-const basePill = pillColors(bgSource, 0)
-const navPills = navItems.map(item => ({ ...item, pill: basePill }))
-
 // Build label colour: gradient if secondary present, else solid
 const labelPrimary = design.colors.labelColor ?? '#f4ff26'
 const labelSecondary = (design.colors as any).labelColorSecondary
@@ -196,17 +197,38 @@ const labelColorValue = labelSecondary
   ? `linear-gradient(90deg, ${labelPrimary}, ${labelSecondary})`
   : labelPrimary
 
+// Per-page text colours — explicit prop > computed from background > site default
+const autoText = pageBackground ? accessibleText(bgSource) : design.colors.text
+const pageText = textColorProp ?? autoText
+const isLightBg = pageText === '#000000'
+const pageTextMuted = pageBackground
+  ? (isLightBg ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.55)')
+  : design.colors.textMuted
+const pageBorder = pageBackground
+  ? (isLightBg ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)')
+  : design.colors.border
+const autoLabelColor = pageBackground
+  ? (isLightBg ? 'rgba(0,0,0,0.85)' : labelColorValue)
+  : labelColorValue
+const pageLabelColor = highlightColorProp ?? autoLabelColor
+
+// Pill colour: use highlightColor if set, otherwise complementary of bg
+const basePill = highlightColorProp
+  ? { bg: highlightColorProp, text: accessibleText(highlightColorProp) }
+  : pillColors(bgSource, 0)
+const navPills = navItems.map(item => ({ ...item, pill: basePill }))
+
 // Generate CSS custom properties from design.json.
 // These override the defaults in tokens.css.
 const designCss = `
 :root {
   /* ── Colors ────────────────────────── */
   --color-bg:          ${design.colors.background};
-  --color-text:        ${design.colors.text};
-  --color-text-muted:  ${design.colors.textMuted};
+  --color-text:        ${pageText};
+  --color-text-muted:  ${pageTextMuted};
   --color-text-bright: ${design.colors.textBright};
-  --color-border:      ${design.colors.border};
-  --color-label:       ${labelColorValue};
+  --color-border:      ${pageBorder};
+  --color-label:       ${pageLabelColor};
 
   /* ── Pill colours (all nav items + back button + next project) ── */
   --pill-base-bg:   ${basePill.bg};

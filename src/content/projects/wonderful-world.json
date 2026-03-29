@@ -8,6 +8,8 @@
   "gridSize": "large",
   "hidden": false,
   "backgroundColor": "#FACC40",
+  "textColor": "#000000",
+  "highlightColor": "#FB5292",
   "services": ["Photography", "Videography", "Creative Direction", "Animation", "Editing"],
   "info": {
     "about": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids.",

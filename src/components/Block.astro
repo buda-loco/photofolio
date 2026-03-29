@@ -117,7 +117,7 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
         <button
           class="widescreen-poster"
           aria-label="Play video"
-          data-src={onelinerSrc(block.url, { autoplay: 'true' })}
+          data-src={onelinerSrc(dropboxUrl(block.url), { autoplay: 'true' })}
         >
           <img src={block.poster} alt="" loading="lazy" decoding="async" />
           <span class="widescreen-play" aria-hidden="true">
@@ -130,7 +130,7 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
         </button>
       ) : (
         <iframe
-          src={onelinerSrc(block.url)}
+          src={onelinerSrc(dropboxUrl(block.url))}
           title={block.caption ?? 'Project video'}
           frameborder="0"
           scrolling="no"
@@ -148,7 +148,7 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
     <div class="reel-video">
       <div class="video-container">
         <iframe
-          src={onelinerSrc(block.video.url, {
+          src={onelinerSrc(dropboxUrl(block.video.url), {
             poster:   block.video.poster   ?? '',
             loop:     block.video.loop     ? 'true' : 'false',
             muted:    block.video.muted    ? 'true' : 'false',

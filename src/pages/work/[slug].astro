@@ -43,7 +43,7 @@ const projectSchema = {
 }
 ---
 
-<Layout title={`${project.title} — Benjamin Arnedo`} description={info.about} pageBackground={bgColor} jsonLd={projectSchema} ogImage={project.cover}>
+<Layout title={`${project.title} — Benjamin Arnedo`} description={info.about} pageBackground={bgColor} textColor={project.textColor} highlightColor={project.highlightColor} jsonLd={projectSchema} ogImage={project.cover}>
   <div class="page project-page" style={pageBg ? `--color-bg: ${bgColor}; background: ${pageBg}` : ''}>
 
     <!-- Cover image — morphs from grid thumbnail via view transition -->
