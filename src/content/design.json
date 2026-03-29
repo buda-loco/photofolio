@@ -1,6 +1,4 @@
 {
-  "_note": "Edit this file to change the visual design. Run npm run build after saving.",
-
   "colors": {
     "background":  "#000000",
     "text":        "#ffffff",
@@ -32,7 +30,6 @@
   },
 
   "textBlock": {
-    "_note": "Controls the 'text' block type inside project pages",
     "headingSize":          "clamp(2.5rem, 5vw, 5.5rem)",
     "headingWeight":        "300",
     "headingLetterSpacing": "0em",

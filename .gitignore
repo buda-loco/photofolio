@@ -4,3 +4,5 @@ dist
 *.local
 .env
 .astro
+tina/__generated__
+public/admin

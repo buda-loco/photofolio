@@ -1,5 +1,8 @@
 ---
 const { block } = Astro.props
+// Tina CMS uses _template as the block discriminator; fall back to type for
+// existing JSON files that haven't been touched by Tina yet.
+const blockType: string = block._template ?? block.type
 
 function dropboxUrl(src: string): string {
   if (!src?.includes('dropbox.com')) return src
@@ -13,7 +16,7 @@ function splitWords(text: string) {
 }
 ---
 
-{block.type === 'hero' && (
+{blockType === 'hero' && (
   <div class="block-hero img-reveal" style={block.aspectRatio ? `--aspect: ${block.aspectRatio}` : undefined}>
     <div class="img-container">
       <img
@@ -28,7 +31,7 @@ function splitWords(text: string) {
   </div>
 )}
 
-{block.type === 'gallery' && (
+{blockType === 'gallery' && (
   <div class="block-gallery" data-cols={String(block.columns ?? 2)}>
     {block.images.map((img: any) => (
       <div class="gallery-item img-reveal" style={img.aspectRatio ? `--aspect: ${img.aspectRatio}` : undefined}>
@@ -45,7 +48,7 @@ function splitWords(text: string) {
   </div>
 )}
 
-{block.type === 'video' && (
+{blockType === 'video' && (
   <div class="block-video">
     <div class="video-container">
       {block.provider === 'youtube' ? (
@@ -78,7 +81,7 @@ function splitWords(text: string) {
   </div>
 )}
 
-{block.type === 'text' && (
+{blockType === 'text' && (
   <div class="block-text">
 
     {block.heading && (

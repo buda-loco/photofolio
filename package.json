@@ -4,14 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "tinacms dev -c 'astro dev'",
+    "build": "tinacms build && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/vercel": "^7.8.2",
+    "@tinacms/cli": "^2.2.0",
     "astro": "^4.16.0",
     "gsap": "^3.12.5",
-    "lenis": "^1.1.14"
+    "lenis": "^1.1.14",
+    "tinacms": "^3.7.0",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2"
