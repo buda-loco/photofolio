@@ -17,136 +17,80 @@
   "blocks": [
     {
       "_template": "hero",
-      "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg",
       "parallax": 0.2
     },
     {
       "_template": "gallery",
-      "type": "gallery",
       "columns": "3",
       "images": [
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg"
-        }
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-64.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-41.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stalls-17.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-67.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-65.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg" }
       ]
     },
     {
       "_template": "hero",
-      "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg",
       "parallax": 0.2
     },
     {
       "_template": "gallery",
-      "type": "gallery",
       "columns": "2",
       "images": [
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-7.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-3.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Shops-4.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg"
-        }
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-7.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2-3.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Shops-4.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg" }
       ]
     },
     {
       "_template": "hero",
-      "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-28.jpg",
       "parallax": 0.2
     },
     {
       "_template": "gallery",
-      "type": "gallery",
       "columns": "2",
       "images": [
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-46.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-233.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-175.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg"
-        }
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-46.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-233.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-175.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg" }
       ]
     },
     {
       "_template": "hero",
-      "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-2.jpg",
       "parallax": 0.2
     },
     {
       "_template": "gallery",
-      "type": "gallery",
       "columns": "2",
       "images": [
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-105.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-19.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-10.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-7.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Food-5.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg"
-        }
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-105.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-19.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Lions-10.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-7.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Food-5.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg" }
       ]
     },
     {
       "_template": "hero",
-      "type": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-11.jpg",
       "parallax": 0.2
     },
     {
       "_template": "gallery",
-      "type": "gallery",
       "columns": "3",
       "images": [
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-57.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-33.jpg"
-        },
-        {
-          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg"
-        }
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-57.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-33.jpg" },
+        { "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg" }
       ]
     }
   ]
