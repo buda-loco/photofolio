@@ -70,7 +70,11 @@ html.lenis, html.lenis body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  will-change: transform;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 /* Label colour — supports solid colours and gradients */
@@ -87,9 +91,4 @@ html.lenis, html.lenis body {
 /* Page wrapper */
 .page {
   padding-top: var(--nav-height);
-}
-
-/* Barba transition state */
-[data-barba="container"] {
-  will-change: opacity;
 }

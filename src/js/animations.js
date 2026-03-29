@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export function initAnimations() {
+  if (document.documentElement.classList.contains('reduce-motion')) return
 
   // ── Fade + rise ───────────────────────────────────────────────
   // Skip elements already in viewport — they may have just been placed
@@ -121,17 +122,21 @@ export function initAnimations() {
 }
 
 // ── Fit grid titles to fill container width ───────────────────────
+let _resizeTimer
+let _resizeListenerAttached = false
+
 function fitGridTitles() {
   document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
 
-  // Re-fit on resize
-  let resizeTimer
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(() => {
-      document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
-    }, 100)
-  })
+  if (!_resizeListenerAttached) {
+    _resizeListenerAttached = true
+    window.addEventListener('resize', () => {
+      clearTimeout(_resizeTimer)
+      _resizeTimer = setTimeout(() => {
+        document.querySelectorAll('.grid-item-title').forEach(fitOneTitle)
+      }, 100)
+    })
+  }
 }
 
 function fitOneTitle(titleEl) {
@@ -191,6 +196,8 @@ function initGridHovers() {
 
     item.addEventListener('mouseenter', () => tl.play())
     item.addEventListener('mouseleave', () => tl.reverse())
+    item.addEventListener('focusin',    () => tl.play())
+    item.addEventListener('focusout',   () => tl.reverse())
   })
 }
 

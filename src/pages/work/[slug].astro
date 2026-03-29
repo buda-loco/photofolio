@@ -18,7 +18,7 @@ export function getStaticPaths() {
 
 const { project } = Astro.props as { project: any }
 const idx = projects.findIndex((p: any) => p.slug === project.slug)
-const nextProject = projects[(idx + 1) % projects.length] as any
+const nextProject = projects.length > 1 ? projects[(idx + 1) % projects.length] as any : null
 const info = project.info ?? {}
 ---
 
@@ -84,16 +84,18 @@ const info = project.info ?? {}
 
     <!-- Content blocks -->
     <div class="project-content">
-      {project.blocks.map((block: any) => (
+      {(project.blocks ?? []).map((block: any) => (
         <Block block={block} />
       ))}
     </div>
 
     <!-- Next project -->
-    <a href={`/work/${nextProject.slug}`} class="project-next">
-      <span class="project-next-label label">Next project</span>
-      <span class="project-next-title serif">{nextProject.title}</span>
-    </a>
+    {nextProject && (
+      <a href={`/work/${nextProject.slug}`} class="project-next">
+        <span class="project-next-label label">Next project</span>
+        <span class="project-next-title serif">{nextProject.title}</span>
+      </a>
+    )}
 
   </div>
 </Layout>

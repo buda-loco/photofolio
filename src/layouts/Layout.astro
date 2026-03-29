@@ -9,6 +9,7 @@ import '../css/grid.css'
 import '../css/project.css'
 import '../css/pages.css'
 import '../css/transitions.css'
+import '../css/a11y.css'
 
 interface Props {
   title?: string
@@ -58,18 +59,6 @@ function rgbToHsl(r:number,g:number,b:number) {
 
 function hslToHex(h:number,s:number,l:number) {
   h/=360; s/=100; l/=100
-  const hue = (t:number) => {
-    t = (t%1+1)%1
-    if (t<1/6) return (l<0.5?l*(1+s):l+s-l*s)*6*t + (2*l-(l<0.5?l*(1+s):l+s-l*s))
-    // shortcut: use standard formula
-    const q = l < 0.5 ? l*(1+s) : l+s-l*s
-    const p = 2*l-q
-    if (t<1/6) return p+(q-p)*6*t
-    if (t<1/2) return q
-    if (t<2/3) return p+(q-p)*(2/3-t)*6
-    return p
-  }
-  // proper impl
   const q = l < 0.5 ? l*(1+s) : l+s-l*s
   const p = 2*l-q
   const hue2 = (t:number) => {
@@ -192,9 +181,41 @@ const designCss = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1">
+  <meta name="color-scheme" content="dark">
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="theme-color" content={design.colors.background}>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Benjamin Arnedo">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+
+  <!-- Font preloads — the 3 faces used most -->
+  <link rel="preload" href="/fonts/Adrianna Light.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Adrianna Extended Light.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Adrianna Extended Bold.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Restore a11y preferences before first paint to avoid flash -->
+  <script is:inline>
+    (function() {
+      var html = document.documentElement
+      if (localStorage.getItem('reduce-motion') === '1' ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        html.classList.add('reduce-motion')
+      }
+      if (localStorage.getItem('high-contrast') === '1') {
+        html.classList.add('high-contrast')
+      }
+    })()
+  </script>
+
   <ViewTransitions />
   <!-- Design tokens from design.json — override tokens.css defaults -->
   <style set:html={designCss}></style>
@@ -203,7 +224,7 @@ const designCss = `
 
   <nav class="site-nav" aria-label="Main navigation">
     <a href="/" class="nav-logo">
-      <img src="/logo.svg" alt="Benjamin Arnedo" class="nav-logo-img" />
+      <img src="/logo.svg" alt="Benjamin Arnedo" class="nav-logo-img" width="200" height="50" />
     </a>
     <ul class="nav-links" role="list">
       {navPills.map(({ href, label, pill }, i) => (
@@ -219,6 +240,16 @@ const designCss = `
   </nav>
 
   <slot />
+
+  <!-- Accessibility widget -->
+  <div class="a11y-widget" aria-label="Accessibility options">
+    <button class="a11y-btn" id="a11y-motion" aria-pressed="false" title="Toggle reduced motion">
+      Motion
+    </button>
+    <button class="a11y-btn" id="a11y-contrast" aria-pressed="false" title="Toggle high contrast">
+      Contrast
+    </button>
+  </div>
 
   <script src="../js/app.js"></script>
 

@@ -1,9 +1,11 @@
 import { initSmoothScroll, destroySmoothScroll } from './smooth-scroll.js'
 import { initAnimations } from './animations.js'
+import { initA11y, cleanupA11y } from './a11y.js'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 function init() {
   initSmoothScroll()
+  initA11y()
   // Wait for fonts before initialising — fit-text needs accurate measurements
   if (document.fonts?.ready) {
     document.fonts.ready.then(() => initAnimations())
@@ -16,6 +18,7 @@ function init() {
 function cleanup() {
   ScrollTrigger.getAll().forEach(t => t.kill())
   destroySmoothScroll()
+  cleanupA11y()
 }
 
 function updateNavActive() {
