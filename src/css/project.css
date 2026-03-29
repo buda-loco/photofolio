@@ -24,10 +24,10 @@
 }
 
 .project-title {
-  font-family: var(--font-serif);
+  font-family: 'Adrianna Extended', var(--font-display);
   font-size: clamp(2.5rem, 6vw, var(--text-4xl));
-  font-weight: 300;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  letter-spacing: -1px;
   line-height: 1;
 }
 

@@ -177,16 +177,16 @@ function initGridHovers() {
     // 1 — rectangle builds up from bottom
     tl.to(bg, {
       scaleY:          1,
-      duration:        0.42,
+      duration:        0.32,
       ease:            'power3.out',
       transformOrigin: 'bottom',
     })
 
-    // 2 — words clip-reveal, staggered (starts just before rect finishes)
+    // 2 — words clip-reveal, staggered (tight overlap with rect)
     tl.fromTo(words,
       { y: '110%' },
-      { y: '0%', duration: 0.52, ease: 'power3.out', stagger: 0.065 },
-      '-=0.08'
+      { y: '0%', duration: 0.38, ease: 'power3.out', stagger: 0.045 },
+      '-=0.18'
     )
 
     item.addEventListener('mouseenter', () => tl.play())
