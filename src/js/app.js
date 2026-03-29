@@ -64,12 +64,17 @@ function initMobileMenu() {
   function renderWorkPreview() {
     if (!workEl || !projects.length) return
 
+    // Exclude the project currently being viewed
+    const currentSlug = window.location.pathname.match(/^\/work\/([^/]+)/)?.[1]
+    const pool = currentSlug ? projects.filter(p => p.slug !== currentSlug) : projects
+    if (!pool.length) return
+
     // Pick random, avoid repeating the same project twice in a row
     let idx
-    do { idx = Math.floor(Math.random() * projects.length) }
-    while (projects.length > 1 && idx === lastPickIndex)
+    do { idx = Math.floor(Math.random() * pool.length) }
+    while (pool.length > 1 && idx === lastPickIndex)
     lastPickIndex = idx
-    const p = projects[idx]
+    const p = pool[idx]
 
     workEl.innerHTML = `
       <span class="mobile-menu-work-label">Latest Work</span>
