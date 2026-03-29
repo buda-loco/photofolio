@@ -26,15 +26,35 @@
   aspect-ratio: var(--aspect, 3/2);
   overflow: hidden;
   position: relative;
+  isolation: isolate;
 }
 
 .grid-item img {
-  transition: transform 0.9s var(--ease-out);
+  transition: transform 0.9s var(--ease-out), filter 0.5s var(--ease-out);
 }
 
 .grid-item:hover img {
   transform: scale(1.04);
+  filter: grayscale(1);
 }
+
+/* Blur lives on the img-container so it can transition independently */
+.grid-item .img-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: backdrop-filter 1.6s var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.grid-item:hover .img-container::after {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
 
 /* ── Title overlay ──────────────────────────────────────────── */
 .grid-item-overlay {
@@ -45,13 +65,15 @@
   padding: 1.25rem 1.5rem;
   overflow: hidden;
   pointer-events: none;
+  z-index: 2;
 }
 
 /* Rectangle — animates up from bottom via GSAP */
 .grid-item-overlay-bg {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.82);
+  background: var(--project-bg, var(--color-accent, #f4ff26));
+  mix-blend-mode: multiply;
   transform: scaleY(0);
   transform-origin: bottom;
   will-change: transform;
@@ -66,11 +88,16 @@
   font-family: 'Adrianna Extended', 'Adrianna', system-ui, sans-serif;
   font-weight: 300;
   line-height: 0.95;
-  letter-spacing: -0.01em;
+  letter-spacing: -2px;
   color: #ffffff;
+  overflow: hidden;
+}
+
+/* Each line is a block — words within a line don't wrap */
+.title-line {
+  display: block;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: clip;
 }
 
 /* Word split structure */

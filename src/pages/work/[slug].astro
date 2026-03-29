@@ -21,6 +21,15 @@ const idx = projects.findIndex((p: any) => p.slug === project.slug)
 const nextProject = projects.length > 1 ? projects[(idx + 1) % projects.length] as any : null
 const info = project.info ?? {}
 
+// Build page background — gradient if secondary present
+const bgColor = project.backgroundColor
+const bgSecondary = project.backgroundColorSecondary
+const pageBg = bgColor
+  ? bgSecondary
+    ? `linear-gradient(135deg, ${bgColor}, ${bgSecondary})`
+    : bgColor
+  : undefined
+
 const projectSchema = {
   '@context': 'https://schema.org',
   '@type': 'CreativeWork',
@@ -33,13 +42,8 @@ const projectSchema = {
 }
 ---
 
-<Layout title={`${project.title} — Benjamin Arnedo`} pageBackground={project.backgroundColor} jsonLd={projectSchema}>
-  <div class="page project-page" style={project.backgroundColor ? `--color-bg: ${project.backgroundColor}; background: ${project.backgroundColor}` : ''}>
-
-    <!-- Back button -->
-    <div class="project-back" data-animate="fade-up">
-      <a href="/" class="btn btn--ghost">&larr; All projects</a>
-    </div>
+<Layout title={`${project.title} — Benjamin Arnedo`} pageBackground={bgColor} jsonLd={projectSchema}>
+  <div class="page project-page" style={pageBg ? `--color-bg: ${bgColor}; background: ${pageBg}` : ''}>
 
     <!-- Cover image — morphs from grid thumbnail via view transition -->
     <div class="cover-transition" style={`--aspect: ${project.coverAspect ?? '16/9'}`}>
@@ -52,6 +56,10 @@ const projectSchema = {
           transition:name={`cover-${project.slug}`}
         />
       </div>
+      <!-- Back button — overlaid top-left of cover image -->
+      <div class="project-back" data-animate="fade-up">
+        <a href="/" class="nav-link" style="--pill-bg: var(--pill-base-bg); --pill-text: var(--pill-base-text)">&larr; All projects</a>
+      </div>
     </div>
 
     <!-- Title + category -->
@@ -63,11 +71,27 @@ const projectSchema = {
       </div>
     </header>
 
+    <!-- Services -->
+    {project.services?.length > 0 && (
+      <div class="project-services" data-animate="fade-up">
+        <span class="project-services-label label">Services</span>
+        <ul class="project-services-list" role="list">
+          {project.services.map((service: string) => (
+            <li>
+              <a href={`/?service=${encodeURIComponent(service)}`} class="service-pill">
+                {service}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
     <!-- Project info strip -->
     {(info.about || info.date || info.place || info.client) && (
       <div class="project-info" data-animate="fade-up">
         {info.about && (
-          <div class="project-info-item">
+          <div class="project-info-item project-info-item--about">
             <span class="project-info-label">About</span>
             <span class="project-info-value">{info.about}</span>
           </div>
@@ -102,10 +126,13 @@ const projectSchema = {
 
     <!-- Next project -->
     {nextProject && (
-      <a href={`/work/${nextProject.slug}`} class="project-next">
-        <span class="project-next-label label">Next project</span>
-        <span class="project-next-title serif">{nextProject.title}</span>
-      </a>
+      <div class="project-next-wrap">
+        <a href={`/work/${nextProject.slug}`} class="project-next">
+          <span class="project-next-label">Next</span>
+          <span class="project-next-sep">/</span>
+          <span class="project-next-title">{nextProject.title}</span>
+        </a>
+      </div>
     )}
 
   </div>

@@ -143,7 +143,11 @@ function fitOneTitle(titleEl) {
   const container = titleEl.closest('.img-container')
   if (!container) return
 
-  const text = titleEl.dataset.title || titleEl.textContent.trim()
+  // Use the longest rendered line — title may be split into .title-line blocks
+  const lines = titleEl.querySelectorAll('.title-line')
+  const text = lines.length
+    ? [...lines].reduce((a, b) => a.textContent.length >= b.textContent.length ? a : b).textContent.trim()
+    : (titleEl.dataset.title || titleEl.textContent.trim())
   const cs   = getComputedStyle(titleEl)
 
   const probe = document.createElement('span')
@@ -165,9 +169,9 @@ function fitOneTitle(titleEl) {
 
   if (!probeW) return
 
-  const padding   = 48 // 1.5rem * 2 sides from overlay padding
+  const padding   = 48 // overlay horizontal padding: 1.5rem * 2 sides
   const available = container.offsetWidth - padding
-  titleEl.style.fontSize = Math.max(12, Math.floor(100 * (available / probeW))) + 'px'
+  titleEl.style.fontSize = Math.max(12, Math.floor(50 * (available / probeW))) + 'px'
 }
 
 // ── Grid hover timelines ──────────────────────────────────────────

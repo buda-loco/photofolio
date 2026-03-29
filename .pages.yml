@@ -86,8 +86,30 @@ content:
 
       - name: backgroundColor
         label: Background colour
-        type: string
-        comment: "Any CSS colour or gradient, e.g. #1a1a2e or linear-gradient(135deg, #1a1a2e, #16213e)"
+        type: color
+        comment: "Solid colour — for gradients use backgroundColorSecondary below"
+
+      - name: backgroundColorSecondary
+        label: Background colour (secondary — creates a diagonal gradient)
+        type: color
+
+      - name: services
+        label: Services
+        type: select
+        list: true
+        options:
+          values:
+            - Photography
+            - Videography
+            - Event Visuals
+            - Editing
+            - Social Media Ads
+            - Animation
+            - Direction
+            - Production
+            - Post-production
+            - Colour Grading
+        comment: "Select all services provided for this project"
 
       # ── Project info strip ──────────────────────────────────────
       - name: info
@@ -284,9 +306,12 @@ content:
             label: Border
             type: string
           - name: labelColor
-            label: Label colour
-            type: string
-            comment: "Solid colour or gradient — e.g. #f4ff26 or linear-gradient(90deg, #f4ff26, #ff6b00)"
+            label: Label colour (primary)
+            type: color
+
+          - name: labelColorSecondary
+            label: Label colour (secondary — leave blank for solid, set to create a gradient)
+            type: color
 
   # ── How I Work page (single file) ────────────────────────────────
   - name: how-i-work

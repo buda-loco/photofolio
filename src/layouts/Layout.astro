@@ -138,18 +138,23 @@ function pillColors(bgCss: string, offset: number = 0): {bg:string, text:string}
   return { bg, text: accessibleText(bg) }
 }
 
-// ── Nav pill colours — slight hue offset per item for variety ────
+// ── Nav pill colours — all items same colour (offset: 0) ────────
 const bgSource = pageBackground ?? design.colors.background ?? '#000000'
 const navItems = [
-  { href: '/',           label: 'Work',    offset:   0 },
-  { href: '/about',      label: 'About',   offset:  15 },
-  { href: '/how-i-work', label: 'Process', offset: -15 },
-  { href: '/contact',    label: 'Contact', offset:  30 },
+  { href: '/',           label: 'Work'    },
+  { href: '/about',      label: 'About'   },
+  { href: '/how-i-work', label: 'Process' },
+  { href: '/contact',    label: 'Contact' },
 ]
-const navPills = navItems.map(item => ({
-  ...item,
-  pill: pillColors(bgSource, item.offset),
-}))
+const basePill = pillColors(bgSource, 0)
+const navPills = navItems.map(item => ({ ...item, pill: basePill }))
+
+// Build label colour: gradient if secondary present, else solid
+const labelPrimary = design.colors.labelColor ?? '#f4ff26'
+const labelSecondary = (design.colors as any).labelColorSecondary
+const labelColorValue = labelSecondary
+  ? `linear-gradient(90deg, ${labelPrimary}, ${labelSecondary})`
+  : labelPrimary
 
 // Generate CSS custom properties from design.json.
 // These override the defaults in tokens.css.
@@ -161,7 +166,11 @@ const designCss = `
   --color-text-muted:  ${design.colors.textMuted};
   --color-text-bright: ${design.colors.textBright};
   --color-border:      ${design.colors.border};
-  --color-label:       ${design.colors.labelColor};
+  --color-label:       ${labelColorValue};
+
+  /* ── Pill colours (all nav items + back button + next project) ── */
+  --pill-base-bg:   ${basePill.bg};
+  --pill-base-text: ${basePill.text};
 
   /* ── Typography ─────────────────────── */
   --font-sans:     ${design.typography.sans};
@@ -253,6 +262,11 @@ const designCss = `
 
   <a href="#main-content" class="skip-nav">Skip to content</a>
 
+  <!-- Mini logo — slides in when nav hides on scroll -->
+  <a href="/" class="nav-mini" aria-label="Back to home">
+    <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="36" height="36" />
+  </a>
+
   <nav class="site-nav" aria-label="Main navigation">
     <a href="/" class="nav-logo">
       <img src="/logo.svg" alt="Benjamin Arnedo" class="nav-logo-img" width="200" height="50" />
@@ -274,15 +288,20 @@ const designCss = `
     <slot />
   </main>
 
-  <!-- Accessibility widget -->
-  <div class="a11y-widget" aria-label="Accessibility options">
-    <button class="a11y-btn" id="a11y-motion" aria-pressed="false" title="Toggle reduced motion">
-      Motion
-    </button>
-    <button class="a11y-btn" id="a11y-contrast" aria-pressed="false" title="Toggle high contrast">
-      Contrast
-    </button>
-  </div>
+  <footer class="site-footer">
+    <a href="/" class="footer-logo">
+      <img src="/logo-mini.svg" alt="Benjamin Arnedo" width="32" height="32" />
+    </a>
+    <p class="footer-copy">&copy; {new Date().getFullYear()} Benjamin Arnedo</p>
+    <div class="a11y-widget" aria-label="Accessibility options">
+      <button class="a11y-btn" id="a11y-motion" aria-pressed="false" title="Toggle reduced motion">
+        Motion
+      </button>
+      <button class="a11y-btn" id="a11y-contrast" aria-pressed="false" title="Toggle high contrast">
+        Contrast
+      </button>
+    </div>
+  </footer>
 
   <script src="../js/app.js"></script>
 

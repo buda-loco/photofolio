@@ -7,6 +7,21 @@ const projects: any[] = Object.values(files)
   .sort((a: any, b: any) => b.year - a.year)
 
 const visible = projects.filter((p: any) => !p.hidden)
+
+/** Split title words into two visually balanced lines by character count */
+function splitTitle(title: string): [string[], string[]] {
+  const words = title.split(' ')
+  if (words.length <= 2) return [words, []]
+  const total = title.replace(/ /g, '').length
+  let best = 1, bestDiff = Infinity
+  let running = 0
+  for (let i = 0; i < words.length - 1; i++) {
+    running += words[i].length
+    const diff = Math.abs(running - (total - running))
+    if (diff < bestDiff) { bestDiff = diff; best = i + 1 }
+  }
+  return [words.slice(0, best), words.slice(best)]
+}
 ---
 
 <Layout>
@@ -28,7 +43,7 @@ const visible = projects.filter((p: any) => !p.hidden)
           class="grid-item"
           data-size={project.gridSize ?? 'medium'}
           data-offset={project.gridOffset ? String(project.gridOffset) : undefined}
-          style={`--aspect: ${project.coverAspect ?? '3/2'}`}
+          style={`--aspect: ${project.coverAspect ?? '3/2'}${project.backgroundColor ? `; --project-bg: ${project.backgroundColor}` : ''}`}
           data-animate="fade-up"
         >
           <div class="img-container">
@@ -39,11 +54,15 @@ const visible = projects.filter((p: any) => !p.hidden)
               decoding="async"
               transition:name={`cover-${project.slug}`}
             />
+            <div class="grid-item-overlay-bg"></div>
             <div class="grid-item-overlay">
-              <div class="grid-item-overlay-bg"></div>
               <p class="grid-item-title" data-title={project.title}>
-                {project.title.split(' ').map((word: string) => (
-                  <span class="word-clip"><span class="word-inner">{word}</span></span>
+                {splitTitle(project.title).map((line: string[]) => line.length > 0 && (
+                  <span class="title-line">
+                    {line.map((word: string) => (
+                      <span class="word-clip"><span class="word-inner">{word}</span></span>
+                    ))}
+                  </span>
                 ))}
               </p>
             </div>
