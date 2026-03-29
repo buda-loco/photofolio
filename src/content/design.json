@@ -10,7 +10,7 @@
   },
 
   "typography": {
-    "sans":    "'Adrianna Extended', 'Adrianna', system-ui, -apple-system, sans-serif",
+    "sans":    "'Adrianna', system-ui, -apple-system, sans-serif",
     "display": "'Adrianna Extended', system-ui, sans-serif",
 
     "headings": {
