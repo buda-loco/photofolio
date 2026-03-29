@@ -84,6 +84,11 @@ content:
         label: Hidden from homepage
         type: boolean
 
+      - name: backgroundColor
+        label: Background colour
+        type: string
+        comment: "Any CSS colour or gradient, e.g. #1a1a2e or linear-gradient(135deg, #1a1a2e, #16213e)"
+
       # ── Project info strip ──────────────────────────────────────
       - name: info
         label: Project info
@@ -251,6 +256,37 @@ content:
       - name: vimeo
         label: Vimeo URL
         type: string
+
+  # ── Design settings (single file) ───────────────────────────────
+  - name: design
+    label: Design
+    type: file
+    path: src/content/design.json
+    format: json
+    fields:
+      - name: colors
+        label: Colors
+        type: object
+        fields:
+          - name: background
+            label: Background
+            type: string
+          - name: text
+            label: Text
+            type: string
+          - name: textMuted
+            label: Muted text
+            type: string
+          - name: textBright
+            label: Bright text
+            type: string
+          - name: border
+            label: Border
+            type: string
+          - name: labelColor
+            label: Label colour
+            type: string
+            comment: "Solid colour or gradient — e.g. #f4ff26 or linear-gradient(90deg, #f4ff26, #ff6b00)"
 
   # ── How I Work page (single file) ────────────────────────────────
   - name: how-i-work

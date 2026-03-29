@@ -6,7 +6,8 @@
     "text":        "#ffffff",
     "textMuted":   "#666666",
     "textBright":  "#ffffff",
-    "border":      "rgba(255, 255, 255, 0.1)"
+    "border":      "rgba(255, 255, 255, 0.1)",
+    "labelColor":  "#f4ff26"
   },
 
   "typography": {

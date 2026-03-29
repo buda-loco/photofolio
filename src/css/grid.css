@@ -62,7 +62,6 @@
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
   white-space: nowrap;
   flex-shrink: 0;
 }

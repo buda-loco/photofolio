@@ -23,7 +23,7 @@ const info = project.info ?? {}
 ---
 
 <Layout title={`${project.title} — Benjamin Arnedo`}>
-  <div class="page project-page">
+  <div class="page project-page" style={project.backgroundColor ? `--color-bg: ${project.backgroundColor}; background: ${project.backgroundColor}` : ''}>
 
     <!-- Back button -->
     <div class="project-back" data-animate="fade-up">

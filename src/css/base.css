@@ -73,6 +73,17 @@ html.lenis, html.lenis body {
   will-change: transform;
 }
 
+/* Label colour — supports solid colours and gradients */
+.project-info-label,
+.label,
+.step-number,
+.grid-item-meta {
+  background: var(--color-label);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Page wrapper */
 .page {
   padding-top: var(--nav-height);
