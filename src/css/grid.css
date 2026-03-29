@@ -23,9 +23,9 @@
 }
 
 .grid-item .img-container {
-  /* --aspect is set per-item from JSON (e.g. 4/3, 3/4, 16/9) */
   aspect-ratio: var(--aspect, 3/2);
   overflow: hidden;
+  position: relative;
 }
 
 .grid-item img {
@@ -36,36 +36,48 @@
   transform: scale(1.04);
 }
 
-/* Project info below thumbnail */
-.grid-item-info {
+/* ── Title overlay ──────────────────────────────────────────── */
+.grid-item-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 0.7rem 0 0;
-  gap: 1rem;
+  align-items: flex-end;
+  padding: 1.25rem 1.5rem;
+  overflow: hidden;
 }
 
+/* Animated rectangle — builds up from bottom on hover */
+.grid-item-overlay-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.grid-item:hover .grid-item-overlay-bg {
+  transform: scaleY(1);
+}
+
+/* Title — readable via blend mode by default */
 .grid-item-title {
-  font-family: var(--font-serif);
-  font-size: var(--text-lg);
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  color: var(--color-text);
-  transition: opacity 0.3s var(--ease-out);
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.5vw, var(--text-xl));
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  transition: mix-blend-mode 0s 0.3s;
 }
 
 .grid-item:hover .grid-item-title {
-  opacity: 0.6;
+  mix-blend-mode: normal;
+  transition: none;
 }
-
-.grid-item-meta {
-  font-size: var(--text-xs);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {

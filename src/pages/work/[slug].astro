@@ -22,7 +22,7 @@ const nextProject = projects[(idx + 1) % projects.length] as any
 const info = project.info ?? {}
 ---
 
-<Layout title={`${project.title} — Benjamin Arnedo`}>
+<Layout title={`${project.title} — Benjamin Arnedo`} pageBackground={project.backgroundColor}>
   <div class="page project-page" style={project.backgroundColor ? `--color-bg: ${project.backgroundColor}; background: ${project.backgroundColor}` : ''}>
 
     <!-- Back button -->

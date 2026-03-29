@@ -39,10 +39,10 @@ const visible = projects.filter((p: any) => !p.hidden)
               decoding="async"
               transition:name={`cover-${project.slug}`}
             />
-          </div>
-          <div class="grid-item-info">
-            <span class="grid-item-title">{project.title}</span>
-            <span class="grid-item-meta">{project.category}&thinsp;—&thinsp;{project.year}</span>
+            <div class="grid-item-overlay">
+              <div class="grid-item-overlay-bg"></div>
+              <span class="grid-item-title">{project.title}</span>
+            </div>
           </div>
         </a>
       ))}
