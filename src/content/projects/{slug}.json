@@ -7,6 +7,7 @@
   "coverAspect": "16/9",
   "gridSize": "large",
   "hidden": false,
+  "backgroundColor": "CD000C",
   "info": {
     "about": "All about the LNY.",
     "date": "Feb, 2026",
@@ -68,7 +69,8 @@
     },
     {
       "type": "hero",
-      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-28.jpg"
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-28.jpg",
+      "parallax": 0.2
     },
     {
       "type": "gallery",
@@ -90,7 +92,8 @@
     },
     {
       "type": "hero",
-      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-2.jpg"
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-2.jpg",
+      "parallax": 0.2
     },
     {
       "type": "gallery",
@@ -118,7 +121,8 @@
     },
     {
       "type": "hero",
-      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-11.jpg"
+      "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-11.jpg",
+      "parallax": 0.2
     },
     {
       "type": "gallery",
