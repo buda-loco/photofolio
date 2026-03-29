@@ -1,5 +1,5 @@
 import { createClient } from "tinacms/dist/client";
 import { queries } from "./types";
-export const client = createClient({ cacheDir: '/Users/budaloco/zstudios Dropbox/Benjamin Arnedo/2026/Benjamin Arnedo/photofolio/tina/__generated__/.cache/1774783719236', url: 'https://content.tinajs.io/2.2/content/61301fe6-2380-40de-8e9b-0e70abab07df/github/main', token: 'bf5a1196276170ca7ffcdd285a456b78a4481e23', queries,  });
+export const client = createClient({ cacheDir: '/Users/budaloco/zstudios Dropbox/Benjamin Arnedo/2026/Benjamin Arnedo/photofolio/tina/__generated__/.cache/1774784713941', url: 'https://content.tinajs.io/2.2/content/b579fb91-bf14-4984-a984-a5406fde7084/github/main', token: '9f17c1c49540b69e1b28344c0b2b6fd223fb082e', queries,  });
 export default client;
   
