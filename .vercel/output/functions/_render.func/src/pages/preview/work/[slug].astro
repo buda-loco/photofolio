@@ -1,0 +1,218 @@
+---
+// SSR-only: serves draft content from Tina Cloud for visual preview.
+// This route is never pre-rendered — it always fetches fresh from the API.
+export const prerender = false
+
+import Layout from '../../../layouts/Layout.astro'
+import Block from '../../../components/Block.astro'
+
+const TINA_TOKEN = import.meta.env.TINA_TOKEN
+
+// Guard: only serve when a valid token is configured
+if (!TINA_TOKEN) {
+  return new Response('Preview unavailable: TINA_TOKEN not set', { status: 503 })
+}
+
+const { slug } = Astro.params
+
+// Fetch draft project data from Tina's content API
+const apiUrl = `https://content.tinajs.io/content/${import.meta.env.TINA_PUBLIC_CLIENT_ID}/github/${import.meta.env.GITHUB_BRANCH ?? 'main'}`
+
+const query = `
+  query GetProject($relativePath: String!) {
+    projects(relativePath: $relativePath) {
+      slug
+      title
+      category
+      year
+      cover
+      coverAspect
+      backgroundColor
+      info {
+        about
+        date
+        place
+        client
+      }
+      blocks {
+        __typename
+        ... on ProjectsBlocksHero {
+          src
+          alt
+          aspectRatio
+          parallax
+        }
+        ... on ProjectsBlocksGallery {
+          columns
+          images {
+            src
+            alt
+            aspectRatio
+          }
+        }
+        ... on ProjectsBlocksVideo {
+          provider
+          src
+          id
+          poster
+          caption
+        }
+        ... on ProjectsBlocksText {
+          heading
+          body
+        }
+      }
+    }
+  }
+`
+
+let project: any = null
+let fetchError: string | null = null
+
+try {
+  const res = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': TINA_TOKEN,
+    },
+    body: JSON.stringify({
+      query,
+      variables: { relativePath: `${slug}.json` },
+    }),
+  })
+
+  if (!res.ok) {
+    fetchError = `Tina API returned ${res.status}`
+  } else {
+    const json = await res.json()
+    if (json.errors) {
+      fetchError = json.errors.map((e: any) => e.message).join(', ')
+    } else {
+      project = json.data?.projects ?? null
+    }
+  }
+} catch (err: any) {
+  fetchError = err?.message ?? 'Unknown fetch error'
+}
+
+if (!project) {
+  return new Response(fetchError ? `Preview error: ${fetchError}` : 'Project not found', {
+    status: fetchError ? 502 : 404,
+  })
+}
+
+// Normalise GraphQL __typename to _template so Block.astro resolves correctly
+const blocks = (project.blocks ?? []).map((b: any) => {
+  const typeName: string = b.__typename ?? ''
+  // e.g. "ProjectsBlocksHero" → "hero"
+  const _template = typeName.replace(/^ProjectsBlocks/, '').toLowerCase()
+  return { ...b, _template }
+})
+
+const info = project.info ?? {}
+
+const projectSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.title,
+  creator: { '@type': 'Person', name: 'Benjamin Arnedo' },
+  ...(project.info?.about ? { description: project.info.about } : {}),
+  ...(project.year ? { dateCreated: String(project.year) } : {}),
+  ...(project.cover ? { image: `https://benjaminarnedo.com${project.cover}` } : {}),
+  ...(info.client ? { sponsor: { '@type': 'Organization', name: info.client } } : {}),
+}
+---
+
+<Layout
+  title={`[PREVIEW] ${project.title} — Benjamin Arnedo`}
+  pageBackground={project.backgroundColor}
+  jsonLd={projectSchema}
+>
+  <div class="page project-page" style={project.backgroundColor ? `--color-bg: ${project.backgroundColor}; background: ${project.backgroundColor}` : ''}>
+
+    <div class="preview-banner">
+      <span>Draft preview — <a href={`/work/${project.slug}`}>view live</a></span>
+    </div>
+
+    <div class="project-back" data-animate="fade-up">
+      <a href="/" class="btn btn--ghost">&larr; All projects</a>
+    </div>
+
+    <div class="cover-transition" style={`--aspect: ${project.coverAspect ?? '16/9'}`}>
+      <div class="img-container">
+        <img
+          src={project.cover}
+          alt={project.title}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <header class="project-header" data-animate="fade-up">
+      <h1 class="project-title">{project.title}</h1>
+      <div class="project-meta">
+        <p class="label">{project.category}</p>
+        <p class="label">{project.year}</p>
+      </div>
+    </header>
+
+    {(info.about || info.date || info.place || info.client) && (
+      <div class="project-info" data-animate="fade-up">
+        {info.about && (
+          <div class="project-info-item">
+            <span class="project-info-label">About</span>
+            <span class="project-info-value">{info.about}</span>
+          </div>
+        )}
+        {info.date && (
+          <div class="project-info-item">
+            <span class="project-info-label">Date</span>
+            <span class="project-info-value">{info.date}</span>
+          </div>
+        )}
+        {info.place && (
+          <div class="project-info-item">
+            <span class="project-info-label">Place</span>
+            <span class="project-info-value">{info.place}</span>
+          </div>
+        )}
+        {info.client && (
+          <div class="project-info-item">
+            <span class="project-info-label">Client</span>
+            <span class="project-info-value">{info.client}</span>
+          </div>
+        )}
+      </div>
+    )}
+
+    <div class="project-content">
+      {blocks.map((block: any) => (
+        <Block block={block} />
+      ))}
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .preview-banner {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f4ff26;
+    color: #000;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 1rem;
+    border-radius: 0 0 6px 6px;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  .preview-banner a {
+    color: inherit;
+    text-decoration: underline;
+  }
+</style>

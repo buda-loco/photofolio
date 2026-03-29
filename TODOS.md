@@ -27,7 +27,7 @@
 **Why:** `tinacms build` currently fails with "Branch 'main' is not on TinaCloud" because the GitHub repo hasn't been connected in the Tina Cloud dashboard. Once connected, Tina indexes the content and enables the visual editor at `/admin`.
 
 **Steps:**
-1. Go to https://app.tina.io/projects/8941095a-bd26-4e92-bf7a-621e1545d94b/configuration
+1. Go to https://app.tina.io/projects/37dbfb9c-02fb-497c-96b0-8d4243b92f96/configuration
 2. Connect your GitHub repository under the "GitHub" section
 3. Set the branch to `main`
 4. Add `TINA_PUBLIC_CLIENT_ID` and `TINA_TOKEN` to Vercel's environment variables (Settings → Environment Variables)
