@@ -1,9 +1,10 @@
 // tina/config.ts
 import { defineConfig } from "tinacms";
+var branch = process.env.GITHUB_BRANCH || process.env.VERCEL_GIT_COMMIT_REF || "main";
 var config_default = defineConfig({
-  clientId: process.env.TINA_PUBLIC_CLIENT_ID ?? "",
-  token: process.env.TINA_TOKEN ?? "",
-  branch: process.env.GITHUB_BRANCH ?? "main",
+  branch,
+  clientId: process.env.TINA_PUBLIC_CLIENT_ID || null,
+  token: process.env.TINA_TOKEN || null,
   build: {
     outputFolder: "admin",
     publicFolder: "public"
@@ -24,7 +25,7 @@ var config_default = defineConfig({
         format: "json",
         ui: {
           filename: {
-            slugify: (values) => values.slug ?? "untitled"
+            slugify: (values) => values.slug || "untitled"
           }
         },
         fields: [
@@ -56,11 +57,7 @@ var config_default = defineConfig({
               { value: "small", label: "Small" }
             ]
           },
-          {
-            name: "gridOffset",
-            label: "Grid column offset",
-            type: "number"
-          },
+          { name: "gridOffset", label: "Grid column offset", type: "number" },
           { name: "hidden", label: "Hidden from homepage", type: "boolean" },
           { name: "backgroundColor", label: "Background colour", type: "string" },
           {
@@ -68,12 +65,7 @@ var config_default = defineConfig({
             label: "Project info",
             type: "object",
             fields: [
-              {
-                name: "about",
-                label: "About",
-                type: "string",
-                ui: { component: "textarea" }
-              },
+              { name: "about", label: "About", type: "string", ui: { component: "textarea" } },
               { name: "date", label: "Date", type: "string" },
               { name: "place", label: "Place", type: "string" },
               { name: "client", label: "Client", type: "string" }
@@ -103,11 +95,7 @@ var config_default = defineConfig({
                       { value: "3/4", label: "Portrait 3:4" }
                     ]
                   },
-                  {
-                    name: "parallax",
-                    label: "Parallax strength",
-                    type: "number"
-                  }
+                  { name: "parallax", label: "Parallax strength", type: "number" }
                 ]
               },
               {
@@ -132,11 +120,7 @@ var config_default = defineConfig({
                     fields: [
                       { name: "src", label: "Image", type: "image" },
                       { name: "alt", label: "Alt text", type: "string" },
-                      {
-                        name: "aspectRatio",
-                        label: "Aspect ratio (optional override)",
-                        type: "string"
-                      }
+                      { name: "aspectRatio", label: "Aspect ratio (optional override)", type: "string" }
                     ]
                   }
                 ]
@@ -166,12 +150,7 @@ var config_default = defineConfig({
                 label: "Text block",
                 fields: [
                   { name: "heading", label: "Heading", type: "string" },
-                  {
-                    name: "body",
-                    label: "Body text",
-                    type: "string",
-                    ui: { component: "textarea" }
-                  }
+                  { name: "body", label: "Body text", type: "string", ui: { component: "textarea" } }
                 ]
               }
             ]
@@ -188,13 +167,7 @@ var config_default = defineConfig({
         fields: [
           { name: "name", label: "Name", type: "string" },
           { name: "title", label: "Tagline", type: "string" },
-          {
-            name: "bio",
-            label: "Bio paragraphs",
-            type: "string",
-            list: true,
-            ui: { component: "textarea" }
-          },
+          { name: "bio", label: "Bio paragraphs", type: "string", list: true },
           { name: "portrait", label: "Portrait photo", type: "image" },
           { name: "clients", label: "Clients", type: "string", list: true },
           { name: "email", label: "Email", type: "string" },
@@ -211,12 +184,7 @@ var config_default = defineConfig({
         format: "json",
         fields: [
           { name: "title", label: "Page title", type: "string" },
-          {
-            name: "intro",
-            label: "Intro text",
-            type: "string",
-            ui: { component: "textarea" }
-          },
+          { name: "intro", label: "Intro text", type: "string", ui: { component: "textarea" } },
           {
             name: "steps",
             label: "Steps",
@@ -225,12 +193,7 @@ var config_default = defineConfig({
             fields: [
               { name: "number", label: "Number", type: "string" },
               { name: "title", label: "Title", type: "string" },
-              {
-                name: "body",
-                label: "Body",
-                type: "string",
-                ui: { component: "textarea" }
-              }
+              { name: "body", label: "Body", type: "string", ui: { component: "textarea" } }
             ]
           },
           {
