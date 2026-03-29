@@ -10,9 +10,8 @@
   },
 
   "typography": {
-    "serif": "'Cormorant Garamond', Georgia, serif",
-    "sans":  "'Adrianna', system-ui, -apple-system, sans-serif",
-    "display": "'Adrianna Condensed', 'Adrianna', system-ui, sans-serif",
+    "sans":    "'Adrianna Extended', 'Adrianna', system-ui, -apple-system, sans-serif",
+    "display": "'Adrianna Extended', system-ui, sans-serif",
 
     "headings": {
       "weight":        "700",

@@ -32,7 +32,6 @@ const designCss = `
   --color-border:      ${design.colors.border};
 
   /* ── Typography ─────────────────────── */
-  --font-serif:    ${design.typography.serif};
   --font-sans:     ${design.typography.sans};
   --font-display:  ${design.typography.display};
 
@@ -73,8 +72,6 @@ const designCss = `
   <title>{title}</title>
   <meta name="description" content={description}>
   <meta name="theme-color" content={design.colors.background}>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <ViewTransitions />
   <!-- Design tokens from design.json — override tokens.css defaults -->
   <style set:html={designCss}></style>

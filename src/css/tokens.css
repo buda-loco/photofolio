@@ -9,9 +9,8 @@
   --color-accent: #f4ff26;
 
   /* Typography */
-  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Adrianna', system-ui, -apple-system, sans-serif;
-  --font-display: 'Adrianna Condensed', 'Adrianna', system-ui, sans-serif;
+  --font-sans: 'Adrianna Extended', 'Adrianna', system-ui, -apple-system, sans-serif;
+  --font-display: 'Adrianna Extended', system-ui, sans-serif;
 
   /* Type scale */
   --text-xs: 0.6875rem;    /* 11px */
