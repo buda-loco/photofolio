@@ -7,6 +7,7 @@
   "coverAspect": "16/9",
   "gridSize": "large",
   "hidden": false,
+  "backgroundColor": "6C5A44",
   "info": {
     "about": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre.",
     "date": "February 2026",
@@ -47,7 +48,8 @@
       "type": "hero",
       "src": "/images/projects/dickson/full/dickson-Centerpiece-by-ben-arnedo-11.jpg",
       "alt": "Centerpiece",
-      "aspectRatio": "3/2"
+      "aspectRatio": "3/2",
+      "parallax": 0.2
     },
     {
       "type": "gallery",
@@ -76,7 +78,8 @@
       "type": "hero",
       "src": "/images/projects/dickson/full/dickson-Bulk-Whole-Foods-by-ben-arnedo-23.jpg",
       "alt": "Bulk Whole Foods",
-      "aspectRatio": "3/2"
+      "aspectRatio": "3/2",
+      "parallax": 0.2
     },
     {
       "type": "gallery",
@@ -96,7 +99,8 @@
       "type": "hero",
       "src": "/images/projects/dickson/full/dickson-Dickson-Sports-Centre-by-ben-arnedo-33.jpg",
       "alt": "Dickson Sports Centre",
-      "aspectRatio": "3/2"
+      "aspectRatio": "3/2",
+      "parallax": 0.2
     }
   ]
 }
