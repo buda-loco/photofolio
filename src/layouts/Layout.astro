@@ -138,6 +138,20 @@ function pillColors(bgCss: string, offset: number = 0): {bg:string, text:string}
   return { bg, text: accessibleText(bg) }
 }
 
+/**
+ * Darken the page background by ~12 lightness points.
+ * If it's already near-black (l < 8), nudge it slightly lighter instead
+ * so the container reads as a distinct surface.
+ */
+function darkenBg(bgCss: string): string {
+  const hex = extractHex(bgCss)
+  if (!hex) return '#141414'
+  const { r, g, b } = hexToRgb(hex)
+  const { h, s, l } = rgbToHsl(r, g, b)
+  const newL = l < 8 ? Math.min(l + 8, 14) : Math.max(l - 12, 4)
+  return hslToHex(h, s, newL)
+}
+
 // ── Nav pill colours — all items same colour (offset: 0) ────────
 const bgSource = pageBackground ?? design.colors.background ?? '#000000'
 const navItems = [
@@ -171,6 +185,10 @@ const designCss = `
   /* ── Pill colours (all nav items + back button + next project) ── */
   --pill-base-bg:   ${basePill.bg};
   --pill-base-text: ${basePill.text};
+
+  /* ── Widescreen video block surface ─────────────────────────── */
+  --widescreen-bg:   ${darkenBg(bgSource)};
+  --widescreen-text: ${accessibleText(darkenBg(bgSource))};
 
   /* ── Typography ─────────────────────── */
   --font-sans:     ${design.typography.sans};

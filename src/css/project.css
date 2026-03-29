@@ -91,11 +91,13 @@
 
 /* ── Widescreen video — full-width on tinted bg ─────────────── */
 .block-widescreen-video {
-  /* Shade of the page background — works for black and coloured pages */
-  background: color-mix(in srgb, var(--color-bg, #000) 25%, #1f1f1f);
-  padding: var(--sp-16) var(--page-margin);
-  /* Note: padding here means page-margin is NOT the content padding —
-     the video fills the full inner width */
+  /* Break out of .project-content's side padding → edge-to-edge surface */
+  margin-left:  calc(-1 * var(--page-margin));
+  margin-right: calc(-1 * var(--page-margin));
+  /* Generous uniform padding — video floats inside the coloured container */
+  padding: var(--sp-12);
+  /* Background computed at build time from page bg — always a few shades darker */
+  background: var(--widescreen-bg, #141414);
 }
 
 .widescreen-container {
@@ -176,9 +178,11 @@
   border: 0;
 }
 
-/* Caption sits below on the tinted bg */
+/* Caption — colour computed for readability against the tinted container */
 .block-widescreen-video .block-caption {
   margin-top: var(--sp-4);
+  color: var(--widescreen-text, #ffffff);
+  opacity: 0.6;
 }
 
 /* ── Vertical reel — 9:16 video + 2 square images ───────────── */
