@@ -51,3 +51,16 @@
   --z-nav: 100;
   --z-cursor: 9999;
 }
+
+/* ── Mobile spacing scale ────────────────────────────────────── */
+/* Desktop tokens are generous; halve the large steps on small screens */
+@media (max-width: 640px) {
+  :root {
+    --nav-height:  4rem;     /* 64px  — slimmer mobile bar */
+    --sp-6:        2rem;     /* 32px  (was 48px)  */
+    --sp-8:        2.5rem;   /* 40px  (was 64px)  */
+    --sp-12:       3.5rem;   /* 56px  (was 96px)  */
+    --sp-16:       5rem;     /* 80px  (was 128px) */
+    --sp-24:       7rem;     /* 112px (was 192px) */
+  }
+}

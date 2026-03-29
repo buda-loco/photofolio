@@ -529,3 +529,32 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  /* Project header — less top gap, tighter */
+  .project-header {
+    padding-top: var(--sp-6);
+    padding-bottom: var(--sp-4);
+  }
+
+  /* Project title — slightly smaller on phones */
+  .project-title {
+    font-size: clamp(1.8rem, 8vw, 3rem);
+  }
+
+  /* Info strip — less padding */
+  .project-info {
+    padding-top: var(--sp-8);
+    padding-bottom: var(--sp-8);
+  }
+
+  /* Services — less bottom gap */
+  .project-services {
+    padding-bottom: var(--sp-4);
+  }
+
+  /* Widescreen video — reduce padding inside */
+  .block-widescreen-video {
+    padding: var(--sp-6);
+  }
+}

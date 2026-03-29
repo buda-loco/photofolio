@@ -115,9 +115,25 @@
     display: flex;
   }
 
+  /* Hamburger on the right */
+  .nav-hamburger {
+    margin-left: auto;
+  }
+
   /* Desktop mini-logo not needed — mobile nav is always visible */
   .nav-mini {
     display: none;
+  }
+
+  /* Remove border on mobile — logo + hamburger float over photos */
+  .site-nav {
+    border-bottom-color: transparent;
+  }
+
+  /* Screen blend — logo and hamburger integrate with photos below */
+  .nav-logo-mobile,
+  .nav-hamburger {
+    mix-blend-mode: screen;
   }
 }
 
