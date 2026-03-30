@@ -1,6 +1,12 @@
 ---
 import { marked } from 'marked'
 const { block } = Astro.props
+// OneLinePlayer is an external service — poster URLs must be absolute
+const siteOrigin = Astro.site?.origin ?? 'https://benjaminarnedo.com'
+function absoluteUrl(path: string): string {
+  if (!path) return ''
+  return path.startsWith('/') ? `${siteOrigin}${path}` : path
+}
 // Tina CMS uses _template as the block discriminator; fall back to type for
 // existing JSON files that haven't been touched by Tina yet.
 const blockType: string = block._template ?? block.type
@@ -161,7 +167,7 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
       <div class="video-container">
         <iframe
           src={onelinerSrc(dropboxUrl(block.video.url), {
-            poster:   block.video.poster   ?? '',
+            poster:   absoluteUrl(block.video.poster ?? ''),
             loop:     block.video.loop     ? 'true' : 'false',
             muted:    block.video.muted    ? 'true' : 'false',
             autoplay: block.video.autoplay ? 'true' : 'false',

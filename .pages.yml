@@ -308,8 +308,8 @@ content:
                     required: true
                     comment: "Paste a Dropbox share link (e.g. https://www.dropbox.com/scl/fi/…/video.mp4?rlkey=…&dl=0), a direct .mp4 URL, or a Vimeo URL — dl=0 is fine, auto-converted"
                   - name: poster
-                    label: Poster image URL
-                    type: string
+                    label: Poster image
+                    type: image
                     comment: "Optional — shown before playback starts"
                   - name: loop
                     label: Loop
