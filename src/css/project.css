@@ -190,7 +190,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--grid-gap);
-  align-items: start;
 }
 
 .reel-video .video-container {
@@ -215,7 +214,8 @@
 }
 
 .reel-images .img-container {
-  aspect-ratio: 1/1;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
