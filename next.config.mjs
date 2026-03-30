@@ -16,8 +16,6 @@ const config = {
   images: {
     unoptimized: true,
   },
-  // Silence the workspace-root lockfile warning
-  outputFileTracingRoot: path.join(__dirname),
   webpack(cfg) {
     cfg.resolve.alias['@tina-client'] = tinaClientPath
     return cfg

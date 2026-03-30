@@ -43,7 +43,8 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
 }
 
 interface BlockProps {
-  block: ContentBlock
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  block: Record<string, any>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tinaFieldAttr?: any
   useTinaMarkdown?: boolean
@@ -92,7 +93,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
         data-cols={String(block.columns ?? 2)}
         {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
       >
-        {(block.images ?? []).map((img, i) => (
+        {(block.images ?? []).map((img: Record<string, string>, i: number) => (
           <div
             key={i}
             className="gallery-item img-reveal"
@@ -250,7 +251,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
           </div>
         </div>
         <div className="reel-images">
-          {(block.images ?? []).slice(0, 2).map((img, i) => (
+          {(block.images ?? []).slice(0, 2).map((img: Record<string, string>, i: number) => (
             <div key={i} className="img-container img-reveal">
               {img.src && (
                 <Image

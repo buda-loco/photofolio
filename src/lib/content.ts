@@ -78,13 +78,15 @@ export interface TextBlock {
   body?: RichNode
 }
 
+// Tina GraphQL client adds __typename (e.g. "ProjectsBlocksWidescreen_video")
+// instead of _template. Both are supported in Block.tsx.
 export type ContentBlock =
-  | HeroBlock
-  | GalleryBlock
-  | VideoBlock
-  | WidescreenVideoBlock
-  | VerticalReelBlock
-  | TextBlock
+  | (HeroBlock & { __typename?: string })
+  | (GalleryBlock & { __typename?: string })
+  | (VideoBlock & { __typename?: string })
+  | (WidescreenVideoBlock & { __typename?: string })
+  | (VerticalReelBlock & { __typename?: string })
+  | (TextBlock & { __typename?: string })
 
 export interface Project {
   slug: string
