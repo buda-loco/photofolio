@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import about from '../content/about.json'
+import { marked } from 'marked'
 ---
 
 <Layout title="About — Benjamin Arnedo">
@@ -10,7 +11,7 @@ import about from '../content/about.json'
       <div class="about-text" data-animate="fade-up">
         <h1>{about.name}</h1>
         {about.bio.map((p: string) => (
-          <p class="body-text">{p}</p>
+          <div class="body-text" set:html={marked.parse(p)} />
         ))}
       </div>
       <div class="about-image img-reveal" data-animate="fade-up">

@@ -64,7 +64,7 @@ export function initAnimations() {
 
   // ── Line reveal — faster fade-up per text line ────────────────
   gsap.utils.toArray('[data-animate="line-reveal"]').forEach(el => {
-    const lines = el.querySelectorAll('.text-line')
+    const lines = el.querySelectorAll('p, li')
     if (!lines.length) return
 
     gsap.fromTo(

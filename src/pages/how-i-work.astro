@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import data from '../content/how-i-work.json'
 import { ArrowRight } from 'lucide-astro'
+import { marked } from 'marked'
 ---
 
 <Layout title="Process — Benjamin Arnedo">
@@ -9,7 +10,7 @@ import { ArrowRight } from 'lucide-astro'
     <div class="how-layout">
 
       <h1 data-animate="fade-up">{data.title}</h1>
-      <p class="how-intro body-text" data-animate="fade-up">{data.intro}</p>
+      <div class="how-intro body-text" data-animate="fade-up" set:html={marked.parse(data.intro)} />
 
       <div class="how-steps">
         {data.steps.map((step: any) => (
@@ -17,7 +18,7 @@ import { ArrowRight } from 'lucide-astro'
             <span class="step-number serif">{step.number}</span>
             <div class="step-content">
               <h3>{step.title}</h3>
-              <p>{step.body}</p>
+              <div set:html={marked.parse(step.body ?? '')} />
             </div>
           </div>
         ))}

@@ -351,8 +351,7 @@ content:
                 comment: Large animated serif heading
               - name: body
                 label: Body text
-                type: text
-                comment: "Use a blank line between paragraphs"
+                type: rich-text
 
   # ── About page (single file) ─────────────────────────────────────
   - name: about
@@ -369,9 +368,8 @@ content:
         type: string
       - name: bio
         label: Bio paragraphs
-        type: text
+        type: rich-text
         list: true
-        comment: Each entry is one paragraph
       - name: portrait
         label: Portrait photo
         type: image
@@ -435,7 +433,7 @@ content:
         type: string
       - name: intro
         label: Intro text
-        type: text
+        type: rich-text
       - name: steps
         label: Steps
         type: object
@@ -450,7 +448,7 @@ content:
             type: string
           - name: body
             label: Body
-            type: text
+            type: rich-text
       - name: cta
         label: Call to action
         type: object

@@ -262,14 +262,15 @@
   will-change: transform;
 }
 
-/* Body lines — each <p> is a separate animated line */
+/* Body — rendered markdown from marked() */
 .block-body {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
+  gap: var(--sp-3);
 }
 
-.text-line {
+.block-body p,
+.block-body li {
   font-family: var(--font-sans);
   font-size: var(--tb-body-size, 1rem);
   line-height: var(--tb-body-line-height, 1.85);
@@ -280,6 +281,16 @@
   text-wrap: pretty;
   overflow-wrap: break-word;
 }
+
+.block-body ul,
+.block-body ol {
+  padding-left: 1.4em;
+}
+
+.block-body strong { font-weight: 700; color: var(--color-text); }
+.block-body em     { font-style: italic; }
+.block-body a      { text-decoration: underline; opacity: 0.8; }
+.block-body a:hover { opacity: 1; }
 
 /* ── Services ────────────────────────────────────────────────── */
 .project-services {
