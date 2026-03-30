@@ -227,7 +227,7 @@
   width: auto;
 }
 
-/* Close button — left side (opposite of hamburger) */
+/* Close button — right side (same side as hamburger) */
 .mobile-menu-close {
   display: flex;
   align-items: center;
