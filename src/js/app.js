@@ -1,4 +1,4 @@
-import { initSmoothScroll, destroySmoothScroll, getLenis } from './smooth-scroll.js'
+import { initSmoothScroll, destroySmoothScroll, getLenis, stopScroll, startScroll } from './smooth-scroll.js'
 import { initAnimations, fitGridTitles } from './animations.js'
 import { initA11y, cleanupA11y } from './a11y.js'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -97,7 +97,7 @@ function initMobileMenu() {
     menu.classList.add('is-open')
     menu.setAttribute('aria-hidden', 'false')
     hamburger.setAttribute('aria-expanded', 'true')
-    document.body.style.overflow = 'hidden'
+    stopScroll()
 
     renderWorkPreview()
 
@@ -115,7 +115,7 @@ function initMobileMenu() {
     if (!isOpen) return
     isOpen = false
     hamburger.setAttribute('aria-expanded', 'false')
-    document.body.style.overflow = ''
+    startScroll()
 
     gsap.to(items, {
       opacity: 0,
@@ -145,7 +145,7 @@ function initMobileMenu() {
     menu.classList.remove('is-open')
     menu.setAttribute('aria-hidden', 'true')
     hamburger.setAttribute('aria-expanded', 'false')
-    document.body.style.overflow = ''
+    startScroll()
     document.removeEventListener('keydown', onKeyDown)
     destroyMobileMenu = null
   }

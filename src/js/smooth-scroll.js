@@ -37,3 +37,6 @@ export function destroySmoothScroll() {
 export function getLenis() {
   return lenis
 }
+
+export function stopScroll()  { lenis?.stop() }
+export function startScroll() { lenis?.start() }
