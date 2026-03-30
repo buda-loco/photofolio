@@ -7,9 +7,7 @@ function absoluteUrl(path: string): string {
   if (!path) return ''
   return path.startsWith('/') ? `${siteOrigin}${path}` : path
 }
-// Tina CMS uses _template as the block discriminator; fall back to type for
-// existing JSON files that haven't been touched by Tina yet.
-const blockType: string = block._template ?? block.type
+const blockType: string = block._template
 
 function dropboxUrl(src: string): string {
   if (!src?.includes('dropbox.com')) return src

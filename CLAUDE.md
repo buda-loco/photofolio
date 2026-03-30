@@ -8,7 +8,7 @@ Portfolio site for Benjamin Arnedo, photographer & cinematographer.
 
 - **Framework:** Astro 4 (static output)
 - **Hosting:** Vercel (auto-deploys on push to `main`)
-- **CMS:** Pages CMS (`.pages.yml`) — edits commit directly to the repo
+- **CMS:** Tina CMS (local only) — `npm run cms`, then `git push` to deploy
 - **Animation:** GSAP 3 + ScrollTrigger
 - **Scroll:** Lenis (smooth scroll)
 
@@ -17,7 +17,8 @@ Portfolio site for Benjamin Arnedo, photographer & cinematographer.
 ## Commands
 
 ```bash
-npm run dev      # local dev server
+npm run cms      # local CMS + dev server (Tina UI at localhost:4001/admin)
+npm run dev      # dev server only (no CMS UI)
 npm run build    # static build → dist/
 npm run preview  # preview the build
 ```
@@ -62,8 +63,8 @@ public/
   images/                 # project images
   logo.svg                # site logo
 tina/
-  config.ts               # Tina CMS schema (parked — not active, see below)
-  __generated__/          # gitignored — never commit (contains live token)
+  config.ts               # Tina CMS schema (active — local editing only)
+  __generated__/          # gitignored — never commit
 ```
 
 ---
@@ -114,7 +115,7 @@ background-clip: text;
 -webkit-text-fill-color: transparent;
 ```
 This means `--color-label` accepts both solid colours and CSS gradients.
-Edit site-wide in Pages CMS under **Design → Colors → Label colour**.
+Edit site-wide in Tina CMS under **Design → Colors → Label colour**.
 
 ### Per-project background colour
 Each project can override the background via `backgroundColor` in its JSON.
@@ -176,9 +177,13 @@ Pills slide in on page load via CSS keyframe animation with staggered `animation
 
 ---
 
-## Content management (Pages CMS)
+## Content management (Tina CMS — local only)
 
-Edit content at the Pages CMS dashboard. Changes commit directly to `main` → Vercel redeploys.
+```
+npm run cms   →   Tina UI at localhost:4001/admin
+                  edits write to src/content/**/*.json on disk
+git push      →   Vercel deploys the updated files
+```
 
 Editable collections:
 - **Projects** — full project CRUD including `backgroundColor` and all content blocks
@@ -186,28 +191,8 @@ Editable collections:
 - **How I Work** — steps, CTA
 - **Design** — site-wide colours including `labelColor` (supports gradients)
 
-See `CONTENT.md` for the full block/field reference.
-
 ### Block discriminator field
-Content blocks in project JSON use `"type"` as the discriminator key — this is what Pages CMS reads and writes (`blockKey: type` in `.pages.yml`). Do not use `"_template"` (that was Tina CMS's convention). `Block.astro` accepts both via `block._template ?? block.type` but new content should always use `"type"`.
-
----
-
-## Tina CMS — parked, do not use
-
-Tina CMS was evaluated as a replacement for Pages CMS and abandoned. `tina/config.ts` remains in the repo as a reference in case it's revisited later (e.g. after an Astro 5 upgrade).
-
-**Why it was abandoned:** Tina Cloud's branch indexing never worked — the webhook fires 200 OK but the content branch stays unindexed. Likely requires a paid plan or specific GitHub App configuration that wasn't worth debugging.
-
-**What's left in the repo:**
-- `tina/config.ts` — full schema, safe to keep, not used at runtime
-- `tina/__generated__/` — **gitignored**. Never commit this directory. It contains a generated `client.ts` with a hardcoded live token.
-
-**To revisit Tina later:**
-1. Upgrade to Astro 5+
-2. Run `npm run dev` (Tina wraps it: `tinacms dev -c 'astro dev'`)
-3. Re-connect a Tina Cloud project — use a **public repo** on the free plan
-4. Blocks in project JSON will need `"_template"` instead of `"type"` (or keep the `??` fallback in `Block.astro`)
+Content blocks in project JSON use `"_template"` as the discriminator key — written by Tina automatically. `Block.astro` reads `block._template` directly. Do not use `"type"` (that was the old Pages CMS convention; all existing files have been migrated).
 
 ---
 
