@@ -121,20 +121,8 @@ html.lenis, html.lenis body {
   padding-top: var(--nav-height);
 }
 
-/* Hide animated elements until GSAP initialises — prevents flash of
-   visible content that then disappears before animating in */
-[data-animate="fade-up"],
-[data-animate="stagger"],
-[data-animate="word-reveal"],
-[data-animate="line-reveal"] {
-  opacity: 0;
-}
-
-/* Reduced motion — show everything immediately */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-animate] {
-    opacity: 1 !important;
-  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
