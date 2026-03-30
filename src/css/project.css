@@ -343,24 +343,33 @@
   gap: var(--grid-gap);
   padding: var(--sp-12) var(--page-margin);
   border-bottom: 1px solid var(--color-border);
-  background: var(--widescreen-bg, #141414);
 }
 
 .project-info-item {}
 
 .project-info-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.35em;
   font-size: var(--text-xs);
-  letter-spacing: 0.15em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.6rem;
+  /* Override base.css gradient text clip — use pill style instead */
+  background: var(--pill-base-bg);
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: var(--pill-base-text);
+  color: var(--pill-base-text);
+  padding: 0.3em 0.6em;
+  line-height: 1;
 }
 
 .info-icon {
   flex-shrink: 0;
-  opacity: 0.6;
+  color: var(--pill-base-text);
+  -webkit-text-fill-color: var(--pill-base-text);
 }
 
 .project-info-value {
