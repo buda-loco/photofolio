@@ -8,21 +8,54 @@
   "gridSize": "large",
   "hidden": false,
   "backgroundColor": "#CD000C",
-  "services": ["Photography", "Videography", "Event Visuals", "Editing", "Post-production"],
+  "textColor": "#ffffff",
+  "primaryColor": "#ffffff",
+  "secondaryColor": "#CD000C",
+  "services": [
+    "Photography",
+    "Videography",
+    "Event Visuals",
+    "Editing",
+    "Post-production"
+  ],
   "info": {
-    "about": "Lunar new year celebrations in Dickson, Canberra. I was tasked with capturing the 12-hour event and deliver high quality images and video for all stakeholders.",
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "children": [
+            {
+              "type": "text",
+              "text": "Lunar new year celebrations in Dickson, Canberra. I was tasked with capturing the 12-hour event and deliver high quality images and video for all stakeholders. "
+            }
+          ],
+          "id": "9h32T868c2"
+        },
+        {
+          "type": "p",
+          "id": "d-64S8Tn-C",
+          "children": [
+            {
+              "type": "text",
+              "id": "EzxwRhYsbQ",
+              "text": "I also designed and produced high-quality visuals for the LED screen on the stage along with some social media graphics to promote the lead-up for the event."
+            }
+          ]
+        }
+      ]
+    },
     "date": "Feb, 2026",
     "place": "Dickson, Canberra",
     "client": "City Renewal Canberra"
   },
   "blocks": [
     {
-      "_template": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-124.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "3",
       "images": [
         {
@@ -43,15 +76,33 @@
         {
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-38.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
+      "video": {
+        "url": "https://www.dropbox.com/scl/fi/lc1ya9k3c52bsrwj0dgbq/Vertical-short-version-with-new-song-graphics-Apple-Devices-HD-Best-Quality.m4v?rlkey=2oru9vqpc0tu67i2p3xiubwyt&dl=0",
+        "poster": "/images/Vertical short version with new song + graphics-Apple Devices HD (Best Quality)-00.00.03.342.jpeg",
+        "autoplay": true,
+        "muted": true,
+        "loop": true
+      },
+      "images": [
+        {
+          "src": "/images/260221-LNY-2026-By-Buda-Performers-86.jpg"
+        },
+        {
+          "src": "/images/260221-LNY-2026-By-Buda-Performers-93.jpg"
+        }
+      ],
+      "_template": "vertical_reel"
+    },
+    {
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-22.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -66,15 +117,15 @@
         {
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-69.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-28.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -89,15 +140,15 @@
         {
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-154.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Gallery-2.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -118,15 +169,15 @@
         {
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-DJ-8.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-11.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "3",
       "images": [
         {
@@ -138,14 +189,18 @@
         {
           "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Crowds-20.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "video",
       "provider": "dropbox",
       "src": "https://www.dropbox.com/scl/fi/y8at5vnzdaj0k7v7wqenm/voiceover-buda.mov?rlkey=12cvjeos0y5cjjlu6a862vrht&dl=0",
       "poster": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2.jpg",
-      "caption": "I usually don't do voice overs, but this particular event really inspired me to write and edit a special edit."
+      "caption": "I usually don't do voice overs, but this particular event really inspired me to write and edit a special video.",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "_template": "video"
     }
   ]
 }

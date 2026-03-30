@@ -1,26 +1,30 @@
 {
-  "name": "benjamin-arnedo-photofolio",
+  "name": "benjamin-arnedo-nextjs",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "cms": "tinacms dev -c 'astro dev'",
-    "build": "astro build",
-    "preview": "astro preview"
+    "dev": "next dev",
+    "cms": "tinacms dev -c 'next dev'",
+    "build": "tinacms build && next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@astrojs/vercel": "^7.8.2",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "@tinacms/cli": "^2.2.0",
-    "astro": "^4.16.0",
+    "tinacms": "^3.7.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.14",
-    "lucide-astro": "^0.556.0",
-    "marked": "^17.0.5",
-    "tinacms": "^3.7.0",
-    "tslib": "^2.8.1"
+    "@barba/core": "^2.9.7"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "typescript": "^5.7.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.3.0"
   }
 }

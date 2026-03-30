@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from 'tinacms'
 
 const branch =
@@ -29,8 +30,12 @@ export default defineConfig({
         format: 'json',
         ui: {
           filename: {
-            slugify: (values) => values.slug || 'untitled',
+            slugify: (values: any) => values.slug || 'untitled',
           },
+          // router maps each document to its page URL — enables the visual
+          // editing tab and live sidebar in the Tina admin
+          router: ({ document }: { document: any }) =>
+            `/work/${document._sys.filename}`,
         },
         fields: [
           { name: 'slug', label: 'Slug', type: 'string', required: true },
@@ -64,12 +69,28 @@ export default defineConfig({
           { name: 'gridOffset', label: 'Grid column offset', type: 'number' },
           { name: 'hidden', label: 'Hidden from homepage', type: 'boolean' },
           { name: 'backgroundColor', label: 'Background colour', type: 'string' },
+          { name: 'backgroundColorSecondary', label: 'Background colour (secondary)', type: 'string' },
+          { name: 'textColor', label: 'Text colour', type: 'string' },
+          { name: 'primaryColor', label: 'Primary colour (button/link text)', type: 'string' },
+          { name: 'secondaryColor', label: 'Secondary colour (button/link bg, video bg, logo)', type: 'string' },
+          { name: 'invertColors', label: 'Invert primary/secondary', type: 'boolean' },
+          {
+            name: 'services',
+            label: 'Services',
+            type: 'string',
+            list: true,
+            options: [
+              'Photography', 'Videography', 'Event Visuals', 'Editing',
+              'Social Media Ads', 'Animation', 'Direction', 'Creative Direction',
+              'Production', 'Post-production', 'Colour Grading',
+            ],
+          },
           {
             name: 'info',
             label: 'Project info',
             type: 'object',
             fields: [
-              { name: 'about', label: 'About', type: 'string', ui: { component: 'textarea' } },
+              { name: 'about', label: 'About', type: 'rich-text', parser: { type: 'slatejson' } },
               { name: 'date', label: 'Date', type: 'string' },
               { name: 'place', label: 'Place', type: 'string' },
               { name: 'client', label: 'Client', type: 'string' },
@@ -100,6 +121,7 @@ export default defineConfig({
                     ],
                   },
                   { name: 'parallax', label: 'Parallax strength', type: 'number' },
+                  { name: 'caption', label: 'Caption', type: 'string' },
                 ],
               },
               {
@@ -147,6 +169,61 @@ export default defineConfig({
                   { name: 'id', label: 'Vimeo / YouTube ID', type: 'string' },
                   { name: 'poster', label: 'Poster image', type: 'image' },
                   { name: 'caption', label: 'Caption', type: 'string' },
+                  { name: 'autoplay', label: 'Autoplay', type: 'boolean' },
+                  { name: 'muted', label: 'Muted', type: 'boolean' },
+                  { name: 'loop', label: 'Loop', type: 'boolean' },
+                ],
+              },
+              {
+                name: 'widescreen_video',
+                label: 'Widescreen video',
+                fields: [
+                  { name: 'url', label: 'Dropbox URL', type: 'string' },
+                  { name: 'poster', label: 'Poster image', type: 'image' },
+                  { name: 'autoplay', label: 'Autoplay', type: 'boolean' },
+                  { name: 'muted', label: 'Muted', type: 'boolean' },
+                  { name: 'loop', label: 'Loop', type: 'boolean' },
+                  {
+                    name: 'aspectRatio',
+                    label: 'Aspect ratio',
+                    type: 'string',
+                    options: [
+                      { value: '16/9', label: 'Landscape 16:9' },
+                      { value: '21/9', label: 'Ultrawide 21:9' },
+                      { value: '3/2', label: 'Landscape 3:2' },
+                      { value: '4/3', label: 'Landscape 4:3' },
+                    ],
+                  },
+                  { name: 'caption', label: 'Caption', type: 'string' },
+                ],
+              },
+              {
+                name: 'vertical_reel',
+                label: 'Vertical reel',
+                fields: [
+                  {
+                    name: 'video',
+                    label: 'Video',
+                    type: 'object',
+                    fields: [
+                      { name: 'url', label: 'Dropbox URL', type: 'string' },
+                      { name: 'poster', label: 'Poster image', type: 'image' },
+                      { name: 'autoplay', label: 'Autoplay', type: 'boolean' },
+                      { name: 'muted', label: 'Muted', type: 'boolean' },
+                      { name: 'loop', label: 'Loop', type: 'boolean' },
+                    ],
+                  },
+                  {
+                    name: 'images',
+                    label: 'Images (max 2)',
+                    type: 'object',
+                    list: true,
+                    fields: [
+                      { name: 'src', label: 'Image', type: 'image' },
+                      { name: 'alt', label: 'Alt text', type: 'string' },
+                    ],
+                  },
+                  { name: 'caption', label: 'Caption', type: 'string' },
                 ],
               },
               {
@@ -154,7 +231,7 @@ export default defineConfig({
                 label: 'Text block',
                 fields: [
                   { name: 'heading', label: 'Heading', type: 'string' },
-                  { name: 'body', label: 'Body text', type: 'string', ui: { component: 'textarea' } },
+                  { name: 'body', label: 'Body text', type: 'rich-text', parser: { type: 'slatejson' } },
                 ],
               },
             ],
@@ -169,10 +246,13 @@ export default defineConfig({
         path: 'src/content',
         match: { include: 'about' },
         format: 'json',
+        ui: {
+          router: () => '/about',
+        },
         fields: [
           { name: 'name', label: 'Name', type: 'string' },
           { name: 'title', label: 'Tagline', type: 'string' },
-          { name: 'bio', label: 'Bio paragraphs', type: 'string', list: true },
+          { name: 'bio', label: 'Bio', type: 'rich-text', parser: { type: 'slatejson' } },
           { name: 'portrait', label: 'Portrait photo', type: 'image' },
           { name: 'clients', label: 'Clients', type: 'string', list: true },
           { name: 'email', label: 'Email', type: 'string' },
@@ -188,9 +268,12 @@ export default defineConfig({
         path: 'src/content',
         match: { include: 'how-i-work' },
         format: 'json',
+        ui: {
+          router: () => '/how-i-work',
+        },
         fields: [
           { name: 'title', label: 'Page title', type: 'string' },
-          { name: 'intro', label: 'Intro text', type: 'string', ui: { component: 'textarea' } },
+          { name: 'intro', label: 'Intro text', type: 'rich-text', parser: { type: 'slatejson' } },
           {
             name: 'steps',
             label: 'Steps',
@@ -199,7 +282,7 @@ export default defineConfig({
             fields: [
               { name: 'number', label: 'Number', type: 'string' },
               { name: 'title', label: 'Title', type: 'string' },
-              { name: 'body', label: 'Body', type: 'string', ui: { component: 'textarea' } },
+              { name: 'body', label: 'Body', type: 'rich-text', parser: { type: 'slatejson' } },
             ],
           },
           {
@@ -222,6 +305,10 @@ export default defineConfig({
         path: 'src/content',
         match: { include: 'design' },
         format: 'json',
+        ui: {
+          // @ts-ignore
+          previewUrl: () => ({ url: 'http://localhost:3000' }),
+        } as any,
         fields: [
           {
             name: 'colors',

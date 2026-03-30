@@ -1,5 +1,3 @@
-@import './fonts.css';
-
 h1, h2 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -71,5 +69,3 @@ h3, h4, h5, h6 {
 .body-text em     { font-style: italic; }
 .body-text a      { text-decoration: underline; opacity: 0.8; }
 .body-text a:hover { opacity: 1; }
-
-/* nav-link pill styles live in nav.css */

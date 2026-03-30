@@ -1,9 +1,9 @@
-/* ── Project page shell ─────────────────────────────────────── */
+/* Project page shell */
 .project-page {
   padding-top: var(--nav-height);
 }
 
-/* Cover image transition hero — appears via view transition from grid */
+/* Cover image */
 .cover-transition {
   aspect-ratio: var(--aspect, 16/9);
   width: 100%;
@@ -17,7 +17,7 @@
 }
 
 .project-header {
-  padding: var(--sp-12) var(--page-margin) var(--sp-6);
+  padding: var(--sp-8) var(--page-margin) var(--sp-4);
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -35,6 +35,15 @@
 .project-meta {
   text-align: right;
   flex-shrink: 0;
+  color: var(--color-text);
+}
+
+.project-meta .label {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: var(--color-text);
+  color: var(--color-text);
 }
 
 .project-meta .label + .label {
@@ -48,7 +57,7 @@
   gap: var(--grid-gap);
 }
 
-/* ── Blocks ─────────────────────────────────────────────────── */
+/* Blocks */
 
 /* Hero — full-width single image */
 .block-hero .img-container {
@@ -89,14 +98,11 @@
   object-fit: cover;
 }
 
-/* ── Widescreen video — contained block with tinted bg ──────── */
+/* Widescreen video */
 .block-widescreen-video {
-  /* Same max-width as all other blocks — no negative margin bleed */
   padding: var(--sp-12);
-  background: var(--widescreen-bg, #141414);
+  background: var(--project-secondary, var(--widescreen-bg, #141414));
 }
-
-
 
 .widescreen-container {
   aspect-ratio: var(--aspect, 16/9);
@@ -105,7 +111,7 @@
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* Poster + play button — visible before play */
+/* Poster + play button */
 .widescreen-poster {
   position: absolute;
   inset: 0;
@@ -130,14 +136,12 @@
   transform: scale(1.02);
 }
 
-/* Centered play button */
 .widescreen-play {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Subtle dark vignette so play button reads on bright images */
   background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%);
 }
 
@@ -163,28 +167,27 @@
 .widescreen-play-icon {
   width: 26px;
   height: 26px;
-  margin-left: 4px; /* visual centre for triangle */
+  margin-left: 4px;
   fill: #ffffff;
   flex-shrink: 0;
 }
 
-/* Iframe — revealed after play click */
 .widescreen-container iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+  pointer-events: none;
 }
 
-/* Caption — colour computed for readability against the tinted container */
 .block-widescreen-video .block-caption {
   margin-top: var(--sp-4);
   color: var(--widescreen-text, #ffffff);
   opacity: 0.6;
 }
 
-/* ── Vertical reel — 9:16 video + 2 square images ───────────── */
+/* Vertical reel */
 .block-vertical-reel {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -195,7 +198,7 @@
   aspect-ratio: 9/16;
   position: relative;
   overflow: hidden;
-  background: #000;
+  background: var(--project-secondary, #000);
 }
 
 .reel-video .video-container iframe {
@@ -204,6 +207,7 @@
   width: 100%;
   height: 100%;
   border: 0;
+  pointer-events: none;
 }
 
 .reel-images {
@@ -231,12 +235,11 @@
   }
 }
 
-/* ── Text block ─────────────────────────────────────────────── */
+/* Text block */
 .block-text {
   padding: var(--sp-8) 0;
 }
 
-/* Heading — large serif, left-aligned, word-by-word clip reveal */
 .block-heading {
   font-family: var(--font-display);
   font-size: var(--tb-heading-size, clamp(2.5rem, 5vw, 5.5rem));
@@ -246,12 +249,10 @@
   margin-bottom: var(--tb-gap, 2.5rem);
 }
 
-/* Word clip — overflow:hidden container, one per word */
 .word-clip {
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
-  /* Extra bottom space so descenders aren't clipped during animation */
   padding-bottom: 0.14em;
   margin-bottom: -0.14em;
 }
@@ -261,7 +262,6 @@
   will-change: transform;
 }
 
-/* Body — rendered markdown from marked() */
 .block-body {
   display: flex;
   flex-direction: column;
@@ -274,7 +274,8 @@
   font-size: var(--tb-body-size, 1rem);
   line-height: var(--tb-body-line-height, 1.85);
   font-weight: 300;
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  opacity: 0.65;
   max-width: var(--tb-max-width, 52ch);
   hyphens: auto;
   text-wrap: pretty;
@@ -291,7 +292,7 @@
 .block-body a      { text-decoration: underline; opacity: 0.8; }
 .block-body a:hover { opacity: 1; }
 
-/* ── Services ────────────────────────────────────────────────── */
+/* Services */
 .project-services {
   display: flex;
   align-items: baseline;
@@ -302,9 +303,15 @@
 
 .project-services-label {
   font-size: var(--text-xs);
-  letter-spacing: 0.15em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   flex-shrink: 0;
+  background: var(--project-primary, #141414);
+  color: var(--project-secondary, var(--color-text));
+  -webkit-text-fill-color: var(--project-secondary, var(--color-text));
+  padding: 0.3em 0.6em;
+  line-height: 1;
 }
 
 .project-services-list {
@@ -324,9 +331,9 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0.45em 0.9em;
-  background: var(--pill-base-bg, #f4ff26);
-  color: var(--pill-base-text, #000000);
-  -webkit-text-fill-color: var(--pill-base-text, #000000);
+  background: var(--project-secondary, var(--pill-base-bg, #f4ff26));
+  color: var(--project-primary, var(--pill-base-text, #000000));
+  -webkit-text-fill-color: var(--project-primary, var(--pill-base-text, #000000));
   line-height: 1;
   transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
@@ -336,20 +343,39 @@
   transform: translateY(-1px);
 }
 
-/* ── Project info section ────────────────────────────────────── */
+/* Project info section */
 .project-info {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: var(--grid-gap);
-  padding: var(--sp-12) var(--page-margin);
-  border-bottom: 1px solid var(--color-border);
+  column-gap: var(--sp-8);
+  row-gap: var(--sp-3);
+  padding: var(--sp-6) var(--page-margin);
 }
 
 .project-info-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  overflow: hidden;
 }
+
+.project-info-item .project-info-label {
+  width: auto;
+  position: relative;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.6rem;
+}
+
+.project-info-item .project-info-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 1px;
+  background: var(--project-primary, var(--color-border));
+}
+
 
 .project-info-label {
   display: inline-flex;
@@ -359,21 +385,20 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 0.6rem;
-  /* Override base.css gradient text clip — use dark bg + accessible text */
-  background: var(--widescreen-bg, #141414);
+  margin-bottom: 0.3rem;
+  background: var(--project-primary, #141414);
   -webkit-background-clip: unset;
   background-clip: unset;
-  -webkit-text-fill-color: var(--widescreen-text, #ffffff);
-  color: var(--widescreen-text, #ffffff);
+  -webkit-text-fill-color: var(--project-secondary, var(--color-text));
+  color: var(--project-secondary, var(--color-text));
   padding: 0.3em 0.6em;
   line-height: 1;
 }
 
 .info-icon {
   flex-shrink: 0;
-  color: var(--widescreen-text, #ffffff);
-  -webkit-text-fill-color: var(--widescreen-text, #ffffff);
+  color: var(--project-secondary, var(--color-text));
+  -webkit-text-fill-color: var(--project-secondary, var(--color-text));
 }
 
 .project-info-value {
@@ -384,7 +409,7 @@
   letter-spacing: 0.01em;
 }
 
-/* About — left half (cols 1–3) */
+/* About — left half */
 .project-info-item--about {
   grid-column: 1 / 4;
   grid-row: 1;
@@ -392,11 +417,29 @@
 
 .project-info-item--about .project-info-value {
   font-size: clamp(1rem, 1.6vw, 1.375rem);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
 }
 
-/* Date / Place / Client — right half (cols 4–6), one each */
+.project-info-value a,
+.project-page .block-body a {
+  background: var(--project-secondary, transparent);
+  color: var(--project-primary, var(--color-accent, #f4ff26));
+  -webkit-text-fill-color: var(--project-primary, var(--color-accent, #f4ff26));
+  text-decoration: none;
+  padding: 0.15em 0.45em;
+  border-radius: 0.25em;
+  line-height: 1;
+  opacity: 1;
+  transition: opacity 0.2s var(--ease-out);
+}
+
+.project-info-value a:hover,
+.project-page .block-body a:hover {
+  filter: brightness(1.3);
+}
+
+/* Date / Place / Client — right half */
 .project-info-item:not(.project-info-item--about) {
   grid-row: 1;
 }
@@ -404,7 +447,7 @@
 @media (max-width: 640px) {
   .project-info {
     grid-template-columns: 1fr;
-    row-gap: var(--sp-4);
+    row-gap: var(--sp-2);
   }
   .project-info-item--about,
   .project-info-item:not(.project-info-item--about) {
@@ -418,7 +461,7 @@
   .project-info-item--about { grid-column: 1 / 3; }
 }
 
-/* ── Buttons ─────────────────────────────────────────────────── */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -445,7 +488,6 @@
   border-color: var(--color-text);
 }
 
-/* Ghost variant — no border, left-flush */
 .btn--ghost {
   border-color: transparent;
   padding-left: 0;
@@ -458,7 +500,6 @@
   color: var(--color-text);
 }
 
-/* Back button — absolute over top-left of cover image */
 .project-back {
   position: absolute;
   top: var(--sp-4);
@@ -466,7 +507,12 @@
   z-index: 10;
 }
 
-/* Buttons row — used on homepage and elsewhere */
+.project-back-link {
+  background-color: var(--project-secondary, var(--pill-base-bg, #f4ff26)) !important;
+  color: var(--project-primary, var(--pill-base-text, #000)) !important;
+  -webkit-text-fill-color: var(--project-primary, var(--pill-base-text, #000));
+}
+
 .btn-row {
   display: flex;
   align-items: center;
@@ -474,7 +520,6 @@
   flex-wrap: wrap;
 }
 
-/* Caption */
 .block-caption {
   margin-top: 0.65rem;
   font-size: var(--text-xs);
@@ -483,7 +528,7 @@
   color: var(--color-text-muted);
 }
 
-/* ── Next project ───────────────────────────────────────────── */
+/* Next project */
 .project-next-wrap {
   padding: var(--sp-8) var(--page-margin);
   border-top: 1px solid var(--color-border);
@@ -496,9 +541,9 @@
   align-items: center;
   gap: 0.75em;
   padding: 0.45em 0.9em;
-  background: var(--pill-base-bg, #f4ff26);
-  color: var(--pill-base-text, #000000) !important;
-  -webkit-text-fill-color: var(--pill-base-text, #000000);
+  background: var(--project-secondary, var(--pill-base-bg, #f4ff26));
+  color: var(--project-primary, var(--pill-base-text, #000000)) !important;
+  -webkit-text-fill-color: var(--project-primary, var(--pill-base-text, #000000));
   transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
 }
 
@@ -533,7 +578,7 @@
   -webkit-text-fill-color: inherit;
 }
 
-/* ── Responsive ─────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 768px) {
   .project-header {
     flex-direction: column;
@@ -555,29 +600,24 @@
 }
 
 @media (max-width: 640px) {
-  /* Project header — less top gap, tighter */
   .project-header {
-    padding-top: var(--sp-6);
-    padding-bottom: var(--sp-4);
+    padding-top: var(--sp-4);
+    padding-bottom: var(--sp-3);
   }
 
-  /* Project title — slightly smaller on phones */
   .project-title {
     font-size: clamp(1.8rem, 8vw, 3rem);
   }
 
-  /* Info strip — less padding */
   .project-info {
-    padding-top: var(--sp-8);
-    padding-bottom: var(--sp-8);
+    padding-top: var(--sp-4);
+    padding-bottom: var(--sp-4);
   }
 
-  /* Services — less bottom gap */
   .project-services {
     padding-bottom: var(--sp-4);
   }
 
-  /* Widescreen video — reduce padding inside */
   .block-widescreen-video {
     padding: var(--sp-6);
   }

@@ -1,9 +1,9 @@
 node_modules
-dist
+.next
 .DS_Store
 *.local
 .env
-.astro
-public/admin
+.env.local
 .vercel
 tina/__generated__
+tsconfig.tsbuildinfo

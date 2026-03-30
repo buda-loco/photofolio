@@ -9,24 +9,60 @@
   "hidden": false,
   "backgroundColor": "#6C5A44",
   "textColor": "#ffffff",
-  "highlightColor": "#000000",
-  "services": ["Photography", "Editing", "Direction"],
+  "primaryColor": "#ffffff",
+  "secondaryColor": "#6C5A44",
+  "services": [
+    "Photography",
+    "Editing",
+    "Direction",
+    "Creative Direction"
+  ],
   "info": {
-    "about": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre.",
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "children": [
+            {
+              "type": "text",
+              "text": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre. The photos were part of a promotional campaign originated in "
+            },
+            {
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qhRKGclJif",
+                  "text": "CRA"
+                }
+              ],
+              "type": "a",
+              "url": "https://www.act.gov.au/cityrenewal/home",
+              "id": "Ed4KSyOHTD"
+            },
+            {
+              "type": "text",
+              "id": "emi-g9vt7s",
+              "text": " (City Renewal Canberra) to showcase local traders in the Dickson area. "
+            }
+          ],
+          "id": "u8Fjsk-fEa"
+        }
+      ]
+    },
     "date": "February 2026",
     "place": "Canberra, Australia",
-    "client": "Dickson Shopping Centre"
+    "client": "City Renewal Canberra"
   },
   "blocks": [
     {
-      "_template": "hero",
       "src": "/images/projects/dickson/cover.jpg",
       "alt": "Dickson Shopping Centre",
       "aspectRatio": "16/9",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -45,17 +81,17 @@
           "src": "/images/projects/dickson/full/dickson-Murray-Fisher-by-ben-arnedo-5.jpg",
           "alt": "Murray Fisher"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/dickson/full/dickson-Centerpiece-by-ben-arnedo-11.jpg",
       "alt": "Centerpiece",
       "aspectRatio": "3/2",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "3",
       "images": [
         {
@@ -70,22 +106,53 @@
           "src": "/images/projects/dickson/full/dickson-modern-dental-by-ben-arnedo-19.jpg",
           "alt": "Modern Dental"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "text",
       "heading": "More than just pretty photos",
-      "body": "Despite the inherent disruption of a photographer moving through a working shop floor, every business owner at Dickson welcomed me with remarkable warmth — a generosity that occasionally extended to treats and genuine smiles I wasn't expecting. There's something quietly profound about being invited, however briefly, into the rhythm of someone's livelihood.\n\nIt also raises a question I find myself returning to: how much visual documentation do businesses like these actually have of themselves? Some operators understand instinctively that strong imagery is an asset — that it shapes how the world perceives them before a single word is spoken. For others, it remains an afterthought, easily deferred.\n\nMy hope is that work like this shifts that equation — that when people see what's possible, and receive something they're genuinely proud of, the value of that investment becomes self-evident."
+      "body": {
+        "type": "root",
+        "children": [
+          {
+            "type": "p",
+            "children": [
+              {
+                "type": "text",
+                "text": "Despite the inherent disruption of a photographer moving through a working shop floor, every business owner at Dickson welcomed me with remarkable warmth — a generosity that occasionally extended to treats and genuine smiles I wasn't expecting. There's something quietly profound about being invited, however briefly, into the rhythm of someone's livelihood."
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "children": [
+              {
+                "type": "text",
+                "text": "It also raises a question I find myself returning to: how much visual documentation do businesses like these actually have of themselves? Some operators understand instinctively that strong imagery is an asset — that it shapes how the world perceives them before a single word is spoken. For others, it remains an afterthought, easily deferred."
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "children": [
+              {
+                "type": "text",
+                "text": "My hope is that work like this shifts that equation — that when people see what's possible, and receive something they're genuinely proud of, the value of that investment becomes self-evident."
+              }
+            ]
+          }
+        ]
+      },
+      "_template": "text"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/dickson/full/dickson-Bulk-Whole-Foods-by-ben-arnedo-23.jpg",
       "alt": "Bulk Whole Foods",
       "aspectRatio": "3/2",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -96,14 +163,15 @@
           "src": "/images/projects/dickson/full/dickson-Trove-Canberra-by-ben-arnedo-13.jpg",
           "alt": "Trove Canberra"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/dickson/full/dickson-Dickson-Sports-Centre-by-ben-arnedo-33.jpg",
       "alt": "Dickson Sports Centre",
       "aspectRatio": "3/2",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     }
   ]
 }

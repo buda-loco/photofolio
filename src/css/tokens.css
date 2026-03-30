@@ -12,34 +12,35 @@
   /* Typography */
   --font-sans: 'Adrianna', system-ui, -apple-system, sans-serif;
   --font-display: 'Adrianna Extended', system-ui, sans-serif;
-  /* Serif alias — Adrianna Extended serves as the display/editorial face */
   --font-serif: var(--font-display);
 
-  /* Type scale — modular, base 16px */
-  --text-xs: 0.75rem;      /* 12px — labels, captions, pills */
-  --text-sm: 0.875rem;     /* 14px — secondary body, step numbers */
-  --text-base: 1rem;       /* 16px — body text */
-  --text-lg: 1.25rem;      /* 20px */
-  --text-xl: 1.75rem;      /* 28px */
-  --text-2xl: 2.5rem;      /* 40px */
-  --text-3xl: 4rem;        /* 64px */
-  --text-4xl: 6rem;        /* 96px */
-  --text-5xl: 9rem;        /* 144px */
+  /* Fluid type scale */
+  --text-xs:   clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
+  --text-sm:   clamp(0.75rem, 0.7rem + 0.3vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.8rem + 0.4vw, 1rem);
+  --text-lg:   clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --text-xl:   clamp(1.25rem, 1rem + 1.2vw, 2rem);
+  --text-2xl:  clamp(1.75rem, 1.2rem + 2.5vw, 3.5rem);
+  --text-3xl:  clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  --text-4xl:  clamp(3.5rem, 2rem + 6vw, 6rem);
+  --text-5xl:  clamp(5rem, 3rem + 8vw, 9rem);
 
   /* Layout */
   --nav-height: 6rem;
   --page-margin: clamp(1.25rem, 4vw, 3rem);
   --grid-gap: clamp(0.75rem, 1.5vw, 1.5rem);
 
-  /* Spacing scale */
+  /* Spacing scale (8px base) */
   --sp-1: 0.5rem;
   --sp-2: 1rem;
   --sp-3: 1.5rem;
   --sp-4: 2rem;
   --sp-6: 3rem;
   --sp-8: 4rem;
+  --sp-10: 5rem;
   --sp-12: 6rem;
   --sp-16: 8rem;
+  --sp-20: 10rem;
   --sp-24: 12rem;
 
   /* Easing */
@@ -52,15 +53,14 @@
   --z-cursor: 9999;
 }
 
-/* ── Mobile spacing scale ────────────────────────────────────── */
-/* Desktop tokens are generous; halve the large steps on small screens */
+/* Mobile spacing scale */
 @media (max-width: 640px) {
   :root {
-    --nav-height:  4rem;     /* 64px  — slimmer mobile bar */
-    --sp-6:        2rem;     /* 32px  (was 48px)  */
-    --sp-8:        2.5rem;   /* 40px  (was 64px)  */
-    --sp-12:       3.5rem;   /* 56px  (was 96px)  */
-    --sp-16:       5rem;     /* 80px  (was 128px) */
-    --sp-24:       7rem;     /* 112px (was 192px) */
+    --nav-height: 4rem;
+    --sp-6: 2rem;
+    --sp-8: 2.5rem;
+    --sp-12: 3.5rem;
+    --sp-16: 5rem;
+    --sp-24: 7rem;
   }
 }

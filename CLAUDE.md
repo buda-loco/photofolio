@@ -6,7 +6,7 @@ Portfolio site for Benjamin Arnedo, photographer & cinematographer.
 
 ## Stack
 
-- **Framework:** Astro 4 (static output)
+- **Framework:** Next.js 15 (App Router)
 - **Hosting:** Vercel (auto-deploys on push to `main`)
 - **CMS:** Tina CMS (local only) — `npm run cms`, then `git push` to deploy
 - **Animation:** GSAP 3 + ScrollTrigger
@@ -17,10 +17,9 @@ Portfolio site for Benjamin Arnedo, photographer & cinematographer.
 ## Commands
 
 ```bash
-npm run cms      # local CMS + dev server (Tina UI at localhost:4001/admin)
-npm run dev      # dev server only (no CMS UI)
-npm run build    # static build → dist/
-npm run preview  # preview the build
+npm run dev      # dev server (localhost:3001)
+npm run build    # production build
+npm run start    # serve production build
 ```
 
 ---

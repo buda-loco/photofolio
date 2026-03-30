@@ -1,21 +1,31 @@
-/* ── Home grid ──────────────────────────────────────────────── */
+/* Home grid */
 .work-grid {
   padding: var(--sp-8) var(--page-margin) var(--sp-16);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: var(--grid-gap);
+  gap: clamp(1rem, 2vw, 1.5rem);
   align-items: start;
 }
 
-/* Grid item sizes — set via data-size attribute */
+/* Grid item sizes */
 .grid-item[data-size="large"]  { grid-column: span 8; }
 .grid-item[data-size="medium"] { grid-column: span 6; }
 .grid-item[data-size="small"]  { grid-column: span 4; }
 
-/* Optional column offsets for asymmetry */
-.grid-item[data-offset="2"] { grid-column-start: 3; }
-.grid-item[data-offset="4"] { grid-column-start: 5; }
-.grid-item[data-offset="6"] { grid-column-start: 7; }
+/* Combined size + offset rules — must set both start and span together
+   because grid-column-start alone overrides the span shorthand */
+.grid-item[data-size="large"][data-offset="1"]  { grid-column: 2 / span 8; }
+.grid-item[data-size="large"][data-offset="2"]  { grid-column: 3 / span 8; }
+.grid-item[data-size="large"][data-offset="4"]  { grid-column: 5 / span 8; }
+.grid-item[data-size="large"][data-offset="6"]  { grid-column: 7 / span 8; }
+.grid-item[data-size="medium"][data-offset="1"] { grid-column: 2 / span 6; }
+.grid-item[data-size="medium"][data-offset="2"] { grid-column: 3 / span 6; }
+.grid-item[data-size="medium"][data-offset="4"] { grid-column: 5 / span 6; }
+.grid-item[data-size="medium"][data-offset="6"] { grid-column: 7 / span 6; }
+.grid-item[data-size="small"][data-offset="1"]  { grid-column: 2 / span 4; }
+.grid-item[data-size="small"][data-offset="2"]  { grid-column: 3 / span 4; }
+.grid-item[data-size="small"][data-offset="4"]  { grid-column: 5 / span 4; }
+.grid-item[data-size="small"][data-offset="6"]  { grid-column: 7 / span 4; }
 
 .grid-item {
   display: block;
@@ -55,8 +65,7 @@
   -webkit-backdrop-filter: blur(2px);
 }
 
-
-/* ── Title overlay ──────────────────────────────────────────── */
+/* Title overlay */
 .grid-item-overlay {
   position: absolute;
   inset: 0;
@@ -93,14 +102,12 @@
   overflow: hidden;
 }
 
-/* Each line is a block — words within a line don't wrap */
 .title-line {
   display: block;
   white-space: nowrap;
   overflow: hidden;
 }
 
-/* Word split structure */
 .grid-item-title .word-clip {
   display: inline-block;
   overflow: hidden;
@@ -119,15 +126,23 @@
   will-change: transform;
 }
 
-
-/* ── Responsive ─────────────────────────────────────────────── */
+/* Responsive */
 @media (max-width: 1024px) {
   .grid-item[data-size="large"]  { grid-column: span 12; }
   .grid-item[data-size="medium"] { grid-column: span 12; }
   .grid-item[data-size="small"]  { grid-column: span 6; }
-  .grid-item[data-offset="2"],
-  .grid-item[data-offset="4"],
-  .grid-item[data-offset="6"] { grid-column-start: auto; }
+  .grid-item[data-size="large"][data-offset="1"],
+  .grid-item[data-size="large"][data-offset="2"],
+  .grid-item[data-size="large"][data-offset="4"],
+  .grid-item[data-size="large"][data-offset="6"],
+  .grid-item[data-size="medium"][data-offset="1"],
+  .grid-item[data-size="medium"][data-offset="2"],
+  .grid-item[data-size="medium"][data-offset="4"],
+  .grid-item[data-size="medium"][data-offset="6"],
+  .grid-item[data-size="small"][data-offset="1"],
+  .grid-item[data-size="small"][data-offset="2"],
+  .grid-item[data-size="small"][data-offset="4"],
+  .grid-item[data-size="small"][data-offset="6"] { grid-column: span 12; }
 }
 
 @media (max-width: 640px) {

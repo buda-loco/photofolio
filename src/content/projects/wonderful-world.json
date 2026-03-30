@@ -6,29 +6,84 @@
   "cover": "/images/projects/wonderful-world/WW_Grandpa_01.jpg",
   "coverAspect": "3/2",
   "gridSize": "large",
-  "gridOffset": 1,
   "hidden": false,
   "backgroundColor": "#FACC40",
-  "textColor": "#211B09",
-  "highlightColor": "#f4ff26",
+  "textColor": "#000000",
+  "primaryColor": "#FACC40",
+  "secondaryColor": "#000000",
+  "invertColors": false,
+  "services": [
+    "Photography",
+    "Videography",
+    "Social Media Ads",
+    "Animation",
+    "Creative Direction"
+  ],
   "info": {
-    "about": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids. I worked together with Placemaking geniuses [Dionysus](https://dionysus.place/ \"Visit Dionysus.place\") and [City Renewal Canberra](https://www.inthecity.com.au/wonderfulworld \"Visit Wonderful World at CRA\") Art direction and original designs by [Florez](https://florez.au/)",
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "children": [
+            {
+              "type": "text",
+              "text": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids. I worked together with Placemaking geniuses Dionysus and "
+            },
+            {
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uysUzbtfIx",
+                  "text": "City Renewal Canberra"
+                }
+              ],
+              "type": "a",
+              "url": "https://www.inthecity.com.au/wonderfulworld",
+              "id": "tTW9JAknnB"
+            },
+            {
+              "type": "text",
+              "id": "bzMz4LSjm9",
+              "text": " Art direction and original designs by "
+            },
+            {
+              "children": [
+                {
+                  "type": "text",
+                  "id": "F6C7znmS9E",
+                  "text": "Florez"
+                }
+              ],
+              "type": "a",
+              "url": "https://florez.au/",
+              "id": "fVr4kCq54N"
+            },
+            {
+              "type": "text",
+              "id": "uFD2VevdKb",
+              "text": "."
+            }
+          ],
+          "id": "SUH9ZUM6EP"
+        }
+      ]
+    },
     "date": "2026",
     "place": "City Walk, Canberra",
     "client": "Dionysus / City Renewal Canberra"
   },
   "blocks": [
     {
-      "_template": "widescreen-video",
       "url": "https://www.dropbox.com/scl/fi/a8w2bvra643pkm6ui1l0o/Wonderful_World_Widescreen_30s_v4.mp4?rlkey=an8u2a39m0r3bawhg0oetvw5e&dl=0",
       "poster": "/images/Wonderful_World_Widescreen_30s_v4-screenshot.jpeg",
       "autoplay": true,
       "muted": true,
       "loop": true,
-      "aspectRatio": "16/9"
+      "aspectRatio": "16/9",
+      "_template": "widescreen_video"
     },
     {
-      "_template": "gallery",
       "columns": "3",
       "images": [
         {
@@ -40,16 +95,16 @@
         {
           "src": "/images/projects/wonderful-world/WW_Family_Street_04.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "vertical-reel",
       "video": {
         "url": "https://www.dropbox.com/scl/fi/27s5ldkxrj7blkpkfcbxo/shopping-screens-V2-10-sec-vertical.mp4?rlkey=p83s3x0fvef7ics2xq433hete&dl=0",
         "poster": "/images/shopping-screens-10-sec-vertical-screenshot.jpeg",
-        "loop": true,
+        "autoplay": true,
         "muted": true,
-        "autoplay": true
+        "loop": true
       },
       "images": [
         {
@@ -58,15 +113,15 @@
         {
           "src": "/images/WW_Icecream_04.jpg"
         }
-      ]
+      ],
+      "_template": "vertical_reel"
     },
     {
-      "_template": "hero",
       "src": "/images/projects/wonderful-world/WW_Icecream_07.jpg",
-      "parallax": 0.2
+      "parallax": 0.2,
+      "_template": "hero"
     },
     {
-      "_template": "gallery",
       "columns": "2",
       "images": [
         {
@@ -75,16 +130,16 @@
         {
           "src": "/images/projects/wonderful-world/WW_Kids_play_06.jpg"
         }
-      ]
+      ],
+      "_template": "gallery"
     },
     {
-      "_template": "vertical-reel",
       "video": {
         "url": "https://www.dropbox.com/scl/fi/a185lw3qo85pjcq9dc254/shopping-screens-10-sec-vertical.mp4?rlkey=nms7hsrf29pntqcw5n4m0de15&st=fmvw4wzr&dl=0",
         "poster": "/images/shopping-screens-10-sec-vertical-screenshot.jpeg",
-        "loop": true,
+        "autoplay": true,
         "muted": true,
-        "autoplay": true
+        "loop": true
       },
       "images": [
         {
@@ -93,7 +148,8 @@
         {
           "src": "/images/projects/wonderful-world/WW_CMAG_07.jpg"
         }
-      ]
+      ],
+      "_template": "vertical_reel"
     }
   ]
 }

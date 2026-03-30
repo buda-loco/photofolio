@@ -1,26 +1,26 @@
 {
   "title": "How I Work",
-  "intro": "A transparent look at my creative process and what you can expect when we collaborate.",
+  "intro": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"A transparent look at my creative process and what you can expect when we collaborate."}]}]},
   "steps": [
     {
       "number": "01",
       "title": "Discovery",
-      "body": "Before any camera is picked up, we talk. I want to understand not just the brief, but the intention behind it — what feeling, what story, what silence you're trying to capture. This conversation shapes everything that follows."
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Before any camera is picked up, we talk. I want to understand not just the brief, but the intention behind it — what feeling, what story, what silence you're trying to capture. This conversation shapes everything that follows."}]}]}
     },
     {
       "number": "02",
       "title": "Pre-production",
-      "body": "Direction, mood references, location scouting, and logistics. I believe in arriving prepared so that on the day, we're free to follow what's actually happening rather than what we planned."
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Direction, mood references, location scouting, and logistics. I believe in arriving prepared so that on the day, we're free to follow what's actually happening rather than what we planned."}]}]}
     },
     {
       "number": "03",
       "title": "Production",
-      "body": "On set or in the field, I work with a small, focused team. Fewer people means more intimacy, and intimacy means better images. You'll have direct access to me throughout."
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"On set or in the field, I work with a small, focused team. Fewer people means more intimacy, and intimacy means better images. You'll have direct access to me throughout."}]}]}
     },
     {
       "number": "04",
       "title": "Delivery",
-      "body": "Edited selects delivered via private gallery within the agreed timeline. For film work, you'll receive the final export in your required format along with all master files. Two revision rounds are included in every project."
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Edited selects delivered via private gallery within the agreed timeline. For film work, you'll receive the final export in your required format along with all master files. Two revision rounds are included in every project."}]}]}
     }
   ],
   "cta": {

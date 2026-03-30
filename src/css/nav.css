@@ -96,9 +96,14 @@
   transform: translateY(-1px);
 }
 
-/* ── Mobile nav bar ─────────────────────────────────────────── */
+/* Override nav pill colours on project pages */
+.project-colors .nav-link {
+  background-color: var(--project-secondary) !important;
+  color: var(--project-primary) !important;
+  -webkit-text-fill-color: var(--project-primary);
+}
 
-/* Default: hide mobile-only elements (must come before the media query) */
+/* Default: hide mobile-only elements */
 .nav-logo-mobile,
 .nav-hamburger {
   display: none;
@@ -116,22 +121,18 @@
     display: flex;
   }
 
-  /* Hamburger on the right */
   .nav-hamburger {
     margin-left: auto;
   }
 
-  /* Desktop mini-logo not needed — mobile nav is always visible */
   .nav-mini {
     display: none;
   }
 
-  /* Remove border on mobile — logo + hamburger float over photos */
   .site-nav {
     border-bottom-color: transparent;
   }
 
-  /* Screen blend — logo and hamburger integrate with photos below */
   .nav-logo-mobile,
   .nav-hamburger {
     mix-blend-mode: screen;
@@ -181,7 +182,7 @@
   transform-origin: center;
 }
 
-/* ── Mobile menu overlay ─────────────────────────────────────── */
+/* Mobile menu overlay */
 .mobile-menu {
   position: fixed;
   inset: 0;
@@ -212,7 +213,6 @@
   flex-shrink: 0;
 }
 
-/* Logo absolutely centered — mirrors the closed nav bar */
 .mobile-menu-logo {
   position: absolute;
   left: 50%;
@@ -230,7 +230,6 @@
   filter: var(--logo-filter, none);
 }
 
-/* Close button — right side (same side as hamburger) */
 .mobile-menu-close {
   display: flex;
   align-items: center;
@@ -248,7 +247,6 @@
 
 .mobile-menu-close:hover { opacity: 1; }
 
-/* Empty spacer — balances the close button width to keep logo truly centered */
 .mobile-menu-header-end {
   width: 38px;
   flex-shrink: 0;
@@ -283,7 +281,7 @@
   color: var(--pill-base-bg, #f4ff26);
 }
 
-/* ── Latest work preview ─────────────────────────────────────── */
+/* Latest work preview */
 .mobile-menu-work {
   padding: var(--sp-4) 0 var(--sp-6);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -346,9 +344,7 @@
   letter-spacing: -0.01em;
 }
 
-/* ── Mini logo — slides in when nav scrolls away ─────────────── */
-/* top aligns the image centre to the nav centre: (nav-height - img-height) / 2 */
-/* Scale bounce only — opacity handled separately via transition */
+/* Mini logo */
 @keyframes nav-mini-bounce {
   0%   { transform: scale(0.6) translateY(-6px); }
   65%  { transform: scale(1.1); }
@@ -357,8 +353,9 @@
 }
 
 .nav-mini {
+  --nav-mini-size: 35px;
   position: fixed;
-  top: calc((var(--nav-height) - 36px) / 2);
+  top: calc((var(--nav-height) - var(--nav-mini-size)) / 2);
   left: 100px;
   z-index: calc(var(--z-nav) + 1);
   display: block;
@@ -375,7 +372,7 @@
 }
 
 .nav-mini img {
-  height: 36px;
+  height: var(--nav-mini-size);
   width: auto;
   display: block;
   filter: var(--logo-filter, none);
@@ -387,15 +384,42 @@
 }
 
 @media (max-width: 640px) {
-  .nav-mini img { height: 30px; }
-  .nav-mini { top: calc((var(--nav-height) - 30px) / 2); }
+  .nav-mini { --nav-mini-size: 20px; }
 }
 
-/* Force-hide mini logo on mobile — base rule above has display:block
-   which wins over the earlier 768px query due to cascade order */
 @media (max-width: 768px) {
   .nav-mini,
   .nav-mini.is-visible {
     display: none !important;
   }
+}
+
+/* Project-specific logo tinting via CSS mask */
+.project-colors .nav-logo {
+  position: relative;
+}
+.project-colors .nav-logo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--project-secondary, var(--color-accent, #f4ff26));
+  -webkit-mask: url(/logo.svg) no-repeat left center / contain;
+  mask: url(/logo.svg) no-repeat left center / contain;
+  pointer-events: none;
+}
+.project-colors .nav-logo-img {
+  opacity: 0;
+}
+
+.project-colors .nav-mini::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--project-secondary, var(--color-accent, #f4ff26));
+  -webkit-mask: url(/logo-mini.svg) no-repeat center / contain;
+  mask: url(/logo-mini.svg) no-repeat center / contain;
+  pointer-events: none;
+}
+.project-colors .nav-mini img {
+  opacity: 0;
 }

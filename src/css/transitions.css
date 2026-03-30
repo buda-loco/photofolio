@@ -1,21 +1,30 @@
-/* Page fade — kept short so the shared-element morph dominates */
-::view-transition-old(root) {
-  animation: 80ms ease-in both vt-fade-out;
-}
-::view-transition-new(root) {
-  animation: 220ms ease-out 80ms both vt-fade-in;
+/* Logo-window page transition mask
+   Inline SVG with fill-rule:evenodd — BA logo is a transparent window
+   through the solid accent-colour fill.
+
+   GSAP owns all transforms. CSS only sets the initial off-screen state
+   and compositing hints. */
+
+.page-transition-mask {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  /* no will-change: transform — that rasterises the SVG at natural size
+     and then pixel-scales the bitmap. Let the browser re-render as vectors. */
 }
 
-/* Shared element morph (cover images) — control timing only,
-   browser handles position/size interpolation */
-::view-transition-group(*) {
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  animation-duration: 600ms;
+/* Block interaction while mask is covering the screen */
+.page-transition-mask.is-entering {
+  pointer-events: auto;
 }
 
-@keyframes vt-fade-out {
-  to { opacity: 0; }
-}
-@keyframes vt-fade-in {
-  from { opacity: 0; }
+/* Reduced motion — never show the mask at all */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-mask {
+    display: none;
+  }
 }
