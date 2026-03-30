@@ -19,6 +19,15 @@
   },
   "blocks": [
     {
+      "type": "widescreen-video",
+      "url": "https://www.dropbox.com/scl/fi/a8w2bvra643pkm6ui1l0o/Wonderful_World_Widescreen_30s_v4.mp4?rlkey=an8u2a39m0r3bawhg0oetvw5e&dl=0",
+      "poster": "/images/Wonderful_World_Widescreen_30s_v4-screenshot.jpeg",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "aspectRatio": "16/9"
+    },
+    {
       "type": "gallery",
       "columns": "3",
       "images": [
@@ -66,15 +75,6 @@
           "src": "/images/projects/wonderful-world/WW_CMAG_07.jpg"
         }
       ]
-    },
-    {
-      "type": "widescreen-video",
-      "url": "https://www.dropbox.com/scl/fi/a8w2bvra643pkm6ui1l0o/Wonderful_World_Widescreen_30s_v4.mp4?rlkey=an8u2a39m0r3bawhg0oetvw5e&dl=0",
-      "poster": "/images/Wonderful_World_Widescreen_30s_v4-screenshot.jpeg",
-      "autoplay": true,
-      "muted": true,
-      "loop": true,
-      "aspectRatio": "16/9"
     }
   ]
 }
