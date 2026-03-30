@@ -43,6 +43,24 @@
       ]
     },
     {
+      "type": "vertical-reel",
+      "video": {
+        "url": "https://www.dropbox.com/scl/fi/27s5ldkxrj7blkpkfcbxo/shopping-screens-V2-10-sec-vertical.mp4?rlkey=p83s3x0fvef7ics2xq433hete&dl=0",
+        "poster": "/images/shopping-screens-10-sec-vertical-screenshot.jpeg",
+        "loop": true,
+        "muted": true,
+        "autoplay": true
+      },
+      "images": [
+        {
+          "src": "/images/WW_Dancing_03.jpg"
+        },
+        {
+          "src": "/images/WW_Icecream_04.jpg"
+        }
+      ]
+    },
+    {
       "type": "hero",
       "src": "/images/projects/wonderful-world/WW_Icecream_07.jpg",
       "parallax": 0.2
