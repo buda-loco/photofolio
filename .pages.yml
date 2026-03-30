@@ -238,8 +238,7 @@ content:
                 comment: Only needed for Vimeo or YouTube
               - name: poster
                 label: Poster image
-                type: string
-                comment: "Upload via media library (e.g. /images/poster.jpg) or paste a direct image URL"
+                type: image
               - name: autoplay
                 label: Autoplay
                 type: boolean
@@ -266,8 +265,8 @@ content:
                 comment: "Paste a Dropbox share link (e.g. https://www.dropbox.com/scl/fi/…/video.mp4?rlkey=…&dl=0), a direct .mp4 URL, or a Vimeo URL — dl=0 is fine, auto-converted"
               - name: poster
                 label: Poster image
-                type: string
-                comment: "Upload via media library (e.g. /images/poster.jpg) or paste a direct image URL — shown before play, click reveals the player"
+                type: image
+                comment: "Shown before play — recommended. Click reveals the player."
               - name: autoplay
                 label: Autoplay on click
                 type: boolean

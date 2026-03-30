@@ -54,7 +54,7 @@
       "type": "vertical-reel",
       "video": {
         "url": "https://www.dropbox.com/scl/fi/a185lw3qo85pjcq9dc254/shopping-screens-10-sec-vertical.mp4?rlkey=nms7hsrf29pntqcw5n4m0de15&st=fmvw4wzr&dl=0",
-        "poster": "https://www.dropbox.com/scl/fi/48y8ril7cceyvcd8avsr2/shopping-screens-10-sec-vertical-screenshot.jpeg?rlkey=rqoiikit5fvijlxlxip43sdxz&dl=0",
+        "poster": "",
         "loop": true,
         "muted": true,
         "autoplay": true
