@@ -150,7 +150,7 @@ content:
         blocks:
 
           - name: hero
-            label: Hero image
+            label: "🖼  Hero — full-width image"
             fields:
               - name: src
                 label: Image
@@ -181,7 +181,7 @@ content:
                 comment: "0 = none, 0.2 = subtle (recommended), 0.4 = strong"
 
           - name: gallery
-            label: Gallery
+            label: "📷  Gallery — grid of images"
             fields:
               - name: columns
                 label: Columns
@@ -215,7 +215,7 @@ content:
                     comment: e.g. 3/2 — leave blank to use default
 
           - name: video
-            label: Video
+            label: "▶️  Video"
             fields:
               - name: provider
                 label: Provider
@@ -256,7 +256,7 @@ content:
                 type: string
 
           - name: widescreen-video
-            label: Widescreen video (full-width on tinted background)
+            label: "🎬  Widescreen video — full-width on tinted bg"
             fields:
               - name: url
                 label: Video URL
@@ -296,7 +296,7 @@ content:
                 type: string
 
           - name: vertical-reel
-            label: Vertical reel (9:16 video + 2 square images)
+            label: "📱  Vertical reel — 9:16 video + 2 images"
             fields:
               - name: video
                 label: Video
@@ -343,7 +343,7 @@ content:
                 type: string
 
           - name: text
-            label: Text block
+            label: "📝  Text — heading + body copy"
             fields:
               - name: heading
                 label: Heading
