@@ -172,7 +172,7 @@ function darkenBg(bgCss: string): string {
   if (!hex) return '#141414'
   const { r, g, b } = hexToRgb(hex)
   const { h, s, l } = rgbToHsl(r, g, b)
-  const newL = l < 8 ? Math.min(l + 8, 14) : Math.max(l - 12, 4)
+  const newL = l < 8 ? Math.min(l + 8, 14) : Math.max(l * 0.65, 2)
   return hslToHex(h, s, newL)
 }
 
