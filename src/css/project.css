@@ -343,6 +343,7 @@
   gap: var(--grid-gap);
   padding: var(--sp-12) var(--page-margin);
   border-bottom: 1px solid var(--color-border);
+  background: var(--widescreen-bg, #141414);
 }
 
 .project-info-item {}
