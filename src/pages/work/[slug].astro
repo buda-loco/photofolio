@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro'
 import Block from '../../components/Block.astro'
 import { CalendarDays, MapPin, User, Info, ArrowLeft, ArrowRight } from 'lucide-astro'
+import { marked } from 'marked'
 
 const files = import.meta.glob('../../content/projects/*.json', { eager: true })
 const projects: any[] = Object.values(files)
@@ -94,7 +95,7 @@ const projectSchema = {
         {info.about && (
           <div class="project-info-item project-info-item--about">
             <span class="project-info-label"><Info size={11} class="info-icon" /> About</span>
-            <span class="project-info-value">{info.about}</span>
+            <div class="project-info-value body-text" set:html={marked.parse(info.about)} />
           </div>
         )}
         {info.date && (

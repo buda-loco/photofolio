@@ -129,7 +129,7 @@ content:
         fields:
           - name: about
             label: About
-            type: text
+            type: rich-text
           - name: date
             label: Date
             type: string
