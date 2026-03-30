@@ -89,15 +89,13 @@
   object-fit: cover;
 }
 
-/* ── Widescreen video — full-width on tinted bg ─────────────── */
+/* ── Widescreen video — contained block with tinted bg ──────── */
 .block-widescreen-video {
-  /* Break out of .project-content's side padding → edge-to-edge surface */
-  margin-left:  calc(-1 * var(--page-margin));
-  margin-right: calc(-1 * var(--page-margin));
-  /* Generous uniform padding — video floats inside the coloured container */
+  /* Same max-width as all other blocks — no negative margin bleed */
   padding: var(--sp-12);
-  /* Background computed at build time from page bg — always a few shades darker */
   background: var(--widescreen-bg, #141414);
+  border: 2px solid var(--color-text);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .widescreen-container {
