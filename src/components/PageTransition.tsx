@@ -96,11 +96,19 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname()
   const isAnimating  = useRef(false)
   const prevPathname = useRef(pathname)
+  // Resolve when the new route mounts so the timeline can wait
+  const routeReady = useRef<(() => void) | null>(null)
 
   // When the new route mounts, fade the page content in from under the mask
   useEffect(() => {
     if (pathname === prevPathname.current) return
     prevPathname.current = pathname
+
+    // Signal the timeline that the new route has mounted
+    if (routeReady.current) {
+      routeReady.current()
+      routeReady.current = null
+    }
 
     // Fade new page content in (mask is still covering screen during early scale)
     gsap.fromTo(
@@ -139,15 +147,12 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
       gsap.killTweensOf([svg, path, '#main-content'])
       gsap.set(svg,  { opacity: 0, y: '100%' })
-      // Set a concrete fill colour so GSAP can interpolate from it
       gsap.set(path, { scale: 1, attr: { fill: ACCENT_FILL } })
 
-      gsap
-        .timeline()
-        // ── Phase 1 ──────────────────────────────────────────────────────────
-        // Mask rises from below.  Old page fades out behind it (starts at
-        // t=0.1 so mask is visibly in-frame before fade begins).
-        .to(svg, {
+      const tl = gsap.timeline()
+
+      // ── Phase 1: Mask slides up, old page fades out ──────────────────────
+      tl.to(svg, {
           y: '0%',
           opacity: 1,
           duration: 0.49,
@@ -161,28 +166,35 @@ export default function PageTransition({ children }: PageTransitionProps) {
           overwrite: true,
         }, 0.1)
 
-        // ── Navigate ─────────────────────────────────────────────────────────
-        // Fires when mask fully covers screen. New page renders at opacity:0;
-        // useEffect above fades it in. Path scale starts immediately after.
+        // ── Navigate and wait for new route to mount ───────────────────────
         .call(() => {
           gsap.set('#main-content', { opacity: 0 })
+
+          // Create a promise that resolves when the pathname useEffect fires
+          const routeMounted = new Promise<void>((resolve) => {
+            routeReady.current = resolve
+            // Safety timeout — don't block forever if route change is instant
+            // (same-page navigation) or fails
+            setTimeout(resolve, 2000)
+          })
+
           router.push(href)
+
+          // Pause the timeline until the new route is ready
+          tl.pause()
+          routeMounted.then(() => {
+            tl.resume()
+          })
         })
 
-        // ── Phase 2a ─────────────────────────────────────────────────────────
-        // Mask is now covering the screen. Shift fill to the destination
-        // background colour before the holes open — so when they blast through,
-        // the solid parts are already the right colour.
+        // ── Phase 2a: Shift fill to destination colour ─────────────────────
         .to(path, {
           attr: { fill: maskFill(bgColor) },
           duration: 0.55,
           ease: 'none',
         })
 
-        // ── Phase 2b ─────────────────────────────────────────────────────────
-        // Logo holes expand in SVG vector space.
-        // expo.in: the first ~60% of time is a sleek slow creep; the final
-        // 40% is an exponential explosion that swallows the screen.
+        // ── Phase 2b: Logo holes expand ────────────────────────────────────
         .to(path, {
           scale: SCALE_FACTOR,
           svgOrigin: SVG_ORIGIN,
@@ -191,16 +203,13 @@ export default function PageTransition({ children }: PageTransitionProps) {
           force3D: true,
         })
 
-        // ── Phase 3 ──────────────────────────────────────────────────────────
-        // Mask dissolves. Viewport is already fully transparent through the
-        // expanded logo holes — this fade removes the element cleanly.
+        // ── Phase 3: Mask dissolves ────────────────────────────────────────
         .to(svg, {
           opacity: 0,
           duration: 0.12,
           ease: 'power1.in',
           onComplete() {
             gsap.set(svg,  { y: '100%' })
-            // Restore CSS-variable fill so the mask is correct next transition
             gsap.set(path, { scale: 1, attr: { fill: 'var(--color-label, #f4ff26)' } })
             isAnimating.current = false
           },

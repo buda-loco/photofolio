@@ -73,12 +73,13 @@ export default async function RootLayout({
     <html lang="en" data-theme="dark">
       <head>
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, viewport-fit=cover" />
         <meta name="color-scheme" content="dark" />
         <meta name="theme-color" content={design.colors.background} />
 
-        {/* Font preloads */}
+        {/* Font preloads — critical weights for first paint */}
         <link rel="preload" href="/fonts/Adrianna Light.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Adrianna Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Adrianna Extended Light.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Adrianna Extended Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
 

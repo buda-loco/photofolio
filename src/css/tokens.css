@@ -27,7 +27,7 @@
 
   /* Layout */
   --nav-height: 6rem;
-  --page-margin: clamp(1.25rem, 4vw, 3rem);
+  --page-margin: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-left, 0px));
   --grid-gap: clamp(0.75rem, 1.5vw, 1.5rem);
 
   /* Spacing scale (8px base) */

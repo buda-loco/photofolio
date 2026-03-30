@@ -111,13 +111,30 @@ html.lenis, html.lenis body {
   transform: translateY(0);
 }
 
+/* Main content — min-height prevents layout collapse during route swap */
+#main-content {
+  min-height: 100vh;
+}
+
 /* Page wrapper */
 .page {
   padding-top: var(--nav-height);
 }
 
-/* Reduced motion */
+/* Hide animated elements until GSAP initialises — prevents flash of
+   visible content that then disappears before animating in */
+[data-animate="fade-up"],
+[data-animate="stagger"],
+[data-animate="word-reveal"],
+[data-animate="line-reveal"] {
+  opacity: 0;
+}
+
+/* Reduced motion — show everything immediately */
 @media (prefers-reduced-motion: reduce) {
+  [data-animate] {
+    opacity: 1 !important;
+  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

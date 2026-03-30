@@ -81,9 +81,12 @@ export default function SmoothScroll() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Scroll to top on navigation
+  // Scroll to top on navigation — use requestAnimationFrame to ensure
+  // the DOM has updated and the transition mask is covering the screen
   useEffect(() => {
-    lenisInstance?.scrollTo(0, { immediate: true })
+    requestAnimationFrame(() => {
+      lenisInstance?.scrollTo(0, { immediate: true })
+    })
   }, [pathname])
 
   return null
