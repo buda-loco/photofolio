@@ -360,20 +360,20 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 0.6rem;
-  /* Override base.css gradient text clip — use dark bg + page text colour */
+  /* Override base.css gradient text clip — use dark bg + accessible text */
   background: var(--widescreen-bg, #141414);
   -webkit-background-clip: unset;
   background-clip: unset;
-  -webkit-text-fill-color: var(--color-text);
-  color: var(--color-text);
+  -webkit-text-fill-color: var(--widescreen-text, #ffffff);
+  color: var(--widescreen-text, #ffffff);
   padding: 0.3em 0.6em;
   line-height: 1;
 }
 
 .info-icon {
   flex-shrink: 0;
-  color: var(--color-text);
-  -webkit-text-fill-color: var(--color-text);
+  color: var(--widescreen-text, #ffffff);
+  -webkit-text-fill-color: var(--widescreen-text, #ffffff);
 }
 
 .project-info-value {
