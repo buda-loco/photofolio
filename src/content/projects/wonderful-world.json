@@ -6,10 +6,11 @@
   "cover": "/images/projects/wonderful-world/WW_Grandpa_01.jpg",
   "coverAspect": "3/2",
   "gridSize": "large",
+  "gridOffset": 1,
   "hidden": false,
   "backgroundColor": "#FACC40",
   "info": {
-    "about": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids.",
+    "about": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids. I worked together with Placemaking geniuses <a href=\"https://dionysus.place/\" target=\"_blank\" title=\"Visit Dionysus.place\">Dionysus</a> and <a href=\"https://www.inthecity.com.au/wonderfulworld\" target=\"https://www.inthecity.com.au/wonderfulworld\" title=\"Visit Wonderful World at CRA\">City Renewal Canberra</a>\n\nArt direction and original designs by <a href=\"https://florez.au/\" target=\"_blank\">Florez</a>",
     "date": "2026",
     "place": "City Walk, Canberra",
     "client": "Dionysus / City Renewal Canberra"
