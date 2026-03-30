@@ -50,6 +50,7 @@
   height: 70px;
   width: auto;
   display: block;
+  filter: var(--logo-filter, none);
 }
 
 @keyframes nav-pill-in {
@@ -154,6 +155,7 @@
   height: 32px;
   width: auto;
   display: block;
+  filter: var(--logo-filter, none);
 }
 
 /* Hamburger button */
@@ -225,6 +227,7 @@
 .mobile-menu-logo img {
   height: 32px;
   width: auto;
+  filter: var(--logo-filter, none);
 }
 
 /* Close button — right side (same side as hamburger) */
@@ -375,6 +378,7 @@
   height: 36px;
   width: auto;
   display: block;
+  filter: var(--logo-filter, none);
 }
 
 .nav-mini.is-visible:hover {

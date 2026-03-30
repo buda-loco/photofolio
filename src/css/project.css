@@ -102,7 +102,6 @@
   aspect-ratio: var(--aspect, 16/9);
   position: relative;
   overflow: hidden;
-  border: 2px solid var(--color-text);
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 

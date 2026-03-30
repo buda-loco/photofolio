@@ -242,6 +242,9 @@ const designCss = `
   /* ── Mobile menu background ──────────────────────────────────── */
   --menu-bg: ${menuBg(bgSource)};
 
+  /* ── Logo tint — invert white SVG on light backgrounds ───────── */
+  --logo-filter: ${isLightBg ? 'invert(1)' : 'none'};
+
   /* ── Typography ─────────────────────── */
   --font-sans:     ${design.typography.sans};
   --font-display:  ${design.typography.display};
