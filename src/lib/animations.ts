@@ -183,63 +183,6 @@ export function destroyScrollAnimations(): void {
   ScrollTrigger.getAll().forEach(t => t.kill())
 }
 
-// Fit grid titles to fill container width
-export function fitGridTitles(): () => void {
-  if (typeof window === 'undefined') return () => {}
-  document.querySelectorAll<HTMLElement>('.grid-item-title').forEach(fitOneTitle)
-
-  let resizeTimer: ReturnType<typeof setTimeout> | null = null
-  const onResize = () => {
-    if (resizeTimer) clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(() => {
-      document.querySelectorAll<HTMLElement>('.grid-item-title').forEach(fitOneTitle)
-    }, 100)
-  }
-
-  window.addEventListener('resize', onResize)
-  return () => {
-    window.removeEventListener('resize', onResize)
-    if (resizeTimer) clearTimeout(resizeTimer)
-  }
-}
-
-function fitOneTitle(titleEl: HTMLElement): void {
-  const container = titleEl.closest<HTMLElement>('.img-container')
-  if (!container) return
-
-  const lines = titleEl.querySelectorAll<HTMLElement>('.title-line')
-  const text = lines.length
-    ? Array.from(lines).reduce((a, b) =>
-        (a.textContent?.length ?? 0) >= (b.textContent?.length ?? 0) ? a : b
-      ).textContent?.trim() ?? ''
-    : (titleEl.dataset['title'] ?? titleEl.textContent?.trim() ?? '')
-
-  const cs = getComputedStyle(titleEl)
-
-  const probe = document.createElement('span')
-  Object.assign(probe.style, {
-    position: 'fixed',
-    visibility: 'hidden',
-    pointerEvents: 'none',
-    whiteSpace: 'nowrap',
-    fontFamily: cs.fontFamily,
-    fontWeight: cs.fontWeight,
-    letterSpacing: cs.letterSpacing,
-    fontSize: '100px',
-  })
-  probe.textContent = text
-  document.body.appendChild(probe)
-
-  const probeW = probe.offsetWidth
-  document.body.removeChild(probe)
-
-  if (!probeW) return
-
-  const padding = 48
-  const available = container.offsetWidth - padding
-  titleEl.style.fontSize = Math.max(12, Math.floor(58 * (available / probeW))) + 'px'
-}
-
 export function initEntryAnimation(): void {
   if (document.documentElement.classList.contains('reduce-motion')) return
   if (typeof window === 'undefined') return

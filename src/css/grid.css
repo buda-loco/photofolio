@@ -88,7 +88,7 @@
   will-change: transform;
 }
 
-/* Title — Adrianna Extended Light, fills container width */
+/* Title — Adrianna Extended Light, consistent clamped size across all card widths */
 .grid-item-title {
   position: relative;
   z-index: 1;
@@ -96,6 +96,7 @@
   width: 100%;
   font-family: 'Adrianna Extended', 'Adrianna', system-ui, sans-serif;
   font-weight: 300;
+  font-size: clamp(1.25rem, 2.8vw, 3rem);
   line-height: 0.95;
   letter-spacing: -0.025em;
   color: #ffffff;

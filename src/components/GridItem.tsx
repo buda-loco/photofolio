@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef, type CSSProperties } from 'react'
+import { type CSSProperties } from 'react'
 import Image from 'next/image'
-import { gsap } from 'gsap'
 import { useTransition } from './PageTransition'
 import type { Project } from '@/lib/content'
 
@@ -31,44 +30,12 @@ function splitTitle(title: string): [string[], string[]] {
 }
 
 export default function GridItem({ project, priority = false, animated = true }: GridItemProps) {
-  const itemRef = useRef<HTMLAnchorElement>(null)
   const { triggerTransition } = useTransition()
 
-  useEffect(() => {
-    const item = itemRef.current
-    if (!item) return
-
-    const bg = item.querySelector<HTMLElement>('.grid-item-overlay-bg')
-    const words = Array.from(item.querySelectorAll<HTMLElement>('.word-inner'))
-    if (!bg || !words.length) return
-
-    // Set initial GSAP state so overwrite-based tweens always have a known start
-    gsap.set(bg, { scaleY: 0, transformOrigin: 'bottom' })
-    gsap.set(words, { y: '110%' })
-
-    function onEnter() {
-      gsap.to(bg,    { scaleY: 1, duration: 0.32, ease: 'power3.out', overwrite: 'auto' })
-      gsap.to(words, { y: '0%',   duration: 0.38, ease: 'power3.out', stagger: 0.045, overwrite: 'auto', delay: 0.14 })
-    }
-
-    function onLeave() {
-      gsap.to(bg,    { scaleY: 0, duration: 0.28, ease: 'power3.in', overwrite: 'auto' })
-      gsap.to(words, { y: '110%', duration: 0.28, ease: 'power3.in', stagger: { each: 0.04, from: 'end' }, overwrite: 'auto' })
-    }
-
-    item.addEventListener('mouseenter', onEnter)
-    item.addEventListener('mouseleave', onLeave)
-    item.addEventListener('focusin',    onEnter)
-    item.addEventListener('focusout',   onLeave)
-
-    return () => {
-      item.removeEventListener('mouseenter', onEnter)
-      item.removeEventListener('mouseleave', onLeave)
-      item.removeEventListener('focusin',    onEnter)
-      item.removeEventListener('focusout',   onLeave)
-      gsap.killTweensOf([bg, ...words])
-    }
-  }, [])
+  // Hover animation is handled globally by initGridHovers() in animations.ts,
+  // which AnimationsInit calls on every page. CSS handles initial state:
+  //   .grid-item-overlay-bg  { transform: scaleY(0); transform-origin: bottom; }
+  //   .grid-item-title .word-inner { transform: translateY(110%); }
 
   const [line1, line2] = splitTitle(project.title)
   const lines = [line1, line2].filter(l => l.length > 0)
@@ -83,7 +50,6 @@ export default function GridItem({ project, priority = false, animated = true }:
   return (
     <a
       href={href}
-      ref={itemRef}
       className="grid-item"
       data-size={project.gridSize || 'medium'}
       {...(project.gridOffset ? { 'data-offset': String(project.gridOffset) } : {})}
