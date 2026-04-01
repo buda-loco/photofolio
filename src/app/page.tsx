@@ -7,14 +7,20 @@ import AnimationsInit from '@/components/AnimationsInit'
 export const metadata: Metadata = {
   title: 'Benjamin Arnedo — Photographer & Cinematographer',
   description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
+  alternates: { canonical: 'https://benjaminarnedo.com' },
   openGraph: {
+    title: 'Benjamin Arnedo — Photographer & Cinematographer',
+    description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
+    url: 'https://benjaminarnedo.com',
+  },
+  twitter: {
     title: 'Benjamin Arnedo — Photographer & Cinematographer',
     description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
   },
 }
 
 export default async function HomePage() {
-  const projects = getAllProjects()
+  const latest = getAllProjects().slice(0, 2)
 
   return (
     <div className="page">
@@ -32,10 +38,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="work-grid" aria-label="Selected work">
-        {projects.map((project, i) => (
-          <GridItem key={project.slug} project={project} priority={i === 0} />
-        ))}
+      <section className="latest-work" aria-label="Latest projects">
+        <div className="latest-work-header">
+          <span className="latest-work-title">Latest Projects</span>
+          <TransitionLink href="/work" className="latest-work-link">
+            View all work &rarr;
+          </TransitionLink>
+        </div>
+        <div className="latest-work-grid">
+          {latest.map((project, i) => (
+            <GridItem key={project.slug} project={project} priority={i === 0} />
+          ))}
+        </div>
       </section>
     </div>
   )

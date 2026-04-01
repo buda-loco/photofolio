@@ -15,7 +15,7 @@ interface NavProps {
 }
 
 const navItems = [
-  { href: '/', label: 'Work' },
+  { href: '/work', label: 'Work' },
   { href: '/about', label: 'About' },
   { href: '/how-i-work', label: 'Process' },
   { href: '/contact', label: 'Contact' },
@@ -29,7 +29,8 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
   const menuItemsRef = useRef<HTMLAnchorElement[]>([])
 
   function isActive(href: string): boolean {
-    return href === pathname || (href === '/' && pathname.startsWith('/work/'))
+    if (href === '/work') return pathname === '/' || pathname.startsWith('/work/')
+    return href === pathname
   }
 
   function openMenu() {

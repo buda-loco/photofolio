@@ -1,0 +1,78 @@
+{
+  "slug": "coasterblitz",
+  "title": "Coaster Blitz",
+  "category": "Website",
+  "year": 2023,
+  "cover": "/images/projects/Coaster-blitz/coaster-blitz-cover-image.jpg",
+  "coverAspect": "16/9",
+  "backgroundColor": "#BE0E39",
+  "backgroundColorSecondary": "",
+  "textColor": "#ffffff",
+  "primaryColor": "white",
+  "secondaryColor": "#60071c",
+  "invertColors": false,
+  "services": [
+    "Creative Direction",
+    "Website design",
+    "Brand design",
+    "Digital Marketing"
+  ],
+  "ctaLabel": "Visit website",
+  "ctaUrl": "https://coasterblitz.com.au/",
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "children": [
+            {
+              "text": "Added Value Enterprises identified a high-growth opportunity within their custom print division, specifically the surging demand for branded drink coasters across the hospitality sector. The scale of inbound orders justified the creation of a dedicated business unit, and I was engaged to bring it to life from the ground up."
+            }
+          ],
+          "type": "p",
+          "id": "6v5Q-kI2zp"
+        },
+        {
+          "type": "p",
+          "id": "HWO02BnmTQ",
+          "children": [
+            {
+              "text": "My scope covered the full brand genesis: naming the venture, developing a cohesive visual identity, and designing a high-impact landing page built to convert. The page communicated the core offering clearly and efficiently, anchored by a focused call to action tailored to pub and bar operators."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "K9gJ0MYIH4",
+          "children": [
+            {
+              "text": "The result was Coaster Blitz — now one of Brisbane's leading suppliers of custom printed coasters to the hospitality industry."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2023",
+    "place": "Brisbane, Australia",
+    "client": "Added Value Enterprises"
+  },
+  "blocks": [
+    {
+      "images": [
+        {
+          "src": "/images/projects/Coaster-blitz/website-macbook.jpg"
+        },
+        {
+          "src": "/images/projects/Coaster-blitz/coffee-mug.jpg"
+        },
+        {
+          "src": "/images/projects/Coaster-blitz/coaster-blitz-shirt.jpg"
+        },
+        {
+          "src": "/images/projects/Coaster-blitz/mobile-phone.jpg"
+        }
+      ],
+      "_template": "gallery"
+    }
+  ]
+}

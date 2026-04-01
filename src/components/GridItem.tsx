@@ -9,6 +9,7 @@ import type { Project } from '@/lib/content'
 interface GridItemProps {
   project: Project
   priority?: boolean
+  animated?: boolean
 }
 
 function splitTitle(title: string): [string[], string[]] {
@@ -29,7 +30,7 @@ function splitTitle(title: string): [string[], string[]] {
   return [words.slice(0, best), words.slice(best)]
 }
 
-export default function GridItem({ project, priority = false }: GridItemProps) {
+export default function GridItem({ project, priority = false, animated = true }: GridItemProps) {
   const itemRef = useRef<HTMLAnchorElement>(null)
   const { triggerTransition } = useTransition()
 
@@ -84,10 +85,10 @@ export default function GridItem({ project, priority = false }: GridItemProps) {
       href={href}
       ref={itemRef}
       className="grid-item"
-      data-size={project.gridSize ?? 'medium'}
+      data-size={project.gridSize || 'medium'}
       {...(project.gridOffset ? { 'data-offset': String(project.gridOffset) } : {})}
       style={itemStyle}
-      data-animate="fade-up"
+      {...(animated ? { 'data-animate': 'fade-up' } : {})}
       onClick={(e) => { e.preventDefault(); triggerTransition(href, project.backgroundColor) }}
     >
       <div className="img-container">
