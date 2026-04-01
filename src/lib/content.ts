@@ -97,7 +97,9 @@ export interface Project {
   coverAspect?: string
   gridSize?: 'large' | 'medium' | 'small'
   gridOffset?: number
-  hidden?: boolean
+  featured?: boolean
+  ctaLabel?: string
+  ctaUrl?: string
   backgroundColor?: string
   backgroundColorSecondary?: string
   textColor?: string
@@ -208,13 +210,17 @@ function readJson<T>(filePath: string): T {
 
 // ── Public API ───────────────────────────────────────────────────
 
+let _projectsCache: Project[] | null = null
+
 export function getAllProjects(): Project[] {
+  if (_projectsCache) return _projectsCache
   const projectsDir = path.join(CONTENT_DIR, 'projects')
   const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.json'))
   const projects = files.map(f => readJson<Project>(path.join(projectsDir, f)))
-  return projects
-    .filter(p => !p.hidden)
+  _projectsCache = projects
+    .filter(p => p.featured !== false)
     .sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+  return _projectsCache
 }
 
 export function getAllProjectsIncludingHidden(): Project[] {
@@ -224,9 +230,11 @@ export function getAllProjectsIncludingHidden(): Project[] {
 }
 
 export function getProject(slug: string): Project | null {
-  const filePath = path.join(CONTENT_DIR, 'projects', `${slug}.json`)
-  if (!fs.existsSync(filePath)) return null
-  return readJson<Project>(filePath)
+  try {
+    return readJson<Project>(path.join(CONTENT_DIR, 'projects', `${slug}.json`))
+  } catch {
+    return null
+  }
 }
 
 export function getAbout(): About {

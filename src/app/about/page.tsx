@@ -5,7 +5,17 @@ import AboutClient from './AboutClient'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Photographer & Cinematographer based in Canberra — about Benjamin Arnedo.',
+  description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+  alternates: { canonical: 'https://benjaminarnedo.com/about' },
+  openGraph: {
+    title: 'About — Benjamin Arnedo',
+    description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+    url: 'https://benjaminarnedo.com/about',
+  },
+  twitter: {
+    title: 'About — Benjamin Arnedo',
+    description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+  },
 }
 
 export default async function AboutPage() {

@@ -14,20 +14,23 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = params
+  const slug = decodeURIComponent(params.slug)
   const project = getProject(slug)
   if (!project) return {}
 
   const description = project.info?.about ? richToPlain(project.info.about) : ''
   const image = project.cover
+  const url = `https://benjaminarnedo.com/work/${slug}`
 
   return {
     title: project.title,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title: `${project.title} — Benjamin Arnedo`,
       description,
-      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : {}),
+      url,
+      ...(image ? { images: [{ url: image }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
@@ -39,10 +42,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProjectPage({ params }: PageProps) {
-  const { slug } = params
+  const slug = decodeURIComponent(params.slug)
 
   const [project, tinaQuery] = await Promise.all([
-    Promise.resolve(getProject(slug)),
+    getProject(slug),
     queryProject(slug),
   ])
   if (!project) throw new Error(`Project not found: ${slug}`)
@@ -63,7 +66,8 @@ export default async function ProjectPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: project.title,
-    creator: { '@type': 'Person', name: 'Benjamin Arnedo' },
+    url: `https://benjaminarnedo.com/work/${slug}`,
+    creator: { '@type': 'Person', name: 'Benjamin Arnedo', url: 'https://benjaminarnedo.com' },
     ...(project.info?.about ? { description: richToPlain(project.info.about) } : {}),
     ...(project.year ? { dateCreated: String(project.year) } : {}),
     ...(project.cover ? { image: `https://benjaminarnedo.com${project.cover}` } : {}),

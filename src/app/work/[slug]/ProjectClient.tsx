@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useTina, tinaField } from 'tinacms/dist/react'
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import Block from '@/components/Block'
+import ExternalLinkButton from '@/components/ExternalLinkButton'
 import TransitionLink from '@/components/TransitionLink'
 import AnimationsInit from '@/components/AnimationsInit'
 import { type TinaQueryResult, buildTinaProps } from '@/lib/tinaHelpers'
@@ -208,6 +209,13 @@ export default function ProjectClient(props: ProjectClientProps) {
               </span>
             </div>
           )}
+        </div>
+      )}
+
+      {/* CTA button */}
+      {project.ctaUrl && project.ctaLabel && (
+        <div className="project-cta" data-animate="fade-up">
+          <ExternalLinkButton href={project.ctaUrl} label={project.ctaLabel} />
         </div>
       )}
 

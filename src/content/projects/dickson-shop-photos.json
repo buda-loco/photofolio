@@ -6,7 +6,7 @@
   "cover": "/images/projects/dickson/cover.jpg",
   "coverAspect": "16/9",
   "gridSize": "large",
-  "hidden": false,
+  "featured": true,
   "backgroundColor": "#6C5A44",
   "textColor": "#ffffff",
   "primaryColor": "#ffffff",
@@ -26,27 +26,38 @@
           "children": [
             {
               "type": "text",
-              "text": "A documentary series capturing the daily rhythms of independent traders at Dickson Shopping Centre. The photos were part of a promotional campaign originated in "
-            },
-            {
-              "children": [
-                {
-                  "type": "text",
-                  "id": "qhRKGclJif",
-                  "text": "CRA"
-                }
-              ],
-              "type": "a",
-              "url": "https://www.act.gov.au/cityrenewal/home",
-              "id": "Ed4KSyOHTD"
+              "text": "City Renewal Authority",
+              "bold": true
             },
             {
               "type": "text",
-              "id": "emi-g9vt7s",
-              "text": " (City Renewal Canberra) to showcase local traders in the Dickson area. "
+              "id": "mmcZBF7pE8",
+              "text": " commissioned a portrait and lifestyle photography series to anchor a place-based promotional campaign centred on the independent trading community of Dickson Shopping Centre. The strategic intent was clear: shift the focus from retail to people, and give locals a human reason to show up."
             }
           ],
           "id": "u8Fjsk-fEa"
+        },
+        {
+          "type": "p",
+          "id": "x5x5D9F9zM",
+          "children": [
+            {
+              "type": "text",
+              "id": "W4iAe4kOln",
+              "text": "I photographed the full breadth of businesses across the precinct, capturing traders in their element — the faces, the craft, and the everyday moments that make independent retail irreplaceable. The resulting image library gave CRA the raw material to build targeted campaigns that celebrated the texture and character of the Dickson community."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "29DY8fBFk3",
+          "children": [
+            {
+              "type": "text",
+              "id": "z3CDIkoxSl",
+              "text": ""
+            }
+          ]
         }
       ]
     },

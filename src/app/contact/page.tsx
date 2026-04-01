@@ -6,6 +6,16 @@ import AnimationsInit from '@/components/AnimationsInit'
 export const metadata: Metadata = {
   title: 'Contact',
   description: "Let's work together — get in touch with Benjamin Arnedo.",
+  alternates: { canonical: 'https://benjaminarnedo.com/contact' },
+  openGraph: {
+    title: 'Contact — Benjamin Arnedo',
+    description: "Let's work together — get in touch with Benjamin Arnedo.",
+    url: 'https://benjaminarnedo.com/contact',
+  },
+  twitter: {
+    title: 'Contact — Benjamin Arnedo',
+    description: "Let's work together — get in touch with Benjamin Arnedo.",
+  },
 }
 
 export default function ContactPage() {

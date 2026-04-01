@@ -16,8 +16,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.7;
   overflow-x: hidden;
 }
 

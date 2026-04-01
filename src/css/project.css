@@ -183,8 +183,7 @@
 
 .block-widescreen-video .block-caption {
   margin-top: var(--sp-4);
-  color: var(--widescreen-text, #ffffff);
-  opacity: 0.6;
+  display: block;
 }
 
 /* Vertical reel */
@@ -291,6 +290,38 @@
 .block-body em     { font-style: italic; }
 .block-body a      { text-decoration: underline; opacity: 0.8; }
 .block-body a:hover { opacity: 1; }
+
+/* CTA button */
+.project-cta {
+  padding: 0 var(--page-margin) var(--sp-6);
+}
+
+.external-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75em 1.5em;
+  background: var(--project-secondary, var(--color-accent, #f4ff26));
+  color: var(--project-primary, #000000);
+  -webkit-text-fill-color: var(--project-primary, #000000);
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.external-link-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+.external-link-icon {
+  flex-shrink: 0;
+  stroke: currentColor;
+  -webkit-text-fill-color: unset;
+}
 
 /* Services */
 .project-services {
@@ -416,9 +447,25 @@
 }
 
 .project-info-item--about .project-info-value {
-  font-size: clamp(1rem, 1.6vw, 1.375rem);
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
+}
+
+.project-info-item--about .project-info-value p:first-child {
+  font-size: 1.2rem;
+  line-height: 1.3;
+  font-weight: 400;
+  margin-bottom: var(--sp-2);
+  hyphens: auto;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+.project-info-item--about .project-info-value p:not(:first-child) {
+  hyphens: auto;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
 }
 
 .project-info-value a,
@@ -526,6 +573,19 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+}
+
+/* Project page captions — dark bg tinted from page background, page text colour.
+   Unsets webkit background-clip because .label uses it for gradient text effects. */
+.project-page .block-caption {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.4em 0.9em;
+  background: color-mix(in srgb, var(--color-bg, #000000) 20%, #000000 80%);
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: var(--color-text, #ffffff);
+  color: var(--color-text, #ffffff);
 }
 
 /* Next project */

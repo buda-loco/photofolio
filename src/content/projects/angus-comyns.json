@@ -1,0 +1,93 @@
+{
+  "slug": "angus-comyns",
+  "title": "Angus Comyns",
+  "category": "Personal Branding",
+  "year": 2023,
+  "cover": "/images/Angus-Comyns-Gallery-2.jpg",
+  "coverAspect": "16/9",
+  "gridSize": "",
+  "gridOffset": 0,
+  "backgroundColor": "#e85043",
+  "textColor": "White",
+  "primaryColor": "#029df7",
+  "secondaryColor": "black",
+  "services": [
+    "Brand Identity",
+    "Photography",
+    "Videography",
+    "Web Design",
+    "Motion Graphics",
+    "Editorial Design"
+  ],
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "children": [
+            {
+              "text": "Angus Comyns is a Canberra-based Screen Print and Stencil Artist whose work spans canvas, walls, and everything in between — bold, layered, and instantly recognisable. He needed a personal brand that could hold its own against the intensity of the art itself."
+            }
+          ],
+          "type": "p",
+          "id": "L47qItz1NZ"
+        },
+        {
+          "type": "p",
+          "id": "xiZqSBkRD_",
+          "children": [
+            {
+              "text": "In collaboration with Pat Rose under the Oddjobs banner, I led a full-spectrum brand and content engagement covering every touchpoint of his creative identity. The project encompassed logo design and complete brand identity development, a custom website and integrated online store, and a professional photography suite capturing both portraiture and detailed documentation of his finished works."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "ib3j9q3iPs",
+          "children": [
+            {
+              "text": "Beyond the static, we embedded ourselves in his process — producing on-location video content that followed Angus as he developed new pieces. This culminated in a series of short-form documentary edits designed to give audiences genuine insight into his creative method and vision."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "gfQ0nkXKWB",
+          "children": [
+            {
+              "text": "The deliverables extended into print and interactive publishing, with two bespoke catalogues produced: one for traditional print distribution and a second optimised for touchscreen presentation."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2023",
+    "place": "Canberra, Australia",
+    "client": "Angus Comyns"
+  },
+  "blocks": [
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/Angus-Comyns-Gallery-10 - 01.jpg"
+        },
+        {
+          "src": "/images/Angus-Comyns-Gallery-8 - 01.jpg"
+        },
+        {
+          "src": "/images/Angus-Comyns-Gallery-4 - 01.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "url": "https://www.dropbox.com/scl/fi/taem2oo4j5mq24i4e08l5/Angus-Studio-Edit-compressed.mp4?rlkey=r433w5hli2iptro7zozncd4vu&dl=0",
+      "poster": "/images/Angus Studio Edit-compressed-poster.jpeg",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "_template": "widescreen_video"
+    }
+  ]
+}

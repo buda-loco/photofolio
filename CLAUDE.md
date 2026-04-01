@@ -197,17 +197,28 @@ Pills slide in on page load via CSS keyframe animation with staggered `animation
 
 ## Page transitions
 
-Custom SVG logo-window transition in `PageTransition.tsx`:
+Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 
-1. **Phase 1:** Accent-coloured SVG mask slides up from bottom, old page fades out behind it
+- **SVG mask** (z-index 9999) — accent-coloured fill with BA logo punched as transparent holes
+- **Dark backdrop** (z-index 9998) — gradient panel (transparent → darkened destination colour) for layered reveal
+- **Content** — the page itself
+
+### Transition sequence
+
+1. **Phase 1:** SVG mask slides up from bottom; dark backdrop is already positioned behind it; old page fades out
 2. **Navigate:** `router.push(href)` called; timeline **pauses** until new route mounts (prevents flash)
-3. **Phase 2a:** Mask fill shifts to destination background colour
-4. **Phase 2b:** Logo holes expand exponentially (`expo.in`, scale 200×) revealing new content
-5. **Phase 3:** Mask dissolves, cleanup
+3. **Phase 2 (simultaneous):**
+   - Mask fill shifts to destination background colour (0.35s linear)
+   - Logo holes expand exponentially (`expo.in`, scale 200×, 1.0s) — reveals dark backdrop through holes
+   - Dark backdrop sweeps down off-screen (1.8s, `power2.out`) with gradient soft edge — graceful layered reveal of new content
+4. **Phase 3:** Mask dissolves (0.12s), cleanup
 
-The `routeReady` ref/promise pattern ensures the timeline waits for React to mount the new page before revealing it through the logo holes. Safety timeout of 2s prevents deadlock.
+### Key details
 
-`TransitionLink` wraps `<a>` tags to trigger transitions. External links bypass the transition.
+- The `routeReady` ref/promise pattern ensures the timeline waits for React to mount the new page before revealing it through the logo holes. Safety timeout of 2s prevents deadlock.
+- `darkenHex()` computes the backdrop colour at 25% brightness of the destination background
+- Backdrop uses `linear-gradient(to bottom, transparent 0%, dark 35%, dark 100%)` so the leading edge fades softly
+- `TransitionLink` wraps `<a>` tags to trigger transitions. External links bypass the transition.
 
 ---
 

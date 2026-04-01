@@ -1,0 +1,27 @@
+# Benjamin Arnedo
+
+> Photographer & Cinematographer based in Brisbane, Australia.
+
+Benjamin Arnedo works at the intersection of editorial photography and narrative filmmaking. His practice spans commercial, documentary, and artistic projects, with a focus on light, motion, and the decisive moment.
+
+## Work
+
+- Portfolio: https://benjaminarnedo.com
+- About: https://benjaminarnedo.com/about
+- Process: https://benjaminarnedo.com/how-i-work
+- Contact: https://benjaminarnedo.com/contact
+
+## Projects
+
+Projects are listed at https://benjaminarnedo.com with individual pages at https://benjaminarnedo.com/work/{slug}
+
+## Contact
+
+- Email: hello@benjaminarnedo.com
+- Instagram: https://instagram.com/benjaminarnedo
+- Vimeo: https://vimeo.com/benjaminarnedo
+
+## Technical
+
+- Site: Next.js 14 static export, hosted on Vercel
+- Sitemap: https://benjaminarnedo.com/sitemap.xml

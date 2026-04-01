@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
+import { extractHex, darkenBg } from '@/lib/colors'
 
 /*
  * Logo-window page transition
@@ -42,17 +43,21 @@ import { gsap } from 'gsap'
  *         │ triggerTransition(href)
  *         ▼
  *   ┌─────────────────────────────────────────┐
- *   │ SLIDE-IN  0.55s  power2.out             │ ← mask rises from below
- *   │ FADE-OUT  0.35s  power1.in  (delayed)   │ ← old page fades out
+ *   │ SLIDE-IN   0.49s  power2.out            │ ← mask rises from below
+ *   │ BACKDROP   already at y:0% behind mask  │ ← no enter animation
+ *   │ FADE-OUT   0.32s  power1.in  (delayed)  │ ← old page fades out
  *   └──────────────┬──────────────────────────┘   simultaneously
  *                  │ onComplete: set main opacity:0, router.push(href)
  *                  ▼
- *   EXPAND   1.9s   expo.in           ← logo holes grow
- *   starts imperceptibly slow,        ← new page fades in via useEffect
- *   ends with exponential explosion   ← as holes reveal it
+ *   COLOUR + EXPAND + BACKDROP EXIT  (simultaneous)
+ *     fill shift 0.35s linear         ← mask changes to destination bg
+ *     scale 1.0s expo.in              ← logo holes grow (extreme accel)
+ *     backdrop 0.7s power4.inOut      ← dark panel sweeps down off-screen
+ *       (starts +0.25s after reveal     visible through holes briefly
+ *        so dark panel peeks through    before sweeping to reveal content)
  *                  │
  *                  ▼
- *   FADE-MASK  0.3s  power1.in        ← mask dissolves, page fully visible
+ *   FADE-MASK  0.12s  power1.in       ← mask dissolves, page fully visible
  *                  │
  *                  │ onComplete → clearProps, reset, isAnimating=false
  *                  ▼
@@ -64,13 +69,10 @@ const SCALE_FACTOR = 200               // see WHY above
 const ACCENT_FILL  = '#f4ff26'         // fallback when no target bg is provided
 
 // Resolve the fill colour for the transition mask.
-// Extracts the first hex from a potential CSS gradient string, then ensures
-// pure black never slips through (invisible against the site's black bg).
+// Pure black is remapped to near-black — it would be invisible against the site bg.
 function maskFill(bgColor?: string): string {
-  if (!bgColor) return '#1a1a1a'
-  const m = bgColor.match(/#[0-9a-f]{3,8}/i)
-  const hex = (m ? m[0] : '#1a1a1a').toLowerCase()
-  return (hex === '#000000' || hex === '#000') ? '#1a1a1a' : hex
+  const hex = bgColor ? (extractHex(bgColor) ?? '#1a1a1a') : '#1a1a1a'
+  return (hex === '#000000') ? '#1a1a1a' : hex
 }
 
 interface TransitionContextValue {
@@ -90,10 +92,11 @@ interface PageTransitionProps {
 }
 
 export default function PageTransition({ children }: PageTransitionProps) {
-  const svgRef  = useRef<SVGSVGElement>(null)
-  const pathRef = useRef<SVGPathElement>(null)
-  const router  = useRouter()
-  const pathname = usePathname()
+  const svgRef       = useRef<SVGSVGElement>(null)
+  const pathRef      = useRef<SVGPathElement>(null)
+  const panelRef     = useRef<HTMLDivElement>(null)
+  const router       = useRouter()
+  const pathname     = usePathname()
   const isAnimating  = useRef(false)
   const prevPathname = useRef(pathname)
   // Resolve when the new route mounts so the timeline can wait
@@ -121,8 +124,9 @@ export default function PageTransition({ children }: PageTransitionProps) {
     // Safety reset of mask if navigation happened outside triggerTransition
     // (back/forward button, direct link)
     if (!isAnimating.current) {
-      if (svgRef.current)  gsap.set(svgRef.current,  { opacity: 0, y: '100%' })
-      if (pathRef.current) gsap.set(pathRef.current, { scale: 1 })
+      if (svgRef.current)   gsap.set(svgRef.current,   { opacity: 0, y: '100%' })
+      if (pathRef.current)  gsap.set(pathRef.current,  { scale: 1 })
+      if (panelRef.current) gsap.set(panelRef.current, { opacity: 0, y: '0%' })
     }
   }, [pathname])
 
@@ -137,21 +141,28 @@ export default function PageTransition({ children }: PageTransitionProps) {
         return
       }
 
-      const svg  = svgRef.current
-      const path = pathRef.current
-      if (!svg || !path) {
+      const svg   = svgRef.current
+      const path  = pathRef.current
+      const panel = panelRef.current
+      if (!svg || !path || !panel) {
         isAnimating.current = false
         router.push(href)
         return
       }
 
-      gsap.killTweensOf([svg, path, '#main-content'])
-      gsap.set(svg,  { opacity: 0, y: '100%' })
-      gsap.set(path, { scale: 1, attr: { fill: ACCENT_FILL } })
+      gsap.killTweensOf([svg, path, panel, '#main-content'])
+      gsap.set(svg,   { opacity: 0, y: '100%' })
+      gsap.set(path,  { scale: 1, attr: { fill: ACCENT_FILL } })
+      const darkColor = darkenBg(maskFill(bgColor))
+      gsap.set(panel, {
+        opacity: 1,
+        y: '0%',
+        background: `linear-gradient(to bottom, transparent 0%, ${darkColor} 35%, ${darkColor} 100%)`,
+      })
 
       const tl = gsap.timeline()
 
-      // ── Phase 1: Mask slides up, old page fades out ──────────────────────
+      // ── Phase 1: Mask slides up, backdrop slides down, old page fades ───
       tl.to(svg, {
           y: '0%',
           opacity: 1,
@@ -187,21 +198,29 @@ export default function PageTransition({ children }: PageTransitionProps) {
           })
         })
 
-        // ── Phase 2a: Shift fill to destination colour ─────────────────────
+        // ── Phase 2: Colour shift + logo expand + backdrop exit ─────────────
+        .addLabel('reveal')
         .to(path, {
           attr: { fill: maskFill(bgColor) },
-          duration: 0.55,
+          duration: 0.35,
           ease: 'none',
-        })
-
-        // ── Phase 2b: Logo holes expand ────────────────────────────────────
+        }, 'reveal')
         .to(path, {
           scale: SCALE_FACTOR,
           svgOrigin: SVG_ORIGIN,
-          duration: 1.2,
+          duration: 1.0,
           ease: 'expo.in',
           force3D: true,
-        })
+        }, 'reveal')
+        // Backdrop sweeps down to reveal content — starts slightly after
+        // the logo begins expanding so it's visible through the holes first.
+        // Slow + power2.out for a graceful, decelerating exit.
+        .to(panel, {
+          y: '100%',
+          duration: 1.8,
+          ease: 'power2.out',
+          force3D: true,
+        }, 'reveal+=0.2')
 
         // ── Phase 3: Mask dissolves ────────────────────────────────────────
         .to(svg, {
@@ -209,8 +228,9 @@ export default function PageTransition({ children }: PageTransitionProps) {
           duration: 0.12,
           ease: 'power1.in',
           onComplete() {
-            gsap.set(svg,  { y: '100%' })
-            gsap.set(path, { scale: 1, attr: { fill: 'var(--color-label, #f4ff26)' } })
+            gsap.set(svg,   { y: '100%' })
+            gsap.set(path,  { scale: 1, attr: { fill: 'var(--color-label, #f4ff26)' } })
+            gsap.set(panel, { opacity: 0, y: '0%' })
             isAnimating.current = false
           },
         })
@@ -241,6 +261,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
           d="M3840,0L3840,2160L0,2160L0,0L3840,0ZM1959.883,965.802L1833.455,965.802L1833.455,1027.69L1959.883,1027.69C1976.962,1027.69 1990.827,1013.824 1990.827,996.746C1990.827,979.668 1976.962,965.802 1959.883,965.802ZM1889.62,1102.741L1920.312,1055.097L1926.975,1055.097L1957.728,1102.741L1970.1,1102.741C1990.214,1102.741 2006.545,1086.411 2006.545,1066.296C2006.545,1046.182 1990.214,1029.851 1970.1,1029.851L1833.455,1029.851L1833.455,1102.741L1889.62,1102.741ZM1833.455,1194.198L2006.348,1194.198L1975.573,1146.652L1864.3,1146.652L1833.455,1194.198ZM1865.575,1144.688L1974.302,1144.688L1920,1060.795L1865.575,1144.688Z"
         />
       </svg>
+      <div
+        ref={panelRef}
+        className="page-transition-backdrop"
+        aria-hidden="true"
+      />
       {children}
     </TransitionContext.Provider>
   )

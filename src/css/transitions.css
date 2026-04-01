@@ -17,14 +17,28 @@
      and then pixel-scales the bitmap. Let the browser re-render as vectors. */
 }
 
+/* Dark backdrop — sits between the SVG mask and page content.
+   Slides in opposite direction to the mask for a layered reveal. */
+.page-transition-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
 /* Block interaction while mask is covering the screen */
 .page-transition-mask.is-entering {
   pointer-events: auto;
 }
 
-/* Reduced motion — never show the mask at all */
+/* Reduced motion — never show the mask or backdrop */
 @media (prefers-reduced-motion: reduce) {
-  .page-transition-mask {
+  .page-transition-mask,
+  .page-transition-backdrop {
     display: none;
   }
 }

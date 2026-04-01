@@ -30,7 +30,11 @@ export default defineConfig({
         format: 'json',
         ui: {
           filename: {
-            slugify: (values: any) => values.slug || 'untitled',
+            slugify: (values: any) =>
+              (values.slug || 'untitled')
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, ''),
           },
           // router maps each document to its page URL — enables the visual
           // editing tab and live sidebar in the Tina admin
@@ -38,7 +42,7 @@ export default defineConfig({
             `/work/${document._sys.filename}`,
         },
         fields: [
-          { name: 'slug', label: 'Slug', type: 'string', required: true },
+          { name: 'slug', label: 'Slug (use hyphens, no spaces)', type: 'string', required: true },
           { name: 'title', label: 'Title', type: 'string', required: true },
           { name: 'category', label: 'Category', type: 'string' },
           { name: 'year', label: 'Year', type: 'number' },
@@ -67,7 +71,7 @@ export default defineConfig({
             ],
           },
           { name: 'gridOffset', label: 'Grid column offset', type: 'number' },
-          { name: 'hidden', label: 'Hidden from homepage', type: 'boolean' },
+          { name: 'featured', label: 'Feature in homepage', type: 'boolean' },
           { name: 'backgroundColor', label: 'Background colour', type: 'string' },
           { name: 'backgroundColorSecondary', label: 'Background colour (secondary)', type: 'string' },
           { name: 'textColor', label: 'Text colour', type: 'string' },
@@ -79,12 +83,9 @@ export default defineConfig({
             label: 'Services',
             type: 'string',
             list: true,
-            options: [
-              'Photography', 'Videography', 'Event Visuals', 'Editing',
-              'Social Media Ads', 'Animation', 'Direction', 'Creative Direction',
-              'Production', 'Post-production', 'Colour Grading',
-            ],
           },
+          { name: 'ctaLabel', label: 'CTA button label (e.g. Visit Website)', type: 'string' },
+          { name: 'ctaUrl', label: 'CTA button URL', type: 'string' },
           {
             name: 'info',
             label: 'Project info',

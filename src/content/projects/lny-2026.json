@@ -6,11 +6,12 @@
   "cover": "/images/projects/lny2026/cover.jpg",
   "coverAspect": "16/9",
   "gridSize": "large",
-  "hidden": false,
+  "featured": true,
   "backgroundColor": "#CD000C",
   "textColor": "#ffffff",
   "primaryColor": "#ffffff",
   "secondaryColor": "#CD000C",
+  "invertColors": true,
   "services": [
     "Photography",
     "Videography",
@@ -24,22 +25,34 @@
       "children": [
         {
           "type": "p",
-          "children": [
-            {
-              "type": "text",
-              "text": "Lunar new year celebrations in Dickson, Canberra. I was tasked with capturing the 12-hour event and deliver high quality images and video for all stakeholders. "
-            }
-          ],
-          "id": "9h32T868c2"
-        },
-        {
-          "type": "p",
           "id": "d-64S8Tn-C",
           "children": [
             {
               "type": "text",
               "id": "EzxwRhYsbQ",
-              "text": "I also designed and produced high-quality visuals for the LED screen on the stage along with some social media graphics to promote the lead-up for the event."
+              "text": "The Lunar New Year celebrations in Dickson represent one of Canberra's most vibrant annual cultural events. I was commissioned to serve as the lead content producer across the full 12-hour programme — responsible for comprehensive photo and video capture that would meet the expectations of multiple stakeholders across government, community, and media."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "DS4LdVG1cn",
+          "children": [
+            {
+              "type": "text",
+              "id": "OXhPkXWGPE",
+              "text": "Beyond documentation, the scope extended into visual production for the event itself. I designed and delivered bespoke motion graphics and static visuals for the main stage LED screen, ensuring the on-ground audience experience was as polished as the event's cultural significance demanded."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "jR4qZZjeDS",
+          "children": [
+            {
+              "type": "text",
+              "id": "R9noE0d3kA",
+              "text": "In the lead-up to the event, I produced a suite of social media graphics to drive awareness and build anticipation across digital channels."
             }
           ]
         }
@@ -89,10 +102,10 @@
       },
       "images": [
         {
-          "src": "/images/260221-LNY-2026-By-Buda-Performers-86.jpg"
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-206.jpg"
         },
         {
-          "src": "/images/260221-LNY-2026-By-Buda-Performers-93.jpg"
+          "src": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Performers-109.jpg"
         }
       ],
       "_template": "vertical_reel"
@@ -196,7 +209,7 @@
       "provider": "dropbox",
       "src": "https://www.dropbox.com/scl/fi/y8at5vnzdaj0k7v7wqenm/voiceover-buda.mov?rlkey=12cvjeos0y5cjjlu6a862vrht&dl=0",
       "poster": "/images/projects/lny2026/260221-LNY-2026-By-Buda-Stage-2.jpg",
-      "caption": "I usually don't do voice overs, but this particular event really inspired me to write and edit a special video.",
+      "caption": "I usually don't do voice overs, but this particular event really inspired me to write and edit a special video script for voiceovers..",
       "autoplay": true,
       "muted": true,
       "loop": true,

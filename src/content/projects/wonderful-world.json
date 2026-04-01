@@ -6,7 +6,7 @@
   "cover": "/images/projects/wonderful-world/WW_Grandpa_01.jpg",
   "coverAspect": "3/2",
   "gridSize": "large",
-  "hidden": false,
+  "featured": true,
   "backgroundColor": "#FACC40",
   "textColor": "#000000",
   "primaryColor": "#FACC40",
@@ -28,7 +28,30 @@
           "children": [
             {
               "type": "text",
-              "text": "Wonderful World is a new festival in the heart of the capital. A week full of games, music, shows and experiences for kids to enjoy with their families: all designed to encourage interaction between parents and kids. I worked together with Placemaking geniuses Dionysus and "
+              "text": "Wonderful World is a landmark new festival in the heart of Canberra — a week-long programme of games, music, live shows, and immersive experiences designed to bring families together and foster genuine connection between parents and children."
+            }
+          ],
+          "id": "SUH9ZUM6EP"
+        },
+        {
+          "type": "p",
+          "id": "EV0ATKd6AP",
+          "children": [
+            {
+              "type": "text",
+              "id": "RahUgHOZTG",
+              "text": "I joined a multidisciplinary creative team alongside placemaking specialists Dionysus and City Renewal Authority, working within an art direction and design framework established by Florez. My contribution sat at the intersection of creative production and brand expression, translating the festival's spirit into compelling visual and content assets across the campaign."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "3JoGjob2eC",
+          "children": [
+            {
+              "type": "text",
+              "id": "ZKIghix5UQ",
+              "text": "I worked together with Placemaking geniuses Dionysus and "
             },
             {
               "children": [
@@ -64,8 +87,7 @@
               "id": "uFD2VevdKb",
               "text": "."
             }
-          ],
-          "id": "SUH9ZUM6EP"
+          ]
         }
       ]
     },
