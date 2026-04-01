@@ -32,8 +32,10 @@ npm run start    # serve production build
 src/
   app/
     layout.tsx            # root layout — nav, footer, design tokens, PageTransition
-    page.tsx              # homepage grid
+    page.tsx              # homepage — 2 latest projects + hero intro
     globals.css           # imports all CSS modules
+    work/
+      page.tsx            # /work listing — bento grid + service filters
     work/[slug]/
       page.tsx            # project page (server component — metadata, schema)
       ProjectClient.tsx   # project page (client component — Tina live editing)
@@ -47,7 +49,9 @@ src/
   components/
     Nav.tsx               # fixed nav + mobile menu + scroll-triggered mini logo
     Block.tsx             # renders content blocks (hero, gallery, video, text)
-    GridItem.tsx          # homepage grid item with hover animation
+    GridItem.tsx          # project card with hover animation (used on home + /work)
+    WorkGrid.tsx          # /work bento grid with service filters + GSAP animations
+    ExternalLinkButton.tsx # reusable CTA button with external-link icon
     PageTransition.tsx    # SVG logo-window page transition mask
     TransitionLink.tsx    # <a> wrapper that triggers page transitions
     SmoothScroll.tsx      # Lenis init + onLenisReady callback pattern
@@ -75,9 +79,11 @@ src/
     project.css           # project page layout
     pages.css             # about / how-i-work / contact / footer pages
     transitions.css       # page transition mask styles
+    work.css              # /work page: bento grid, filters, latest-work section
 public/
   fonts/                  # WOFF2 font files (served statically)
   images/                 # project images
+  llms.txt                # agentic discoverability (AI crawlers)
   logo.svg                # site wordmark logo (used in desktop nav)
   logo-mini.svg           # icon logo (used in scroll mini, footer, mobile nav)
   favicon.png             # favicon
@@ -110,6 +116,9 @@ Four fonts are preloaded in `layout.tsx`: Adrianna Light, Adrianna Bold, Adriann
 Families available: `Adrianna`, `Adrianna Extended`, `Adrianna Condensed`
 Weights: Thin (100), Light (300), Regular (400), DemiBold (600), Bold (700), ExtraBold (800)
 Each has normal + italic variants.
+
+### Typography scale
+Base font size is `1rem` (16px). Body line-height `1.7`. Lead paragraph (first `<p>` in `.body-text`): `1.2rem / 1.3lh`. Secondary body: `var(--text-sm)`. Smart hyphenation + `text-wrap: pretty` applied site-wide to `.body-text p`.
 
 ---
 
@@ -181,17 +190,39 @@ Each nav item renders as a coloured pill box. The colour is computed at **build 
 
 Pills slide in on page load via CSS keyframe animation with staggered `animation-delay` using `--i` (item index).
 
+### Nav "Work" active state
+The Work pill (`href="/work"`) is marked active on `/` (homepage), `/work`, and all `/work/[slug]` project pages. `isActive` uses `pathname === '/' || pathname.startsWith('/work/')`.
+
 ---
 
-## Homepage grid
+## Homepage
 
-- 12-column CSS grid; items sized via `data-size` (large=8col, medium=6col, small=4col)
-- Optional `gridOffset` shifts the card right by N columns for asymmetry
-- **Title overlay:** Adrianna Extended Light, font-size fitted to 100% container width via JS probe measurement (`fitOneTitle` in `animations.ts`). Recalculates on resize, waits for `document.fonts.ready`.
-- **Hover animation (GSAP):**
-  1. Dark rectangle wipes up from bottom (`scaleY` 0→1, 0.32s, `power3.out`)
-  2. Words clip-reveal staggered (0.38s each, 0.045s stagger), fires 0.18s before rect finishes
-  3. Mouse leave: full timeline reverse
+The homepage (`/`) shows a **hero intro** + **2 latest projects** (sorted by year desc) under a "Latest Projects" label with a "View all work →" link to `/work`. It does not show all projects — use `/work` for the full portfolio.
+
+- Section: `.latest-work` with `.latest-work-header` (label + link) and `.latest-work-grid`
+- The 2 latest projects render as equal 6-col cards (overriding their `data-size`)
+- `getAllProjects()` is memoized — no duplicate file reads
+
+---
+
+## Work page (`/work`)
+
+The full portfolio listing at `/work` with bento-box layout and service filters.
+
+### Bento grid
+- 12-column CSS grid with `data-span` attribute for column spans (4–12)
+- 4 pre-defined column-span blueprints, randomly selected per session on mount (client-only, after hydration)
+- Blueprint randomisation uses `useState` (not `useRef`) so the re-render after mount is intentional — ensures hydration safety (SSR and client both start at blueprint 0)
+- `WorkGrid.tsx` is the client component; `work/page.tsx` is the server component that reads projects and computes services
+
+### Service filters
+- Pill buttons: "All" + all unique services collected from `projects.flatMap(p => p.services ?? [])`, deduped and sorted
+- Filter animation: GSAP fade-out current items (0.18s, `power2.in`) → state update → fade-in new items (0.5s stagger, `power3.out`)
+- `isFiltering` ref prevents concurrent animation conflicts on rapid clicks
+- GSAP tweens are cleaned up on component unmount via `useEffect` cleanup
+
+### GridItem `animated` prop
+`GridItem` accepts `animated={false}` (default `true`) to suppress `data-animate="fade-up"`. WorkGrid passes `animated={false}` because it manages all animation via GSAP directly, avoiding conflicts with `AnimationsInit`'s ScrollTrigger processing.
 
 ---
 
@@ -216,9 +247,11 @@ Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 ### Key details
 
 - The `routeReady` ref/promise pattern ensures the timeline waits for React to mount the new page before revealing it through the logo holes. Safety timeout of 2s prevents deadlock.
-- `darkenHex()` computes the backdrop colour at 25% brightness of the destination background
+- `darkenBg()` (from `colors.ts`) computes the backdrop colour at 25% brightness of the destination background
 - Backdrop uses `linear-gradient(to bottom, transparent 0%, dark 35%, dark 100%)` so the leading edge fades softly
 - `TransitionLink` wraps `<a>` tags to trigger transitions. External links bypass the transition.
+- WHY `SCALE_FACTOR = 200`: the inner A-triangle connector is only ~55 SVG units wide; the yellow counter stays on-screen until scale > 159. 200 clears all yellow off-screen on any viewport.
+- WHY animate `<path>` not `<svg>`: scaling the SVG element hits browser GPU texture limits (~16–32 Kpx) at 200×. Animating the inner path keeps the SVG at viewport size — pure SVG vector with no rasterisation limit.
 
 ---
 
@@ -226,6 +259,9 @@ Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 
 - Cover image with configurable aspect ratio
 - Project info strip: About / Date / Place / Client labels coloured via `--color-label`
+- First paragraph of About is the lead (1.2rem / 1.3lh), subsequent paragraphs use `--text-sm`
+- **Block captions** use `color-mix(in srgb, var(--color-bg) 85%, transparent)` for a dark tinted background matching the project theme
+- Optional CTA button rendered via `ExternalLinkButton` when `project.ctaUrl` + `project.ctaLabel` are set
 - Content blocks rendered by `Block.tsx`: `hero`, `gallery`, `video`, `widescreen_video`, `vertical_reel`, `text`
 - **Next project** link loops through projects sorted by year desc
 - Tina live editing supported via `useTina` hook in `ProjectClient.tsx`
@@ -236,6 +272,18 @@ Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 - `vertical_reel` — vertical video + 2 side images grid layout
 
 Boolean attributes (autoplay, muted, loop) use `!!` operator to ensure proper React boolean handling.
+
+---
+
+## ExternalLinkButton
+
+`src/components/ExternalLinkButton.tsx` — reusable CTA for projects with external links.
+
+```tsx
+<ExternalLinkButton href="https://..." label="Visit website" />
+```
+
+Renders an `<a target="_blank" rel="noopener noreferrer">` with a small SVG external-link icon. Styled via `.external-link-btn` and `.external-link-icon` in `project.css`. Shown in `ProjectClient.tsx` when the project has both `ctaUrl` and `ctaLabel` fields.
 
 ---
 
@@ -252,6 +300,8 @@ Boolean attributes (autoplay, muted, loop) use `!!` operator to ensure proper Re
 
 `AnimationsInit.tsx` is included on every page. It dynamically imports `animations.ts`, kills old ScrollTriggers, and re-initialises on each pathname change.
 
+**Note:** Do not put `data-animate` on elements inside `WorkGrid` — the bento grid manages its own GSAP animations and would conflict with ScrollTrigger processing.
+
 ---
 
 ## Smooth scroll (Lenis)
@@ -264,6 +314,19 @@ Scroll resets to top on pathname change (deferred to next animation frame to avo
 
 ---
 
+## SEO
+
+- `metadataBase: new URL('https://benjaminarnedo.com')` set in root `layout.tsx`
+- Every page has `alternates.canonical`, `openGraph` (title, description, url), and `twitter` metadata
+- Root layout has Person JSON-LD schema with `addressLocality: 'Brisbane'`
+- Project pages have CreativeWork JSON-LD with `url`, `creator`, `image`, `dateCreated`
+- `robots.ts` explicitly allows AI crawlers: GPTBot, ClaudeBot, anthropic-ai, PerplexityBot
+- `public/llms.txt` for agentic discoverability
+- `sitemap.ts` uses static dates (not `new Date()`) — project routes use the project's `year` field
+- City is **Brisbane** (not Canberra) — about.json confirms this
+
+---
+
 ## Content management (Tina CMS — local only)
 
 ```
@@ -273,7 +336,7 @@ git push      →   Vercel deploys the updated files
 ```
 
 Editable collections:
-- **Projects** — full project CRUD including colours, services, and all content blocks
+- **Projects** — full project CRUD including colours, services, CTA, and all content blocks
 - **About** — bio (rich-text), portrait, clients, social links
 - **How I Work** — steps (rich-text), CTA
 - **Design** — site-wide colours including `labelColor` (supports gradients)
@@ -283,6 +346,18 @@ Editable collections:
 
 ### Block discriminator field
 Content blocks in project JSON use `"_template"` as the discriminator key (written by Tina). The `Block.tsx` component also handles `"__typename"` from Tina's GraphQL client, normalising both to the template string. Use underscores in block names: `widescreen_video`, `vertical_reel` (not hyphens).
+
+### Slugify
+Tina's slug field normalises: lowercase, spaces → hyphens, strips non-alphanumeric. File must be named with hyphens (e.g. `angus-comyns.json`), not spaces.
+
+### Services
+Free-text field (no fixed options). `getAllProjects()` collects all unique services for the filter UI.
+
+### Featured field
+Projects with `"featured": false` are hidden from the homepage and `/work`. Projects without the field (undefined) default to shown (`featured !== false`). The `getAllProjects()` result is memoized at the module level (`_projectsCache`).
+
+### CTA fields
+`ctaLabel` and `ctaUrl` — optional. When both are set, an `ExternalLinkButton` is rendered below the project info strip.
 
 ### Build
 Production build runs `next build` only — `tinacms build` is not included because Tina Cloud is not configured. Tina is local-only.
@@ -303,8 +378,9 @@ Production build runs `next build` only — `tinacms build` is not included beca
 
 1. Create `src/content/projects/your-slug.json` (or use CMS)
 2. Add images to `public/images/projects/your-slug/`
-3. Follow the schema in `CONTENT.md`
-4. Push to `main` — Vercel deploys automatically
+3. Set `"featured": true` (or omit — defaults to shown)
+4. Use hyphenated slugs only (e.g. `my-project`, not `my project`)
+5. Push to `main` — Vercel deploys automatically
 
 ---
 
