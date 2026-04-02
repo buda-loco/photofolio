@@ -10,26 +10,28 @@ interface WorkGridProps {
   services: string[]
 }
 
-// Column-span blueprints (12-col). Randomised per visit so the grid never
-// looks the same twice — each number is the grid-column span for that slot.
-const BLUEPRINTS = [
-  [8, 4, 4, 8, 12],
-  [6, 6, 12, 5, 7],
-  [12, 4, 4, 4, 8],
-  [7, 5, 12, 6, 6],
+// Fixed repeating layout pattern (12-col grid).
+// Groups: [1 big + 2 small stacked] → [3 small] → [2 medium] → repeat
+// The big item spans 2 rows; the two smalls fill that same 2-row space beside it.
+const PATTERN = [
+  { col: 8, row: 2 },  // big — 2 rows tall
+  { col: 4, row: 1 },  // small — top-right of big
+  { col: 4, row: 1 },  // small — bottom-right of big
+  { col: 4, row: 1 },  // small ─┐
+  { col: 4, row: 1 },  // small  │ 3-small row
+  { col: 4, row: 1 },  // small ─┘
+  { col: 6, row: 1 },  // medium ─┐ 2-medium row
+  { col: 6, row: 1 },  // medium ─┘
 ]
 
 export default function WorkGrid({ projects, services }: WorkGridProps) {
   const [active, setActive] = useState('All')
   const [visible, setVisible] = useState<Project[]>(projects)
-  const [blueprint, setBlueprint] = useState<number[]>(BLUEPRINTS[0])
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
 
-  // Pick random blueprint on mount (client-only to avoid hydration mismatch)
+  // Cleanup tweens on unmount
   useEffect(() => {
-    const idx = Math.floor(Math.random() * BLUEPRINTS.length)
-    setBlueprint(BLUEPRINTS[idx])
     return () => {
       const items = gridRef.current?.querySelectorAll<HTMLElement>('.bento-item')
       if (items?.length) gsap.killTweensOf(Array.from(items))
@@ -95,15 +97,19 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
         {visible.length === 0 ? (
           <p className="bento-empty">No projects for this service.</p>
         ) : (
-          visible.map((project, i) => (
-            <div
-              key={project.slug}
-              className="bento-item"
-              data-span={blueprint[i % blueprint.length]}
-            >
-              <GridItem project={project} animated={false} priority={i < 2} />
-            </div>
-          ))
+          visible.map((project, i) => {
+            const slot = PATTERN[i % PATTERN.length]
+            return (
+              <div
+                key={project.slug}
+                className="bento-item"
+                data-span={slot.col}
+                data-row-span={slot.row}
+              >
+                <GridItem project={project} animated={false} priority={i < 2} />
+              </div>
+            )
+          })
         )}
       </div>
     </div>
