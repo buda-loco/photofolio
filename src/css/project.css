@@ -272,7 +272,7 @@
   font-family: var(--font-sans);
   font-size: var(--tb-body-size, 1rem);
   line-height: var(--tb-body-line-height, 1.85);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-text);
   opacity: 0.65;
   max-width: var(--tb-max-width, 52ch);
@@ -435,7 +435,7 @@
 .project-info-value {
   font-family: var(--font-sans);
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-text);
   letter-spacing: 0.01em;
 }
@@ -448,7 +448,7 @@
 
 .project-info-item--about .project-info-value {
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.8;
 }
 
@@ -474,6 +474,7 @@
   color: var(--project-primary, var(--color-accent, #f4ff26));
   -webkit-text-fill-color: var(--project-primary, var(--color-accent, #f4ff26));
   text-decoration: none;
+  font-weight: 700;
   padding: 0.15em 0.45em;
   border-radius: 0.25em;
   line-height: 1;

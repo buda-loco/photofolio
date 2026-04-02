@@ -52,6 +52,7 @@ export default defineConfig({
             label: 'Cover aspect ratio',
             type: 'string',
             options: [
+              { value: '21/9', label: 'Ultrawide 21:9' },
               { value: '16/9', label: 'Landscape 16:9' },
               { value: '3/2', label: 'Landscape 3:2' },
               { value: '4/3', label: 'Landscape 4:3' },
@@ -114,6 +115,7 @@ export default defineConfig({
                     label: 'Aspect ratio',
                     type: 'string',
                     options: [
+                      { value: '21/9', label: 'Ultrawide 21:9' },
                       { value: '16/9', label: 'Landscape 16:9' },
                       { value: '3/2', label: 'Landscape 3:2' },
                       { value: '4/3', label: 'Landscape 4:3' },

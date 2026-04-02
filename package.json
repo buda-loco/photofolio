@@ -10,21 +10,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@barba/core": "^2.9.7",
+    "@tinacms/cli": "^2.2.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.14",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@tinacms/cli": "^2.2.0",
-    "tinacms": "^3.7.0",
-    "gsap": "^3.12.5",
-    "lenis": "^1.1.14",
-    "@barba/core": "^2.9.7"
+    "tinacms": "^3.7.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@types/node": "^22.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.3.0"
+    "eslint-config-next": "^15.3.0",
+    "typescript": "^5.7.0"
   }
 }

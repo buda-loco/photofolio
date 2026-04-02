@@ -37,7 +37,20 @@
           "id": "xiZqSBkRD_",
           "children": [
             {
-              "text": "In collaboration with Pat Rose under the Oddjobs banner, I led a full-spectrum brand and content engagement covering every touchpoint of his creative identity. The project encompassed logo design and complete brand identity development, a custom website and integrated online store, and a professional photography suite capturing both portraiture and detailed documentation of his finished works."
+              "text": "In collaboration with "
+            },
+            {
+              "children": [
+                {
+                  "text": "Pat Rose"
+                }
+              ],
+              "type": "a",
+              "url": "https://rickrose.com.au/",
+              "id": "yt_gAkak48"
+            },
+            {
+              "text": " under the Oddjobs banner, I led a full-spectrum brand and content engagement covering every touchpoint of his creative identity. The project encompassed logo design and complete brand identity development, a custom website and integrated online store, and a professional photography suite capturing both portraiture and detailed documentation of his finished works."
             }
           ]
         },
@@ -88,6 +101,37 @@
       "muted": true,
       "loop": true,
       "_template": "widescreen_video"
+    },
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/mockup-02.jpg"
+        },
+        {
+          "src": "/images/mockup-03.jpg"
+        },
+        {
+          "src": "/images/mockup-04.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/manual.jpg",
+      "aspectRatio": "21/9",
+      "_template": "hero"
+    },
+    {
+      "images": [
+        {
+          "src": "/images/Angus-Comyns-Gallery-1.jpg"
+        },
+        {
+          "src": "/images/Angus-Comyns-Gallery-3.jpg"
+        }
+      ],
+      "_template": "gallery"
     }
   ]
 }

@@ -14,7 +14,7 @@ const tinaClientPath = existsSync(path.resolve('./tina/__generated__/client.ts')
 /** @type {import('next').NextConfig} */
 const config = {
   images: {
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
   },
   webpack(cfg) {
     cfg.resolve.alias['@tina-client'] = tinaClientPath
