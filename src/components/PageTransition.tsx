@@ -38,23 +38,22 @@ import { extractHex, darkenBg } from '@/lib/colors'
  *
  * Sequence:
  *
- *   IDLE  (mask off-screen, main at natural opacity)
+ *   IDLE  (mask off-screen, backdrop off-screen, page visible)
  *         │
  *         │ triggerTransition(href)
  *         ▼
- *   ┌─────────────────────────────────────────┐
- *   │ SLIDE-IN   0.49s  power2.out            │ ← mask rises from below
- *   │ BACKDROP   already at y:0% behind mask  │ ← no enter animation
- *   │ FADE-OUT   0.32s  power1.in  (delayed)  │ ← old page fades out
- *   └──────────────┬──────────────────────────┘   simultaneously
+ *   ┌──────────────────────────────────────────────────┐
+ *   │ SLIDE-IN   0.49s  power2.out                     │ ← mask rises
+ *   │ PAGE STAYS VISIBLE through logo holes             │
+ *   │ BACKDROP   slides up behind mask (0.35s delay)   │ ← covers page
+ *   └──────────────┬───────────────────────────────────┘
  *                  │ onComplete: set main opacity:0, router.push(href)
  *                  ▼
  *   COLOUR + EXPAND + BACKDROP EXIT  (simultaneous)
  *     fill shift 0.35s linear         ← mask changes to destination bg
  *     scale 1.0s expo.in              ← logo holes grow (extreme accel)
- *     backdrop 0.7s power4.inOut      ← dark panel sweeps down off-screen
- *       (starts +0.25s after reveal     visible through holes briefly
- *        so dark panel peeks through    before sweeping to reveal content)
+ *     backdrop 1.8s power2.out        ← dark panel sweeps down off-screen
+ *       (starts +0.2s after reveal      with gradient soft edge)
  *                  │
  *                  ▼
  *   FADE-MASK  0.12s  power1.in       ← mask dissolves, page fully visible
@@ -126,7 +125,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
     if (!isAnimating.current) {
       if (svgRef.current)   gsap.set(svgRef.current,   { opacity: 0, y: '100%' })
       if (pathRef.current)  gsap.set(pathRef.current,  { scale: 1 })
-      if (panelRef.current) gsap.set(panelRef.current, { opacity: 0, y: '0%' })
+      if (panelRef.current) gsap.set(panelRef.current, { opacity: 0, y: '100%' })
     }
   }, [pathname])
 
@@ -150,48 +149,51 @@ export default function PageTransition({ children }: PageTransitionProps) {
         return
       }
 
+      // Kill any in-flight tweens and reset all targets to idle state —
+      // prevents stale backdrop/mask if a previous transition was interrupted
       gsap.killTweensOf([svg, path, panel, '#main-content'])
       gsap.set(svg,   { opacity: 0, y: '100%' })
       gsap.set(path,  { scale: 1, attr: { fill: ACCENT_FILL } })
+      gsap.set('#main-content', { clearProps: 'opacity' })
       const darkColor = darkenBg(maskFill(bgColor))
+      // Backdrop starts off-screen BELOW — slides up behind the mask
       gsap.set(panel, {
         opacity: 1,
-        y: '0%',
+        y: '100%',
         background: `linear-gradient(to bottom, transparent 0%, ${darkColor} 35%, ${darkColor} 100%)`,
       })
 
       const tl = gsap.timeline()
 
-      // ── Phase 1: Mask slides up, backdrop slides down, old page fades ───
+      // ── Phase 1: Mask slides up; page stays visible through logo holes ──
       tl.to(svg, {
           y: '0%',
           opacity: 1,
           duration: 0.49,
           ease: 'power2.out',
-          force3D: true,
         }, 0)
-        .to('#main-content', {
-          opacity: 0,
-          duration: 0.32,
-          ease: 'power1.in',
-          overwrite: true,
-        }, 0.1)
+        // Backdrop slides up behind mask after a delay — covers the page
+        .to(panel, {
+          y: '0%',
+          duration: 0.4,
+          ease: 'power2.out',
+          force3D: true,
+        }, 0.35)
 
         // ── Navigate and wait for new route to mount ───────────────────────
         .call(() => {
+          // Page is now hidden behind mask + backdrop — safe to swap
           gsap.set('#main-content', { opacity: 0 })
 
-          // Create a promise that resolves when the pathname useEffect fires
           const routeMounted = new Promise<void>((resolve) => {
             routeReady.current = resolve
-            // Safety timeout — don't block forever if route change is instant
-            // (same-page navigation) or fails
+            // Safety: don't block forever if route mounts instantly (same-page)
+            // or the pathname useEffect never fires
             setTimeout(resolve, 2000)
           })
 
           router.push(href)
 
-          // Pause the timeline until the new route is ready
           tl.pause()
           routeMounted.then(() => {
             tl.resume()
@@ -212,9 +214,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
           ease: 'expo.in',
           force3D: true,
         }, 'reveal')
-        // Backdrop sweeps down to reveal content — starts slightly after
-        // the logo begins expanding so it's visible through the holes first.
-        // Slow + power2.out for a graceful, decelerating exit.
+        // Backdrop sweeps down to reveal new content
         .to(panel, {
           y: '100%',
           duration: 1.8,
