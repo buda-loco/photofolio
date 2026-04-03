@@ -4,7 +4,8 @@ import { useState, type CSSProperties } from 'react'
 import Image from 'next/image'
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import type { ContentBlock } from '@/lib/content'
-import { richToHtml, type RichNode as RichNodeType } from '@/lib/richText'
+import type { RichNode as RichNodeType } from '@/lib/richText'
+import RichText from '@/components/RichText'
 
 const SITE_ORIGIN = 'https://benjaminarnedo.com'
 
@@ -300,11 +301,9 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               <TinaMarkdown content={block.body as Parameters<typeof TinaMarkdown>[0]['content']} />
             </div>
           ) : (
-            <div
-              className="block-body"
-              data-animate="line-reveal"
-              dangerouslySetInnerHTML={{ __html: richToHtml(block.body as RichNodeType) }}
-            />
+            <div className="block-body" data-animate="line-reveal">
+              <RichText content={block.body as RichNodeType} />
+            </div>
           )
         )}
       </div>

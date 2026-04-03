@@ -75,3 +75,10 @@ h3, h4, h5, h6 {
 .body-text em      { font-style: italic; }
 .body-text a       { text-decoration: underline; opacity: 0.8; }
 .body-text a:hover { opacity: 1; }
+
+.richtext-img {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/2;
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { getHowIWork } from '@/lib/content'
-import { richToHtml } from '@/lib/richText'
+import RichText from '@/components/RichText'
 import TransitionLink from '@/components/TransitionLink'
 import AnimationsInit from '@/components/AnimationsInit'
 
@@ -30,11 +30,9 @@ export default function HowIWorkPage() {
         <h1 data-animate="fade-up">{data.title}</h1>
 
         {data.intro && (
-          <div
-            className="how-intro body-text"
-            data-animate="fade-up"
-            dangerouslySetInnerHTML={{ __html: richToHtml(data.intro) }}
-          />
+          <div className="how-intro body-text" data-animate="fade-up">
+            <RichText content={data.intro} />
+          </div>
         )}
 
         <div className="how-steps">
@@ -44,7 +42,7 @@ export default function HowIWorkPage() {
               <div className="step-content">
                 <h3>{step.title}</h3>
                 {step.body && (
-                  <div dangerouslySetInnerHTML={{ __html: richToHtml(step.body) }} />
+                  <div><RichText content={step.body} /></div>
                 )}
               </div>
             </div>
