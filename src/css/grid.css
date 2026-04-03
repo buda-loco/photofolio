@@ -82,7 +82,7 @@
   position: absolute;
   inset: 0;
   background: var(--project-bg, var(--color-accent, #f4ff26));
-  mix-blend-mode: multiply;
+  opacity: 0.45;
   transform: scaleY(0);
   transform-origin: bottom;
   will-change: transform;
