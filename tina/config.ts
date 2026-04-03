@@ -233,6 +233,37 @@ export default defineConfig({
                 ],
               },
               {
+                name: 'vertical_grid',
+                label: 'Vertical grid (4-up)',
+                fields: [
+                  {
+                    name: 'items',
+                    label: 'Items (up to 4)',
+                    type: 'object',
+                    list: true,
+                    fields: [
+                      {
+                        name: 'type',
+                        label: 'Type',
+                        type: 'string',
+                        options: [
+                          { value: 'image', label: 'Image' },
+                          { value: 'video', label: 'Video' },
+                        ],
+                      },
+                      { name: 'src', label: 'Image', type: 'image' },
+                      { name: 'alt', label: 'Alt text', type: 'string' },
+                      { name: 'videoUrl', label: 'Dropbox video URL', type: 'string' },
+                      { name: 'poster', label: 'Video poster image', type: 'image' },
+                      { name: 'autoplay', label: 'Autoplay video', type: 'boolean' },
+                      { name: 'muted', label: 'Muted', type: 'boolean' },
+                      { name: 'loop', label: 'Loop', type: 'boolean' },
+                    ],
+                  },
+                  { name: 'caption', label: 'Caption', type: 'string' },
+                ],
+              },
+              {
                 name: 'text',
                 label: 'Text block',
                 fields: [

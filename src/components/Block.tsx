@@ -276,6 +276,56 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
     )
   }
 
+  if (blockType === 'vertical_grid') {
+    const items = (block.items ?? []).slice(0, 4) as Array<Record<string, string>>
+    return (
+      <div
+        className="block-vertical-grid"
+        data-animate="fade-up"
+        {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
+      >
+        {items.map((item, i) => (
+          <div key={i} className="vertical-grid-item">
+            {item.type === 'video' && item.videoUrl ? (
+              <div className="vertical-grid-video">
+                <iframe
+                  src={onelinerSrc(dropboxUrl(item.videoUrl), {
+                    poster: item.poster ? absoluteUrl(item.poster) : '',
+                    autoplay: item.autoplay ? 'true' : 'false',
+                    muted: item.muted ? 'true' : 'false',
+                    loop: item.loop ? 'true' : 'false',
+                  })}
+                  title={item.alt || block.caption || 'Vertical video'}
+                  frameBorder="0"
+                  scrolling="no"
+                  allow="autoplay; fullscreen"
+                />
+              </div>
+            ) : (
+              <div className="img-container img-reveal">
+                {item.src && (
+                  <Image
+                    src={item.src}
+                    alt={item.alt ?? ''}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                    loading="lazy"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+        {block.caption && (
+          <p className="block-caption label" style={{ gridColumn: '1 / -1' }}>
+            {block.caption}
+          </p>
+        )}
+      </div>
+    )
+  }
+
   if (blockType === 'text') {
     const words = block.heading ? splitWords(block.heading) : []
     return (

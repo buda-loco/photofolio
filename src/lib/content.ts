@@ -72,6 +72,23 @@ export interface VerticalReelBlock {
   caption?: string
 }
 
+export interface VerticalGridItem {
+  type: 'image' | 'video'
+  src?: string
+  alt?: string
+  videoUrl?: string
+  poster?: string
+  autoplay?: boolean
+  muted?: boolean
+  loop?: boolean
+}
+
+export interface VerticalGridBlock {
+  _template: 'vertical_grid'
+  items?: VerticalGridItem[]
+  caption?: string
+}
+
 export interface TextBlock {
   _template: 'text'
   heading?: string
@@ -86,6 +103,7 @@ export type ContentBlock =
   | (VideoBlock & { __typename?: string })
   | (WidescreenVideoBlock & { __typename?: string })
   | (VerticalReelBlock & { __typename?: string })
+  | (VerticalGridBlock & { __typename?: string })
   | (TextBlock & { __typename?: string })
 
 export interface Project {
