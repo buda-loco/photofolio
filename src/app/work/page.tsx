@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { getAllProjects } from '@/lib/content'
 import WorkGrid from '@/components/WorkGrid'
 import AnimationsInit from '@/components/AnimationsInit'
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Work — Benjamin Arnedo',
     description: 'Selected projects — photography, cinematography and creative direction by Benjamin Arnedo.',
     url: 'https://benjaminarnedo.com/work',
+    images: [{ url: '/images/about/portrait.jpg' }],
   },
   twitter: {
     title: 'Work — Benjamin Arnedo',
@@ -31,7 +33,9 @@ export default function WorkPage() {
           Photography · Cinematography · Creative Direction
         </p>
       </div>
-      <WorkGrid projects={projects} services={services} />
+      <Suspense>
+        <WorkGrid projects={projects} services={services} />
+      </Suspense>
     </div>
   )
 }

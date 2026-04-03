@@ -10,7 +10,7 @@
   "backgroundColor": "#e85043",
   "textColor": "White",
   "primaryColor": "#029df7",
-  "secondaryColor": "black",
+  "secondaryColor": "White",
   "services": [
     "Brand Identity",
     "Photography",
@@ -95,6 +95,26 @@
       "_template": "gallery"
     },
     {
+      "src": "/images/manual.jpg",
+      "aspectRatio": "21/9",
+      "_template": "hero"
+    },
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/mockup-02a.jpg"
+        },
+        {
+          "src": "/images/mockup-03b.jpg"
+        },
+        {
+          "src": "/images/mockup-04c.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
       "url": "https://www.dropbox.com/scl/fi/taem2oo4j5mq24i4e08l5/Angus-Studio-Edit-compressed.mp4?rlkey=r433w5hli2iptro7zozncd4vu&dl=0",
       "poster": "/images/Angus Studio Edit-compressed-poster.jpeg",
       "autoplay": true,
@@ -103,32 +123,27 @@
       "_template": "widescreen_video"
     },
     {
-      "columns": "3",
-      "images": [
-        {
-          "src": "/images/mockup-02.jpg"
-        },
-        {
-          "src": "/images/mockup-03.jpg"
-        },
-        {
-          "src": "/images/mockup-04.jpg"
-        }
-      ],
-      "_template": "gallery"
-    },
-    {
-      "src": "/images/manual.jpg",
-      "aspectRatio": "21/9",
-      "_template": "hero"
-    },
-    {
       "images": [
         {
           "src": "/images/Angus-Comyns-Gallery-1.jpg"
         },
         {
           "src": "/images/Angus-Comyns-Gallery-3.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/mockup.jpg",
+      "_template": "hero"
+    },
+    {
+      "images": [
+        {
+          "src": "/images/mockup-02.jpg"
+        },
+        {
+          "src": "/images/mockup-03.jpg"
         }
       ],
       "_template": "gallery"

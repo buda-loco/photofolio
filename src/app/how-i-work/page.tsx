@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Process — Benjamin Arnedo',
     description: 'A transparent look at my creative process — how Benjamin Arnedo approaches every project.',
     url: 'https://benjaminarnedo.com/how-i-work',
+    images: [{ url: '/images/about/portrait.jpg' }],
   },
   twitter: {
     title: 'Process — Benjamin Arnedo',

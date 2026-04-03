@@ -128,7 +128,12 @@ export default function ProjectClient(props: ProjectClientProps) {
           <ul className="project-services-list" role="list">
             {(project.services as string[]).filter(Boolean).map((service: string) => (
               <li key={service}>
-                <span className="service-pill">{service}</span>
+                <TransitionLink
+                  href={`/work?service=${encodeURIComponent(service)}`}
+                  className="service-pill"
+                >
+                  {service}
+                </TransitionLink>
               </li>
             ))}
           </ul>

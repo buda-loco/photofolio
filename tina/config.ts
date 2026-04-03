@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from 'tinacms'
+import servicesData from '../src/content/services.json'
+const services: string[] = servicesData.items
 
 const branch =
   process.env.GITHUB_BRANCH ||
@@ -84,6 +86,7 @@ export default defineConfig({
             label: 'Services',
             type: 'string',
             list: true,
+            options: services.map((s: string) => ({ value: s, label: s })),
           },
           { name: 'ctaLabel', label: 'CTA button label (e.g. Visit Website)', type: 'string' },
           { name: 'ctaUrl', label: 'CTA button URL', type: 'string' },
@@ -297,6 +300,24 @@ export default defineConfig({
               { name: 'link', label: 'Link', type: 'string' },
               { name: 'label', label: 'Button label', type: 'string' },
             ],
+          },
+        ],
+      },
+
+      // ── Services ───────────────────────────────────────────────
+      {
+        name: 'services',
+        label: 'Services',
+        path: 'src/content',
+        match: { include: 'services' },
+        format: 'json',
+        fields: [
+          {
+            name: 'items',
+            label: 'Services',
+            type: 'string',
+            list: true,
+            description: 'Add or remove services here. Restart the CMS to see new options in project forms.',
           },
         ],
       },

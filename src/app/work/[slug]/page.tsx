@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { getAllProjects, getProject } from '@/lib/content'
 import { richToPlain } from '@/lib/richText'
 import { queryProject, buildTinaResult } from '@/lib/tinaClient'
@@ -48,7 +49,7 @@ export default async function ProjectPage({ params }: PageProps) {
     getProject(slug),
     queryProject(slug),
   ])
-  if (!project) throw new Error(`Project not found: ${slug}`)
+  if (!project) notFound()
 
   const tinaResult = buildTinaResult(tinaQuery, 'projects', project, `${slug}.json`)
 

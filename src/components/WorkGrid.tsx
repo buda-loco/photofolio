@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { gsap } from 'gsap'
 import GridItem from '@/components/GridItem'
 import type { Project } from '@/lib/content'
@@ -25,10 +26,27 @@ const PATTERN = [
 ]
 
 export default function WorkGrid({ projects, services }: WorkGridProps) {
-  const [active, setActive] = useState('All')
-  const [visible, setVisible] = useState<Project[]>(projects)
+  const searchParams = useSearchParams()
+  const initialService = searchParams.get('service') ?? 'All'
+  const validInitial = initialService === 'All' || services.includes(initialService)
+    ? initialService : 'All'
+
+  const [active, setActive] = useState(validInitial)
+  const [visible, setVisible] = useState<Project[]>(
+    validInitial === 'All' ? projects : projects.filter(p => p.services?.includes(validInitial))
+  )
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
+
+  // Sync filter when URL query param changes (e.g. browser back/forward)
+  useEffect(() => {
+    const param = searchParams.get('service') ?? 'All'
+    const svc = param === 'All' || services.includes(param) ? param : 'All'
+    if (svc !== active) {
+      setActive(svc)
+      setVisible(svc === 'All' ? projects : projects.filter(p => p.services?.includes(svc)))
+    }
+  }, [searchParams, services, projects, active])
 
   // Cleanup tweens on unmount
   useEffect(() => {
@@ -86,6 +104,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
           <button
             key={svc}
             className={`work-filter-btn${active === svc ? ' is-active' : ''}`}
+            aria-pressed={active === svc}
             onClick={() => filterTo(svc)}
           >
             {svc}

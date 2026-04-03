@@ -248,5 +248,3 @@ export function getHowIWork(): HowIWork {
 export function getDesign(): DesignData {
   return readJson<DesignData>(path.join(CONTENT_DIR, 'design.json'))
 }
-
-export const readDesign = getDesign

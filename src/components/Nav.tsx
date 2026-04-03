@@ -130,7 +130,7 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
     <>
       {/* Mini logo */}
       <TransitionLink href="/" className="nav-mini" aria-label="Back to home">
-        <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={35} height={35} style={{ width: 'auto' }} />
+        <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={35} height={35} style={{ width: 'auto', height: 'auto' }} />
       </TransitionLink>
 
       <nav className="site-nav" aria-label="Main navigation">
@@ -143,13 +143,12 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
             width={200}
             height={50}
             priority
-            style={{ width: 'auto' }}
           />
         </TransitionLink>
 
         {/* Mobile: centered mini logo */}
         <TransitionLink href="/" className="nav-logo-mobile" aria-label="Home">
-          <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto' }} />
+          <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto', height: 'auto' }} />
         </TransitionLink>
 
         {/* Desktop nav links */}
@@ -189,7 +188,7 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
         <div className="mobile-menu-header">
           <div className="mobile-menu-header-end" aria-hidden="true" />
           <TransitionLink href="/" className="mobile-menu-logo" aria-label="Home" onClick={closeMenu}>
-            <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto' }} />
+            <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto', height: 'auto' }} />
           </TransitionLink>
           <button
             className="mobile-menu-close"

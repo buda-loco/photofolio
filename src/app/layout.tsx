@@ -132,7 +132,7 @@ export default async function RootLayout({
           </main>
           <footer className="site-footer">
             <a href="/" className="footer-logo">
-              <img src="/logo-mini.svg" alt="Benjamin Arnedo" width={28} height={28} />
+              <img src="/logo-mini.svg" alt="Benjamin Arnedo" width={35} height={35} />
             </a>
             <p className="footer-copy">
               &copy; {new Date().getFullYear()} Benjamin Arnedo

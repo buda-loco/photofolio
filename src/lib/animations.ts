@@ -158,27 +158,6 @@ export function initGridHovers(): () => void {
   return () => cleanups.forEach(fn => fn())
 }
 
-export function initWordReveal(): void {
-  if (typeof window === 'undefined') return
-
-  gsap.utils.toArray<HTMLElement>('[data-animate="word-reveal"]').forEach(el => {
-    const words = el.querySelectorAll('.word-inner')
-    if (!words.length) return
-
-    gsap.fromTo(
-      words,
-      { y: '105%' },
-      {
-        y: '0%',
-        duration: 0.72,
-        ease: 'power3.out',
-        stagger: 0.055,
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-      }
-    )
-  })
-}
-
 export function destroyScrollAnimations(): void {
   ScrollTrigger.getAll().forEach(t => t.kill())
 }

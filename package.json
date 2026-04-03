@@ -7,10 +7,10 @@
     "cms": "tinacms dev -c 'next dev'",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "node scripts/patch-tina-media.js"
   },
   "dependencies": {
-    "@barba/core": "^2.9.7",
     "@tinacms/cli": "^2.2.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",

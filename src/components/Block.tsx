@@ -193,7 +193,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
             >
               <Image
                 src={block.poster}
-                alt=""
+                alt="Play video"
                 fill
                 sizes="100vw"
                 style={{ objectFit: 'cover' }}
