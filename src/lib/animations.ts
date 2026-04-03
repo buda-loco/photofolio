@@ -14,9 +14,9 @@ export function initScrollAnimations(): void {
 
     gsap.fromTo(
       el,
-      { opacity: 0, y: 36 },
+      { autoAlpha: 0, y: 36 },
       {
-        opacity: 1,
+        autoAlpha: 1,
         y: 0,
         duration: 0.9,
         ease: 'power2.out',
@@ -29,9 +29,9 @@ export function initScrollAnimations(): void {
   gsap.utils.toArray<HTMLElement>('[data-animate="stagger"]').forEach(el => {
     gsap.fromTo(
       el.children,
-      { opacity: 0, y: 20 },
+      { autoAlpha: 0, y: 20 },
       {
-        opacity: 1,
+        autoAlpha: 1,
         y: 0,
         duration: 0.7,
         ease: 'power2.out',
@@ -66,9 +66,9 @@ export function initScrollAnimations(): void {
 
     gsap.fromTo(
       lines,
-      { opacity: 0, y: 14 },
+      { autoAlpha: 0, y: 14 },
       {
-        opacity: 1,
+        autoAlpha: 1,
         y: 0,
         duration: 0.45,
         ease: 'power2.out',
@@ -100,10 +100,10 @@ export function initScrollAnimations(): void {
 
     gsap.fromTo(
       img,
-      { scale: 1.07, opacity: 0 },
+      { scale: 1.07, autoAlpha: 0 },
       {
         scale: 1,
-        opacity: 1,
+        autoAlpha: 1,
         duration: 1.3,
         ease: 'power2.out',
         scrollTrigger: { trigger: el, start: 'top 82%', once: true },
@@ -114,6 +114,7 @@ export function initScrollAnimations(): void {
 
 export function initGridHovers(container?: HTMLElement | null): () => void {
   if (typeof window === 'undefined') return () => {}
+  if (document.documentElement.classList.contains('reduce-motion')) return () => {}
 
   const cleanups: Array<() => void> = []
   const root = container ?? document;
@@ -172,14 +173,14 @@ export function initEntryAnimation(): void {
 
   const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
 
-  tl.fromTo('.site-nav', { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.7 }, 0)
+  tl.fromTo('.site-nav', { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0)
 
   const heroEls = document.querySelectorAll('.home-intro > *')
   if (heroEls.length) {
     tl.fromTo(
       heroEls,
-      { opacity: 0, y: 24 },
-      { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 },
+      { autoAlpha: 0, y: 24 },
+      { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1 },
       0.2
     )
   }

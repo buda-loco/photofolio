@@ -61,8 +61,8 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     if (!items?.length) return
     gsap.fromTo(
       Array.from(items),
-      { opacity: 0, y: 28 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out' }
+      { autoAlpha: 0, y: 28 },
+      { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out' }
     )
     const cleanupHovers = initGridHovers(gridRef.current)
     return () => cleanupHovers()
@@ -85,7 +85,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     }
 
     gsap.to(Array.from(items), {
-      opacity: 0,
+      autoAlpha: 0,
       y: 16,
       duration: 0.18,
       stagger: 0.025,

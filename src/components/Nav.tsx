@@ -59,12 +59,12 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
     if (mobileOpen) {
       gsap.fromTo(
         items,
-        { opacity: 0, y: 48 },
-        { opacity: 1, y: 0, duration: 0.55, stagger: 0.07, ease: 'power3.out', delay: 0.1 }
+        { autoAlpha: 0, y: 48 },
+        { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.07, ease: 'power3.out', delay: 0.1 }
       )
     } else {
       gsap.to(items, {
-        opacity: 0,
+        autoAlpha: 0,
         y: 24,
         duration: 0.28,
         stagger: 0.04,
