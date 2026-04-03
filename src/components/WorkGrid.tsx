@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
+import { initGridHovers } from '@/lib/animations'
 import GridItem from '@/components/GridItem'
 import type { Project } from '@/lib/content'
 
@@ -54,7 +55,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     }
   }, [])
 
-  // Fade-in items after visible changes
+  // Fade-in items and re-init hover effects after visible changes
   useEffect(() => {
     const items = gridRef.current?.querySelectorAll<HTMLElement>('.bento-item')
     if (!items?.length) return
@@ -63,6 +64,8 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
       { opacity: 0, y: 28 },
       { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out' }
     )
+    const cleanupHovers = initGridHovers()
+    return () => cleanupHovers()
   }, [visible])
 
   const filterTo = useCallback((service: string) => {
