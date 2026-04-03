@@ -59,18 +59,71 @@ html.lenis, html.lenis body {
 }
 ::-webkit-scrollbar { width: 0; }
 
-/* Image container — prevents layout shift */
+/* Skeleton shimmer — used as placeholder while content loads */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .img-container,
+  .cover-transition,
+  .video-container,
+  .widescreen-container,
+  .vertical-grid-video {
+    animation: none;
+  }
+}
+
+/* Image container — prevents layout shift, shimmer until image loads */
 .img-container {
   width: 100%;
   overflow: hidden;
   position: relative;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
-.img-container img {
+.img-container img,
+.img-container video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Cover and video containers get the same shimmer */
+.cover-transition,
+.video-container,
+.widescreen-container,
+.vertical-grid-video {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
 :focus-visible {
