@@ -309,7 +309,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
                     alt={item.alt ?? ''}
                     fill
                     sizes="(max-width: 640px) 50vw, 25vw"
-                    style={{ objectFit: 'cover' }}
+                    style={{ objectFit: 'contain' }}
                     loading="lazy"
                   />
                 )}
