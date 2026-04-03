@@ -64,7 +64,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
       { opacity: 0, y: 28 },
       { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out' }
     )
-    const cleanupHovers = initGridHovers()
+    const cleanupHovers = initGridHovers(gridRef.current)
     return () => cleanupHovers()
   }, [visible])
 

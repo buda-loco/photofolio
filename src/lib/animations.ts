@@ -112,12 +112,16 @@ export function initScrollAnimations(): void {
   })
 }
 
-export function initGridHovers(): () => void {
+export function initGridHovers(container?: HTMLElement | null): () => void {
   if (typeof window === 'undefined') return () => {}
 
   const cleanups: Array<() => void> = []
+  const root = container ?? document;
 
-  document.querySelectorAll<HTMLElement>('.grid-item').forEach(item => {
+  (root.querySelectorAll<HTMLElement>('.grid-item') as NodeListOf<HTMLElement>).forEach(item => {
+    // Skip bento grid items when called globally — WorkGrid manages its own hovers
+    if (!container && item.closest('.bento-grid')) return
+
     const bg = item.querySelector<HTMLElement>('.grid-item-overlay-bg')
     const words = item.querySelectorAll<HTMLElement>('.word-inner')
     if (!bg || !words.length) return
