@@ -6,6 +6,107 @@
   "cover": "/images/240614-Winter-in-the-city-Central-people-16.jpg",
   "coverAspect": "16/9",
   "backgroundColor": "#677A95",
-  "primaryColor": "#232325",
-  "services": []
+  "backgroundColorSecondary": "#BAB3AD",
+  "textColor": "#1F1F1F",
+  "primaryColor": "#FFF",
+  "secondaryColor": "#1F1F1F",
+  "invertColors": true,
+  "services": [
+    "Animation",
+    "Creative Direction",
+    "Motion Graphics",
+    "Photography",
+    "Post-production",
+    "Social Media Ads",
+    "Videography"
+  ],
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "children": [
+            {
+              "text": "Commissioned by "
+            },
+            {
+              "children": [
+                {
+                  "text": "City Renewal Authority"
+                }
+              ],
+              "type": "a",
+              "url": "https://www.act.gov.au/cityrenewal/home",
+              "id": "qOrtxgjtzb"
+            },
+            {
+              "text": " to concept and execute a fast-turnaround visual content campaign positioning Canberra as a compelling winter destination. The brief demanded end-to-end production ownership — talent coordination, location and business liaison, creative direction on set, and delivery of a complete asset library spanning photography and video."
+            }
+          ],
+          "type": "p",
+          "id": "qbrUJ16wrJ"
+        },
+        {
+          "type": "p",
+          "id": "RTQ8RsFF-N",
+          "children": [
+            {
+              "text": "The result was a suite of high-end campaign imagery and cinematic reels, produced at pace without compromising on quality, ready for deployment across the Authority's digital and promotional channels."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2024",
+    "place": "Canberra, ACT",
+    "client": "City Renewal Canberra"
+  },
+  "blocks": [
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/240614-Winter-in-the-city-other-pics-121.jpg"
+        },
+        {
+          "src": "/images/240614-Winter-in-the-city-other-pics-213.jpg"
+        },
+        {
+          "src": "/images/240614-Winter-in-the-city-other-pics-234.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "url": "https://www.dropbox.com/scl/fi/ujx0ri4ac1sn0b439q41m/winter-screen.mp4?rlkey=ky5m737146rkqam2t7tgtxm0d&dl=0",
+      "poster": "/images/winter-screen-poster.jpeg",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "aspectRatio": "4/3",
+      "_template": "widescreen_video"
+    },
+    {
+      "items": [
+        {
+          "type": "video",
+          "videoUrl": "https://www.dropbox.com/scl/fi/l8h0etjqr29axcb7jga6n/Reel-Reel-mix.mp4?rlkey=xabirz9q41xj8nup0zgxn3ijn&dl=0",
+          "poster": "/images/Reel - Reel-mix-poster.jpeg",
+          "autoplay": true,
+          "muted": true,
+          "loop": true
+        },
+        {
+          "src": "/images/Reel - Central-00.00.03.130.jpeg"
+        },
+        {
+          "src": "/images/Reel - Monster-00.00.14.511.jpeg"
+        },
+        {
+          "src": "/images/Reel - Tiger Lane-00.00.01.795.jpeg"
+        }
+      ],
+      "_template": "vertical_grid"
+    }
+  ]
 }
