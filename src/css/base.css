@@ -59,14 +59,12 @@ html.lenis, html.lenis body {
 }
 ::-webkit-scrollbar { width: 0; }
 
-/* Skeleton shimmer — used as placeholder while content loads */
+/* Shimmer — placeholder while media loads */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-/* Shimmer — shared by skeletons and media containers */
-.skeleton,
 .img-container,
 .cover-transition,
 .video-container,
@@ -82,10 +80,7 @@ html.lenis, html.lenis body {
   animation: shimmer 1.8s ease-in-out infinite;
 }
 
-.skeleton { display: inline-block; }
-
 @media (prefers-reduced-motion: reduce) {
-  .skeleton,
   .img-container,
   .cover-transition,
   .video-container,

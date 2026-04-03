@@ -148,7 +148,7 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
 
         {/* Mobile: centered mini logo */}
         <TransitionLink href="/" className="nav-logo-mobile" aria-label="Home">
-          <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto', height: 'auto' }} />
+          <Image src="/logo-mini.svg" alt="Benjamin Arnedo" width={36} height={36} style={{ width: 'auto', height: '32px' }} />
         </TransitionLink>
 
         {/* Desktop nav links */}
