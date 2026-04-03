@@ -25,9 +25,59 @@
   padding: 0 var(--page-margin) var(--sp-16);
 }
 
-/* Filters */
-.work-filters {
+/* Sidebar + grid layout */
+.work-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--sp-8);
+  align-items: start;
+}
+
+.work-main {
+  min-width: 0;
+}
+
+/* Sidebar — alphabetical service list (desktop only) */
+.work-sidebar {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--sp-4));
+}
+
+.work-sidebar-list {
   display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.work-sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 0.35em 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.work-sidebar-btn:hover {
+  color: var(--color-text);
+}
+
+.work-sidebar-btn.is-active {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+/* Pill filters — visible on mobile, hidden on desktop */
+.work-filters {
+  display: none;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: var(--sp-6);
@@ -145,8 +195,12 @@
   .bento-item[data-span="4"] { grid-column: span 6; }
   .bento-item[data-span="6"] { grid-column: span 6; }
   .bento-item[data-span="8"] { grid-column: span 12; }
-  /* Collapse row-span on tablet — stacked layout doesn't need it */
   .bento-item[data-row-span="2"] { grid-row: span 1; }
+
+  /* Hide sidebar, show pill filters */
+  .work-layout { grid-template-columns: 1fr; }
+  .work-sidebar { display: none; }
+  .work-filters { display: flex; }
 
   .latest-work-grid .grid-item { grid-column: span 12; }
 }

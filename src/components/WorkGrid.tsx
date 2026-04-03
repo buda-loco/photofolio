@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
 import GridItem from '@/components/GridItem'
 import type { Project } from '@/lib/content'
@@ -25,28 +25,26 @@ const PATTERN = [
   { col: 6, row: 1 },  // medium ─┘
 ]
 
-export default function WorkGrid({ projects, services }: WorkGridProps) {
-  const searchParams = useSearchParams()
-  const initialService = searchParams.get('service') ?? 'All'
-  const validInitial = initialService === 'All' || services.includes(initialService)
-    ? initialService : 'All'
+function getServiceParam(): string {
+  if (typeof window === 'undefined') return 'All'
+  const params = new URLSearchParams(window.location.search)
+  return params.get('service') ?? 'All'
+}
 
-  const [active, setActive] = useState(validInitial)
-  const [visible, setVisible] = useState<Project[]>(
-    validInitial === 'All' ? projects : projects.filter(p => p.services?.includes(validInitial))
-  )
+export default function WorkGrid({ projects, services }: WorkGridProps) {
+  const pathname = usePathname()
+  const [active, setActive] = useState('All')
+  const [visible, setVisible] = useState<Project[]>(projects)
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
 
-  // Sync filter when URL query param changes (e.g. browser back/forward)
+  // Read ?service= param on mount and on navigation
   useEffect(() => {
-    const param = searchParams.get('service') ?? 'All'
+    const param = getServiceParam()
     const svc = param === 'All' || services.includes(param) ? param : 'All'
-    if (svc !== active) {
-      setActive(svc)
-      setVisible(svc === 'All' ? projects : projects.filter(p => p.services?.includes(svc)))
-    }
-  }, [searchParams, services, projects, active])
+    setActive(svc)
+    setVisible(svc === 'All' ? projects : projects.filter(p => p.services?.includes(svc)))
+  }, [pathname, services, projects])
 
   // Cleanup tweens on unmount
   useEffect(() => {
@@ -99,37 +97,57 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
 
   return (
     <div className="work-section">
-      <div className="work-filters" role="group" aria-label="Filter by service">
-        {['All', ...services].map(svc => (
-          <button
-            key={svc}
-            className={`work-filter-btn${active === svc ? ' is-active' : ''}`}
-            aria-pressed={active === svc}
-            onClick={() => filterTo(svc)}
-          >
-            {svc}
-          </button>
-        ))}
-      </div>
+      <div className="work-layout">
+        <aside className="work-sidebar" role="navigation" aria-label="Filter by service">
+          <ul className="work-sidebar-list">
+            {['All', ...services].map(svc => (
+              <li key={svc}>
+                <button
+                  className={`work-sidebar-btn${active === svc ? ' is-active' : ''}`}
+                  aria-pressed={active === svc}
+                  onClick={() => filterTo(svc)}
+                >
+                  {svc}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
 
-      <div className="bento-grid" ref={gridRef}>
-        {visible.length === 0 ? (
-          <p className="bento-empty">No projects for this service.</p>
-        ) : (
-          visible.map((project, i) => {
-            const slot = PATTERN[i % PATTERN.length]
-            return (
-              <div
-                key={project.slug}
-                className="bento-item"
-                data-span={slot.col}
-                data-row-span={slot.row}
+        <div className="work-main">
+          <div className="work-filters" role="group" aria-label="Filter by service">
+            {['All', ...services].map(svc => (
+              <button
+                key={svc}
+                className={`work-filter-btn${active === svc ? ' is-active' : ''}`}
+                aria-pressed={active === svc}
+                onClick={() => filterTo(svc)}
               >
-                <GridItem project={project} animated={false} priority={i < 2} />
-              </div>
-            )
-          })
-        )}
+                {svc}
+              </button>
+            ))}
+          </div>
+
+          <div className="bento-grid" ref={gridRef}>
+            {visible.length === 0 ? (
+              <p className="bento-empty">No projects for this service.</p>
+            ) : (
+              visible.map((project, i) => {
+                const slot = PATTERN[i % PATTERN.length]
+                return (
+                  <div
+                    key={project.slug}
+                    className="bento-item"
+                    data-span={slot.col}
+                    data-row-span={slot.row}
+                  >
+                    <GridItem project={project} animated={false} priority={i < 2} />
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { getAllProjects } from '@/lib/content'
 import WorkGrid from '@/components/WorkGrid'
 import AnimationsInit from '@/components/AnimationsInit'
@@ -33,9 +32,7 @@ export default function WorkPage() {
           Photography · Cinematography · Creative Direction
         </p>
       </div>
-      <Suspense>
-        <WorkGrid projects={projects} services={services} />
-      </Suspense>
+      <WorkGrid projects={projects} services={services} />
     </div>
   )
 }
