@@ -16,8 +16,8 @@ export default function WorkLoading() {
         }}>
           {/* Sidebar skeleton */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="skeleton" style={{ width: `${60 + Math.random() * 40}%`, height: '0.75em', borderRadius: '3px' }} />
+            {[85, 60, 95, 70, 50, 80, 65, 90].map((w, i) => (
+              <span key={i} className="skeleton" style={{ width: `${w}%`, height: '0.75em', borderRadius: '3px' }} />
             ))}
           </div>
 
