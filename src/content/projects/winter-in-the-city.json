@@ -3,7 +3,7 @@
   "title": "Winter in the City",
   "category": "Campaigns",
   "year": 2024,
-  "cover": "/images/240614-Winter-in-the-city-Central-people-16.jpg",
+  "cover": "/images/projects/Winter/240614-Winter-in-the-city-Central-people-16.jpg",
   "coverAspect": "16/9",
   "backgroundColor": "#677A95",
   "backgroundColorSecondary": "#BAB3AD",
@@ -66,20 +66,20 @@
       "columns": "3",
       "images": [
         {
-          "src": "/images/240614-Winter-in-the-city-other-pics-121.jpg"
+          "src": "/images/projects/Winter/240614-Winter-in-the-city-other-pics-121.jpg"
         },
         {
-          "src": "/images/240614-Winter-in-the-city-other-pics-213.jpg"
+          "src": "/images/projects/Winter/240614-Winter-in-the-city-other-pics-213.jpg"
         },
         {
-          "src": "/images/240614-Winter-in-the-city-other-pics-234.jpg"
+          "src": "/images/projects/Winter/240614-Winter-in-the-city-other-pics-234.jpg"
         }
       ],
       "_template": "gallery"
     },
     {
       "url": "https://www.dropbox.com/scl/fi/ujx0ri4ac1sn0b439q41m/winter-screen.mp4?rlkey=ky5m737146rkqam2t7tgtxm0d&dl=0",
-      "poster": "/images/winter-screen-poster.jpeg",
+      "poster": "/images/projects/Winter/winter-screen-poster.jpeg",
       "autoplay": true,
       "muted": true,
       "loop": true,
@@ -91,19 +91,19 @@
         {
           "type": "video",
           "videoUrl": "https://www.dropbox.com/scl/fi/l8h0etjqr29axcb7jga6n/Reel-Reel-mix.mp4?rlkey=xabirz9q41xj8nup0zgxn3ijn&dl=0",
-          "poster": "/images/Reel - Reel-mix-poster.jpeg",
+          "poster": "/images/projects/Winter/Reel - Reel-mix-poster.jpeg",
           "autoplay": true,
           "muted": true,
           "loop": true
         },
         {
-          "src": "/images/Reel - Central-00.00.03.130.jpeg"
+          "src": "/images/projects/Winter/Reel - Central-00.00.03.130.jpeg"
         },
         {
-          "src": "/images/Reel - Monster-00.00.14.511.jpeg"
+          "src": "/images/projects/Winter/Reel - Monster-00.00.14.511.jpeg"
         },
         {
-          "src": "/images/Reel - Tiger Lane-00.00.01.795.jpeg"
+          "src": "/images/projects/Winter/Reel - Tiger Lane-00.00.01.795.jpeg"
         }
       ],
       "_template": "vertical_grid"

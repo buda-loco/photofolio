@@ -3,7 +3,7 @@
   "title": "Angus Comyns",
   "category": "Personal Branding",
   "year": 2023,
-  "cover": "/images/Angus-Comyns-Gallery-2.jpg",
+  "cover": "/images/projects/angus/Angus-Comyns-Gallery-2.jpg",
   "coverAspect": "16/9",
   "gridSize": "",
   "gridOffset": 0,
@@ -83,19 +83,19 @@
       "columns": "3",
       "images": [
         {
-          "src": "/images/Angus-Comyns-Gallery-10 - 01.jpg"
+          "src": "/images/projects/angus/Angus-Comyns-Gallery-10 - 01.jpg"
         },
         {
-          "src": "/images/Angus-Comyns-Gallery-8 - 01.jpg"
+          "src": "/images/projects/angus/Angus-Comyns-Gallery-8 - 01.jpg"
         },
         {
-          "src": "/images/Angus-Comyns-Gallery-4 - 01.jpg"
+          "src": "/images/projects/angus/Angus-Comyns-Gallery-4 - 01.jpg"
         }
       ],
       "_template": "gallery"
     },
     {
-      "src": "/images/manual.jpg",
+      "src": "/images/projects/angus/manual.jpg",
       "aspectRatio": "21/9",
       "_template": "hero"
     },
@@ -103,20 +103,20 @@
       "columns": "3",
       "images": [
         {
-          "src": "/images/mockup-02a.jpg"
+          "src": "/images/projects/angus/mockup-02a.jpg"
         },
         {
-          "src": "/images/mockup-03b.jpg"
+          "src": "/images/projects/angus/mockup-03b.jpg"
         },
         {
-          "src": "/images/mockup-04c.jpg"
+          "src": "/images/projects/angus/mockup-04.jpg"
         }
       ],
       "_template": "gallery"
     },
     {
       "url": "https://www.dropbox.com/scl/fi/taem2oo4j5mq24i4e08l5/Angus-Studio-Edit-compressed.mp4?rlkey=r433w5hli2iptro7zozncd4vu&dl=0",
-      "poster": "/images/Angus Studio Edit-compressed-poster.jpeg",
+      "poster": "/images/projects/angus/Angus Studio Edit-compressed-poster.jpeg",
       "autoplay": true,
       "muted": true,
       "loop": true,
@@ -125,25 +125,25 @@
     {
       "images": [
         {
-          "src": "/images/Angus-Comyns-Gallery-1.jpg"
+          "src": "/images/projects/angus/Angus-Comyns-Gallery-1.jpg"
         },
         {
-          "src": "/images/Angus-Comyns-Gallery-3.jpg"
+          "src": "/images/projects/angus/Angus-Comyns-Gallery-3.jpg"
         }
       ],
       "_template": "gallery"
     },
     {
-      "src": "/images/mockup.jpg",
+      "src": "/images/projects/angus/mockup.jpg",
       "_template": "hero"
     },
     {
       "images": [
         {
-          "src": "/images/mockup-02.jpg"
+          "src": "/images/projects/angus/mockup-02.jpg"
         },
         {
-          "src": "/images/mockup-03.jpg"
+          "src": "/images/projects/angus/mockup-03.jpg"
         }
       ],
       "_template": "gallery"

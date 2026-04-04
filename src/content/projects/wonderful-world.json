@@ -98,7 +98,7 @@
   "blocks": [
     {
       "url": "https://www.dropbox.com/scl/fi/a8w2bvra643pkm6ui1l0o/Wonderful_World_Widescreen_30s_v4.mp4?rlkey=an8u2a39m0r3bawhg0oetvw5e&dl=0",
-      "poster": "/images/Wonderful_World_Widescreen_30s_v4-screenshot.jpeg",
+      "poster": "/images/projects/wonderful-world/Wonderful_World_Widescreen_30s_v4-screenshot.jpeg",
       "autoplay": true,
       "muted": true,
       "loop": true,
@@ -123,17 +123,17 @@
     {
       "video": {
         "url": "https://www.dropbox.com/scl/fi/27s5ldkxrj7blkpkfcbxo/shopping-screens-V2-10-sec-vertical.mp4?rlkey=p83s3x0fvef7ics2xq433hete&dl=0",
-        "poster": "/images/shopping-screens-10-sec-vertical-screenshot.jpeg",
+        "poster": "/images/projects/wonderful-world/shopping-screens-10-sec-vertical-screenshot.jpeg",
         "autoplay": true,
         "muted": true,
         "loop": true
       },
       "images": [
         {
-          "src": "/images/WW_Dancing_03.jpg"
+          "src": "/images/projects/wonderful-world/WW_Dancing_03.jpg"
         },
         {
-          "src": "/images/WW_Icecream_04.jpg"
+          "src": "/images/projects/wonderful-world/WW_Icecream_04.jpg"
         }
       ],
       "_template": "vertical_reel"
@@ -158,7 +158,7 @@
     {
       "video": {
         "url": "https://www.dropbox.com/scl/fi/a185lw3qo85pjcq9dc254/shopping-screens-10-sec-vertical.mp4?rlkey=nms7hsrf29pntqcw5n4m0de15&st=fmvw4wzr&dl=0",
-        "poster": "/images/shopping-screens-10-sec-vertical-screenshot.jpeg",
+        "poster": "/images/projects/wonderful-world/shopping-screens-10-sec-vertical-screenshot.jpeg",
         "autoplay": true,
         "muted": true,
         "loop": true
