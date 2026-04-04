@@ -5,22 +5,22 @@
     {
       "number": "01",
       "title": "We talk first",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I need to understand what you're after before I touch anything. Not just the brief — the why behind it. What are you trying to make people feel? Who's it for? What's everyone else in your space doing that you want to avoid? I'll ask a lot of questions. I might go off on a tangent about a film that relates to your project. That's part of it."}]}]}
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I need to understand what you're after before I touch anything. Not just the brief, the why behind it. What are you trying to make people feel? Who's it for? What's everyone else in your space doing that you want to avoid? I'll ask a lot of questions. I might go off on a tangent about a film or a typeface that relates to your project. That's part of it."}]}]}
     },
     {
       "number": "02",
       "title": "I go down the rabbit hole",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"This is where I get a bit obsessive. Mood boards, references, strategy, ideas you definitely didn't ask for. I don't like obvious work. I want to find the thing that makes your project feel like yours, not like a template with your logo on it. I'll come back with options, and at least one of them will make you go \"I didn't expect that.\" Good."}]}]}
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"This is where I get a bit obsessive. Mood boards, references, strategy, ideas you definitely didn't ask for. I don't like obvious work. I want to find the thing that makes your project feel like yours, not like a template with your logo on it. Could be a logo, a campaign shoot, a landing page. I'll come back with options, and at least one of them will make you go \"I didn't expect that.\" Good."}]}]}
     },
     {
       "number": "03",
       "title": "We make it together",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I'm not the kind of creative who disappears into a cave and comes back with a finished thing. I like the energy of working with people. You'll be involved, you'll have access to me, and your gut feeling matters as much as mine. Best work I've ever done has been with teams where everyone's contributing, not just watching."}]}]}
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I'm not the kind of creative who disappears into a cave and comes back with a finished thing. I like the back-and-forth. You'll see work early, you'll have access to me, and your gut feeling matters as much as mine. Best work I've ever done has been with people who actually want to be in the room."}]}]}
     },
     {
       "number": "04",
       "title": "You get your stuff, on time",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Clean files, right formats, delivered when I said I would. Two rounds of revisions are included, but honestly we usually land it earlier than that because you've been part of the process the whole way through."}]}]}
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Clean files, right formats, delivered when I said I would. Print-ready artwork, final cuts, source files, whatever you need. Two rounds of revisions are included, but honestly we usually land it earlier than that because you've been part of the process the whole way through."}]}]}
     }
   ],
   "cta": {

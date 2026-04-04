@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     title: 'Work — Benjamin Arnedo',
     description: 'Selected projects — photography, cinematography and creative direction by Benjamin Arnedo.',
     url: 'https://benjaminarnedo.com/work',
-    images: [{ url: '/images/about/portrait.jpg' }],
+    images: [{ url: '/images/about/portrait.gif' }],
   },
   twitter: {
     title: 'Work — Benjamin Arnedo',
     description: 'Selected projects — photography, cinematography and creative direction by Benjamin Arnedo.',
-    images: ['/images/about/portrait.jpg'],
+    images: ['/images/about/portrait.gif'],
   },
 }
 

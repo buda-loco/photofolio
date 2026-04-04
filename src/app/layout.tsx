@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     url: 'https://benjaminarnedo.com',
     title: 'Benjamin Arnedo',
     description: 'Photographer & Cinematographer based in Brisbane',
-    images: [{ url: '/images/about/portrait.jpg' }],
+    images: [{ url: '/images/about/portrait.gif' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     site: '@buda_loco',
     title: 'Benjamin Arnedo',
     description: 'Photographer & Cinematographer based in Brisbane',
-    images: ['/images/about/portrait.jpg'],
+    images: ['/images/about/portrait.gif'],
   },
   robots: {
     index: true,
