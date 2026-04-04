@@ -1,26 +1,26 @@
 {
   "title": "How I Work",
-  "intro": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"A transparent look at my creative process and what you can expect when we collaborate."}]}]},
+  "intro": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Honest rundown of what happens when we work together."}]}]},
   "steps": [
     {
       "number": "01",
-      "title": "Discovery",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Before any camera is picked up, we talk. I want to understand not just the brief, but the intention behind it — what feeling, what story, what silence you're trying to capture. This conversation shapes everything that follows."}]}]}
+      "title": "We talk first",
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I need to understand what you're after before I touch anything. Not just the brief — the why behind it. What are you trying to make people feel? Who's it for? What's everyone else in your space doing that you want to avoid? I'll ask a lot of questions. I might go off on a tangent about a film that relates to your project. That's part of it."}]}]}
     },
     {
       "number": "02",
-      "title": "Pre-production",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Direction, mood references, location scouting, and logistics. I believe in arriving prepared so that on the day, we're free to follow what's actually happening rather than what we planned."}]}]}
+      "title": "I go down the rabbit hole",
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"This is where I get a bit obsessive. Mood boards, references, strategy, ideas you definitely didn't ask for. I don't like obvious work. I want to find the thing that makes your project feel like yours, not like a template with your logo on it. I'll come back with options, and at least one of them will make you go \"I didn't expect that.\" Good."}]}]}
     },
     {
       "number": "03",
-      "title": "Production",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"On set or in the field, I work with a small, focused team. Fewer people means more intimacy, and intimacy means better images. You'll have direct access to me throughout."}]}]}
+      "title": "We make it together",
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"I'm not the kind of creative who disappears into a cave and comes back with a finished thing. I like the energy of working with people. You'll be involved, you'll have access to me, and your gut feeling matters as much as mine. Best work I've ever done has been with teams where everyone's contributing, not just watching."}]}]}
     },
     {
       "number": "04",
-      "title": "Delivery",
-      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Edited selects delivered via private gallery within the agreed timeline. For film work, you'll receive the final export in your required format along with all master files. Two revision rounds are included in every project."}]}]}
+      "title": "You get your stuff, on time",
+      "body": {"type":"root","children":[{"type":"p","children":[{"type":"text","text":"Clean files, right formats, delivered when I said I would. Two rounds of revisions are included, but honestly we usually land it earlier than that because you've been part of the process the whole way through."}]}]}
     }
   ],
   "cta": {

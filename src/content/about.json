@@ -9,7 +9,7 @@
         "children": [
           {
             "type": "text",
-            "text": "Based in Brisbane, Benjamin Arnedo captures the intersection of light, motion, and stillness. With a background spanning editorial photography and narrative filmmaking, his work exists at the boundary between the decisive moment and the carefully composed frame."
+            "text": "Designer. Director. DJ. Twenty-three years of making things people remember."
           }
         ],
         "id": "Roi-NXYBUu"
@@ -19,10 +19,30 @@
         "children": [
           {
             "type": "text",
-            "text": "His approach is rooted in observation — finding the image that already exists within a scene rather than constructing one. Whether on set or in the field, he brings the same quiet intensity to every project."
+            "text": "Benjamin Arnedo works across graphic design, brand strategy, video, UX, and marketing — fuelled by a bicultural lens (Argentine-born, Brisbane-based), an obsessive attention to detail, and the belief that the best ideas come from the room, not just from one person in it."
           }
         ],
         "id": "5MBbUP81xj"
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "text",
+            "text": "He's led studios, taught at universities, and delivered for everyone from government agencies to startups. He brings the idea you didn't expect, then stays up late making sure it's perfect."
+          }
+        ],
+        "id": "kR3vYwT1nP"
+      },
+      {
+        "type": "p",
+        "children": [
+          {
+            "type": "text",
+            "text": "He also sings. Not badly, apparently."
+          }
+        ],
+        "id": "xQ7mLz2dWs"
       }
     ]
   },
