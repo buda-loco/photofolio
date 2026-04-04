@@ -54,6 +54,8 @@
 
 .about-image .img-container {
   aspect-ratio: 3/4;
+  background: none;
+  animation: none;
 }
 
 /* Bio paragraph hierarchy — first paragraph is the lead */
