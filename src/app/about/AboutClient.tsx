@@ -36,7 +36,7 @@ export default function AboutClient(props: AboutClientProps) {
                 alt={about.name ?? ''}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'contain' }}
                 priority
                 data-tina-field={tinaField(about, 'portrait')}
               />
