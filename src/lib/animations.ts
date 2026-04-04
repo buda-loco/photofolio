@@ -127,6 +127,8 @@ export function initGridHovers(container?: HTMLElement | null): () => void {
     const words = item.querySelectorAll<HTMLElement>('.word-inner')
     if (!bg || !words.length) return
 
+    gsap.set(bg, { scaleY: 0 })
+
     const tl = gsap.timeline({ paused: true })
 
     tl.to(bg, {

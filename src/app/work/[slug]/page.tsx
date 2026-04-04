@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const project = getProject(slug)
   if (!project) return {}
 
-  const description = project.info?.about ? richToPlain(project.info.about) : ''
+  const rawDesc = project.info?.about ? richToPlain(project.info.about) : ''
+  const description = rawDesc.length > 155 ? rawDesc.slice(0, 152) + '...' : rawDesc
   const image = project.cover
   const url = `https://benjaminarnedo.com/work/${slug}`
 

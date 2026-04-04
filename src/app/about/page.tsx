@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   twitter: {
     title: 'About — Benjamin Arnedo',
     description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+    images: ['/images/about/portrait.jpg'],
   },
 }
 

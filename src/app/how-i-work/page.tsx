@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   twitter: {
     title: 'Process — Benjamin Arnedo',
     description: 'A transparent look at my creative process — how Benjamin Arnedo approaches every project.',
+    images: ['/images/about/portrait.jpg'],
   },
 }
 
@@ -41,7 +42,7 @@ export default function HowIWorkPage() {
             <div key={step.number} className="how-step" data-animate="fade-up">
               <span className="step-number serif">{step.number}</span>
               <div className="step-content">
-                <h3>{step.title}</h3>
+                <h2>{step.title}</h2>
                 {step.body && (
                   <div><RichText content={step.body} /></div>
                 )}

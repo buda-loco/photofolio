@@ -132,6 +132,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               title={block.caption ?? 'Project video'}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              loading="lazy"
             />
           ) : block.provider === 'vimeo' ? (
             <iframe
@@ -139,6 +141,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               title={block.caption ?? 'Project video'}
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
             />
           ) : block.provider === 'onelineplayer' ? (
             <iframe
@@ -147,6 +151,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               frameBorder="0"
               scrolling="no"
               allow="autoplay; fullscreen"
+              allowFullScreen
+              loading="lazy"
             />
           ) : (
             <video
@@ -214,6 +220,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               frameBorder="0"
               scrolling="no"
               allow="autoplay; fullscreen"
+              allowFullScreen
+              loading="lazy"
             />
           )}
         </div>
@@ -247,6 +255,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
                 frameBorder="0"
                 scrolling="no"
                 allow="autoplay; fullscreen"
+                allowFullScreen
+                loading="lazy"
               />
             )}
           </div>
@@ -299,6 +309,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
                   frameBorder="0"
                   scrolling="no"
                   allow="autoplay; fullscreen"
+                  allowFullScreen
+                  loading="lazy"
                 />
               </div>
             ) : (

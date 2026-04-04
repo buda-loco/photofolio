@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   twitter: {
     title: 'Benjamin Arnedo — Photographer & Cinematographer',
     description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
+    images: ['/images/about/portrait.jpg'],
   },
 }
 
@@ -41,14 +42,14 @@ export default async function HomePage() {
 
       <section className="latest-work" aria-label="Latest projects">
         <div className="latest-work-header">
-          <span className="latest-work-title">Latest Projects</span>
+          <h2 className="latest-work-title">Latest Projects</h2>
           <TransitionLink href="/work" className="latest-work-link">
             View all work &rarr;
           </TransitionLink>
         </div>
         <div className="latest-work-grid">
           {latest.map((project, i) => (
-            <GridItem key={project.slug} project={project} priority={i === 0} />
+            <GridItem key={project.slug} project={project} priority={i < 2} />
           ))}
         </div>
       </section>

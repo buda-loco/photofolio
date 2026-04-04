@@ -167,8 +167,10 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
-  margin-right: -8px;
+  padding: 12px;
+  margin-right: -12px;
+  min-width: 44px;
+  min-height: 44px;
   pointer-events: auto;
 }
 
@@ -240,8 +242,10 @@
   cursor: pointer;
   color: var(--color-text);
   opacity: 0.6;
-  padding: 8px;
-  margin-left: -8px;
+  padding: 12px;
+  margin-left: -12px;
+  min-width: 44px;
+  min-height: 44px;
   transition: opacity 0.2s var(--ease-out);
   flex-shrink: 0;
 }

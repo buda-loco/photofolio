@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   twitter: {
     title: 'Contact — Benjamin Arnedo',
     description: "Let's work together — get in touch with Benjamin Arnedo.",
+    images: ['/images/about/portrait.jpg'],
   },
 }
 

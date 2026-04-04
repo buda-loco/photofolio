@@ -73,15 +73,43 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
     }
   }, [mobileOpen])
 
-  // Close menu on Escape
+  // Close menu on Escape + focus trap
   useEffect(() => {
+    if (!mobileOpen) return
+
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && mobileOpen) closeMenu()
+      if (e.key === 'Escape') { closeMenu(); return }
+
+      // Focus trap: cycle focus within .mobile-menu
+      if (e.key === 'Tab') {
+        const menu = document.querySelector('.mobile-menu')
+        if (!menu) return
+        const focusable = menu.querySelectorAll<HTMLElement>(
+          'a[href], button, [tabindex]:not([tabindex="-1"])'
+        )
+        if (!focusable.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
     }
+
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mobileOpen])
+
+  // Close menu on route change (browser back/forward)
+  useEffect(() => {
+    if (mobileOpen) closeMenu()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   // Scroll-hide nav
   useEffect(() => {
@@ -208,6 +236,7 @@ export default function Nav({ pillBg, pillText, menuProjects }: NavProps) {
               key={href}
               href={href}
               className="mobile-menu-item"
+              aria-current={isActive(href) ? 'page' : undefined}
               ref={(el) => { if (el) menuItemsRef.current[i] = el }}
               onClick={(e) => { e.preventDefault(); closeMenu(); triggerTransition(href) }}
             >
