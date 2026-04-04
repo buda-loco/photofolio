@@ -1,0 +1,114 @@
+{
+  "slug": "music-act",
+  "title": "Music ACT",
+  "category": "Branding",
+  "year": 2022,
+  "cover": "/images/projects/music-act/benjamin-arnedo-music-act-branding-11.jpeg.jpg",
+  "backgroundColor": "",
+  "backgroundColorSecondary": "#524884",
+  "textColor": "#E3C03D",
+  "primaryColor": "#524884",
+  "secondaryColor": "#fff",
+  "invertColors": true,
+  "services": [
+    "Animation",
+    "Brand Identity",
+    "Creative Direction",
+    "Event Visuals",
+    "Motion Graphics",
+    "Web Design"
+  ],
+  "ctaLabel": "Visit website",
+  "ctaUrl": "https://www.musicact.com.au/",
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "children": [
+            {
+              "text": "MusicACT is the ACT's peak body for contemporary music — a non-profit driving professional development, policy change, and industry growth across the Canberra region. As an institution that exists largely behind the scenes, championing artists rather than seeking the spotlight itself, the rebrand needed to reflect exactly that: present, purposeful, and quietly powerful."
+            }
+          ],
+          "type": "p",
+          "id": "BBSaO5sBIV"
+        },
+        {
+          "type": "p",
+          "id": "bi1gkrLkKQ",
+          "children": [
+            {
+              "text": "The identity is built around a single conceptual idea — soundwaves rendered entirely through line manipulation. By varying line width and rhythm, the logotype emerges from the waveform itself, making the music visible without ever depicting it literally. The subtlety is intentional. MusicACT is not the artist; it is the force that amplifies them. The mark carries that same restraint — something you feel before you fully read it."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "yj5qleHUzE",
+          "children": [
+            {
+              "text": "The identity extended across a complete design system: social media graphics, stationery, website, and the visual language for their annual awards ceremony, which recognises artists for their commitment to the craft."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2021",
+    "place": "Canberra, ACT",
+    "client": "Music ACT"
+  },
+  "blocks": [
+    {
+      "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-12.jpg",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-6.jpeg.jpg"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-8.jpeg.jpg"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-7.jpeg.jpg"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-9.jpeg.jpg"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-10.jpeg.jpg",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-2.jpg",
+          "aspectRatio": "1"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-3.jpg",
+          "aspectRatio": "1"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-5.jpg",
+          "aspectRatio": "1"
+        },
+        {
+          "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-4.jpg",
+          "aspectRatio": "1"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/music-act/benjamin-arnedo-music-act-branding-13.jpg",
+      "_template": "hero"
+    }
+  ]
+}
