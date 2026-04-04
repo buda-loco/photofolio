@@ -77,7 +77,7 @@ export default async function RootLayout({
     email: 'hello@benjaminarnedo.com',
     address: { '@type': 'PostalAddress', addressLocality: 'Brisbane', addressCountry: 'AU' },
     sameAs: [
-      'https://instagram.com/benjaminarnedo',
+      'https://instagram.com/benarnedo',
       'https://vimeo.com/benjaminarnedo',
     ],
   }
