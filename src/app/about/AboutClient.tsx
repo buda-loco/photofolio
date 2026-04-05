@@ -86,15 +86,17 @@ export default function AboutClient(props: AboutClientProps) {
           )
         })
 
-        gsap.utils.toArray<HTMLElement>('.about-cta-line').forEach(line => {
-          gsap.fromTo(line,
-            { autoAlpha: 0, y: 15 },
+        const ctaTexts = gsap.utils.toArray<HTMLElement>('.about-cta-text')
+        if (ctaTexts.length) {
+          gsap.fromTo(ctaTexts,
+            { autoAlpha: 0, y: 20 },
             {
-              autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out',
-              scrollTrigger: { trigger: line, start: 'top 85%', once: true },
+              autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out',
+              stagger: 0.15,
+              scrollTrigger: { trigger: '.about-cta-inner', start: 'top 85%', once: true },
             }
           )
-        })
+        }
 
         const underline = document.querySelector('.about-cta-underline')
         if (underline) {
@@ -102,7 +104,7 @@ export default function AboutClient(props: AboutClientProps) {
             { scaleX: 0 },
             {
               scaleX: 1, duration: 0.6, ease: 'power2.out',
-              scrollTrigger: { trigger: underline, start: 'top 85%', once: true },
+              scrollTrigger: { trigger: underline, start: 'top 88%', once: true },
             }
           )
         }
@@ -142,6 +144,7 @@ export default function AboutClient(props: AboutClientProps) {
           start: 'top top',
           end: '+=30%',
           pin: true,
+          pinSpacing: 'margin',
           scrub: true,
         },
       })
@@ -186,29 +189,30 @@ export default function AboutClient(props: AboutClientProps) {
             start: 'top top',
             end: `+=${CHUNKS.length * 50}%`,
             pin: true,
+            pinSpacing: 'margin',
             scrub: true,
           },
         })
 
         panels.forEach((panel, i) => {
-          const num = panel.querySelector('.about-chunk-num')
+          const chars = panel.querySelectorAll('.about-chunk-char')
           const ticker = panel.querySelector('.about-chunk-ticker')
           const lines = panel.querySelectorAll('.about-chunk-line')
           const offset = i * (CHUNK_DUR - OVERLAP)
 
-          // Number enters
-          if (num) {
-            masterTl.fromTo(num,
-              { autoAlpha: 0, y: 40 },
-              { autoAlpha: 1, y: -20, duration: ENTER + HOLD + EXIT },
+          // Number chars stagger in — entrance only lasts until hold starts
+          if (chars.length) {
+            masterTl.fromTo(chars,
+              { autoAlpha: 0, y: 50 },
+              { autoAlpha: 1, y: 0, duration: ENTER, stagger: 0.03 },
               offset)
           }
 
-          // Ticker drifts slowly through the whole chunk duration
+          // Ticker drifts in during entrance
           if (ticker) {
             masterTl.fromTo(ticker,
               { autoAlpha: 0, y: 40 },
-              { autoAlpha: 0.06, y: -100, duration: ENTER + HOLD + EXIT },
+              { autoAlpha: 0.06, y: -30, duration: ENTER },
               offset)
           }
 
@@ -223,9 +227,9 @@ export default function AboutClient(props: AboutClientProps) {
             autoAlpha: 0, y: -20, duration: EXIT, stagger: EXIT / (lines.length + 1),
           }, offset + ENTER + HOLD)
 
-          // Number + ticker fade out
-          if (num) {
-            masterTl.to(num, { autoAlpha: 0, duration: EXIT }, offset + ENTER + HOLD)
+          // Number chars + ticker fade out
+          if (chars.length) {
+            masterTl.to(chars, { autoAlpha: 0, y: -40, duration: EXIT, stagger: 0.01 }, offset + ENTER + HOLD)
           }
           if (ticker) {
             masterTl.to(ticker, { autoAlpha: 0, duration: EXIT }, offset + ENTER + HOLD)
@@ -246,6 +250,7 @@ export default function AboutClient(props: AboutClientProps) {
             start: 'top top',
             end: '+=250%',
             pin: true,
+            pinSpacing: 'margin',
             scrub: true,
             refreshPriority: -10,
           },
@@ -293,28 +298,29 @@ export default function AboutClient(props: AboutClientProps) {
         }
       }
 
-      // ── CTA ──
-      const ctaLines = gsap.utils.toArray<HTMLElement>('.about-cta-line')
-      if (ctaLines.length) {
-        const ctaTl = gsap.timeline({
-          scrollTrigger: { trigger: '.about-cta-inner', start: 'top 70%', once: true },
-        })
+      // ── CTA: use onEnter callback to avoid pin spacer position issues ──
+      gsap.set('.about-cta-text', { autoAlpha: 0, y: 25 })
+      gsap.set('.about-cta-underline', { scaleX: 0 })
+      gsap.set('.about-cta-link', { autoAlpha: 0, y: 12 })
 
-        ctaTl.fromTo(ctaLines,
-          { autoAlpha: 0, y: 20 },
-          { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.3 },
-          0)
-
-        ctaTl.fromTo('.about-cta-underline',
-          { scaleX: 0 },
-          { scaleX: 1, duration: 0.5, ease: 'power2.out' },
-          '-=0.1')
-
-        ctaTl.fromTo('.about-cta-link',
-          { autoAlpha: 0, y: 12 },
-          { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' },
-          '-=0.15')
-      }
+      ScrollTrigger.create({
+        trigger: '.about-scene-cta',
+        start: 'top 80%',
+        once: true,
+        refreshPriority: -20,
+        onEnter: () => {
+          const tl = gsap.timeline()
+          tl.to('.about-cta-text', {
+            autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.25,
+          }, 0)
+          tl.to('.about-cta-underline', {
+            scaleX: 1, duration: 0.6, ease: 'power2.out',
+          }, 0.6)
+          tl.to('.about-cta-link', {
+            autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out',
+          }, 0.9)
+        },
+      })
 
       // ── Clients ──
       gsap.set('.about-client-item', { autoAlpha: 0, y: 20 })
@@ -365,7 +371,11 @@ export default function AboutClient(props: AboutClientProps) {
       <section className="about-scene about-chunks-container">
         {CHUNKS.map(chunk => (
           <div key={chunk.num} className="about-chunk-panel">
-            <span className="about-chunk-num" aria-hidden="true">{chunk.num}</span>
+            <span className="about-chunk-num" aria-hidden="true">
+              {chunk.num.split('').map((char, ci) => (
+                <span key={ci} className="about-chunk-char">{char}</span>
+              ))}
+            </span>
             <span className="about-chunk-ticker" aria-hidden="true">{chunk.ticker}</span>
             <div className="about-chunk-text">
               {chunk.lines.map((line, li) => (
@@ -393,13 +403,9 @@ export default function AboutClient(props: AboutClientProps) {
       {/* CTA + Clients */}
       <section className="about-scene-cta">
         <div className="about-cta-inner">
-          <p className="about-cta-heading">
-            <span className="about-cta-line">The best way to understand what I do</span>
-            <span className="about-cta-line about-cta-line--underlined">
-              is to look at what I&rsquo;ve made.
-              <span className="about-cta-underline" aria-hidden="true" />
-            </span>
-          </p>
+          <p className="about-cta-text">The best way to understand what I do</p>
+          <p className="about-cta-text">is to look at what I&rsquo;ve made.</p>
+          <span className="about-cta-underline" aria-hidden="true" />
           <TransitionLink href="/work" className="about-cta-link">
             See the work &rarr;
           </TransitionLink>
