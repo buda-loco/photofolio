@@ -92,31 +92,6 @@ export default function ContactPage() {
               </svg>
             </TransitionLink>
           )}
-
-          {about.vimeo && (
-            <TransitionLink
-              href={about.vimeo}
-              className="nav-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Vimeo
-              {' '}
-              <svg
-                style={{ display: 'inline', verticalAlign: 'middle', opacity: 0.5 }}
-                width="11"
-                height="11"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <line x1="7" y1="17" x2="17" y2="7"/>
-                <polyline points="7 7 17 7 17 17"/>
-              </svg>
-            </TransitionLink>
-          )}
         </div>
       </div>
     </div>
