@@ -99,16 +99,44 @@
    ABOUT — Full-screen pinned scroll scenes
    ═══════════════════════════════════════════ */
 
-/* Shared scene base — full viewport pinned sections */
-.about-scene {
+/* Progress bar — fixed at bottom, fills left→right as user scrolls */
+.about-progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--color-accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* Single pinned wrapper — hero, chunks, skills stacked inside */
+.about-stage {
   position: relative;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* Shared scene base — stacked absolutely inside .about-stage on desktop */
+.about-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
+
+/* Scene stacking order — chunks text must stay above background pills */
+.about-scene-hero { z-index: 3; }
+.about-chunks-container { z-index: 2; }
+.about-scene-skills { z-index: 1; pointer-events: none; }
 
 /* ── SCENE 1: Hero ── */
 .about-scene-hero {
@@ -381,7 +409,14 @@
 
 /* ── MOBILE: no pinning, simple flow ── */
 @media (max-width: 768px) {
+  .about-stage {
+    height: auto;
+    overflow: visible;
+  }
+
   .about-scene {
+    position: relative;
+    inset: auto;
     height: auto;
     min-height: 0;
     padding: var(--sp-12) var(--page-margin);

@@ -68,9 +68,34 @@ export default function AboutClient(props: AboutClientProps) {
   const { data } = useTina(buildTinaProps(props))
   const about = data.about
   const containerRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const debugRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches
+
+    // ── DEBUG: live scroll stats ──
+    const debugEl = debugRef.current
+    const onScroll = () => {
+      if (!debugEl) return
+      const scrollY = window.scrollY
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const pct = maxScroll > 0 ? ((scrollY / maxScroll) * 100).toFixed(1) : '0'
+
+      // Find which scene is in view
+      // Determine active scene based on scroll percentage
+      const pctNum = parseFloat(pct)
+      let activeScene = '—'
+      if (pctNum < 3) activeScene = 'hero'
+      else if (pctNum < 60) activeScene = 'chunks'
+      else if (pctNum < 90) activeScene = 'skills'
+      else activeScene = 'cta'
+
+      debugEl.innerHTML =
+        `<b>${pct}%</b> · ${scrollY.toFixed(0)}px / ${maxScroll.toFixed(0)}px · <b>${activeScene}</b>`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
 
     const ctx = gsap.context(() => {
 
@@ -122,180 +147,249 @@ export default function AboutClient(props: AboutClientProps) {
         return
       }
 
-      // ═══════════════════════════════════════════
-      // DESKTOP
-      // ═══════════════════════════════════════════
+      // ═══════════════════════════════════════════════════════
+      // DESKTOP — Single pinned wrapper, one master timeline
+      // Hero → Chunks → Skills all stacked inside .about-stage
+      // so there are zero dead-scroll gaps between scenes.
+      //
+      //  timeline position:
+      //  0 ─── HERO ───|─── CHUNK 01 ─── ... ─── CHUNK 05 ───|─── SKILLS ───|
+      //                 ↑ chunks start                         ↑ skills start
+      // ═══════════════════════════════════════════════════════
 
-      // Scroll hint fades
-      gsap.to('.about-scroll-hint', {
-        autoAlpha: 0, y: -10,
+      const stage = document.querySelector('.about-stage')
+      if (!stage) return
+
+      // ── Timing budget (normalised durations within the master timeline) ──
+      const HERO_IN    = 0.02   // hero elements fade in
+      const HERO_HOLD  = 0.02   // hero visible
+      const HERO_OUT   = 0.02   // hero fades out
+
+      const CHUNK_ENTER  = 0.03
+      const CHUNK_HOLD   = 0.04
+      const CHUNK_EXIT   = 0.02
+      const CHUNK_OVERLAP = 0.015  // next chunk enters while current exits
+      const CHUNK_DUR    = CHUNK_ENTER + CHUNK_HOLD + CHUNK_EXIT
+      const CHUNKS_TOTAL = CHUNKS.length * (CHUNK_DUR - CHUNK_OVERLAP) + CHUNK_OVERLAP
+
+      const SKILL_IN   = 0.06
+      const SKILL_HOLD = 0.06
+      const SKILL_SETTLE = 0.04
+      const SKILL_PAUSE = 0.04
+      const SKILL_OUT  = 0.03
+
+      // Where each act starts on the timeline (0–1)
+      const HERO_START   = 0
+      const CHUNKS_START = HERO_IN + HERO_HOLD + HERO_OUT
+      const SKILLS_START = CHUNKS_START + CHUNKS_TOTAL
+
+      // Total scroll distance (viewport-heights)
+      const SCROLL_VH = 600
+
+      const masterTl = gsap.timeline({
         scrollTrigger: {
-          trigger: '.about-scene-hero',
+          trigger: stage,
           start: 'top top',
-          end: '+=15%',
+          end: `+=${SCROLL_VH}%`,
+          pin: true,
           scrub: true,
         },
       })
+
+      // ── Scroll hint ──
+      masterTl.to('.about-scroll-hint', {
+        autoAlpha: 0, y: -10, duration: HERO_IN,
+      }, 0)
 
       // ── HERO ──
-      const heroTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.about-scene-hero',
-          start: 'top top',
-          end: '+=30%',
-          pin: true,
-          pinSpacing: 'margin',
-          scrub: true,
-        },
-      })
+      masterTl.fromTo('.about-hero-name',
+        { autoAlpha: 0, y: 30 },
+        { autoAlpha: 1, y: 0, duration: HERO_IN }, HERO_START)
+      masterTl.fromTo('.about-hero-sub',
+        { autoAlpha: 0, y: 20 },
+        { autoAlpha: 1, y: 0, duration: HERO_IN }, HERO_START + 0.005)
+      // hold (nothing happens for HERO_HOLD)
+      masterTl.to('.about-hero-portrait', {
+        scale: 1.3, autoAlpha: 0, duration: HERO_OUT,
+      }, HERO_START + HERO_IN + HERO_HOLD)
+      masterTl.to(['.about-hero-name', '.about-hero-sub'], {
+        autoAlpha: 0, y: -20, duration: HERO_OUT,
+      }, HERO_START + HERO_IN + HERO_HOLD)
 
-      heroTl
-        .fromTo('.about-hero-name',
-          { autoAlpha: 0, y: 30 },
-          { autoAlpha: 1, y: 0, duration: 0.15 }, 0)
-        .fromTo('.about-hero-sub',
-          { autoAlpha: 0, y: 20 },
-          { autoAlpha: 1, y: 0, duration: 0.15 }, 0.05)
-        .to('.about-hero-portrait', {
-          scale: 1.3, autoAlpha: 0, duration: 0.35 }, '>')
-        .to(['.about-hero-name', '.about-hero-sub'], {
-          autoAlpha: 0, y: -20, duration: 0.25 }, '<')
-
-      // ── CHUNKS: single pinned container, crossfade between panels ──
-      // All 5 chunks are stacked (position: absolute) inside one
-      // pinned viewport. A master timeline crossfades them — the exit
-      // of chunk N overlaps with the entrance of chunk N+1.
-      const chunkContainer = document.querySelector('.about-chunks-container')
+      // ── CHUNKS ──
       const panels = gsap.utils.toArray<HTMLElement>('.about-chunk-panel')
+      panels.forEach((panel, i) => {
+        const chars = panel.querySelectorAll('.about-chunk-char')
+        const ticker = panel.querySelector('.about-chunk-ticker')
+        const lines = panel.querySelectorAll('.about-chunk-line')
+        const off = CHUNKS_START + i * (CHUNK_DUR - CHUNK_OVERLAP)
 
-      if (chunkContainer && panels.length) {
-        // Children start at autoAlpha: 0 via their fromTo immediateRender.
-        // Panels themselves stay visible — they're just transparent containers.
+        // Number chars stagger in
+        if (chars.length) {
+          masterTl.fromTo(chars,
+            { autoAlpha: 0, y: 50 },
+            { autoAlpha: 1, y: 0, duration: CHUNK_ENTER, stagger: 0.005 },
+            off)
+        }
 
-        // Per-chunk duration in the master timeline
-        const ENTER = 0.12
-        const HOLD = 0.08
-        const EXIT = 0.08
-        const OVERLAP = 0.04 // how much the next chunk's enter overlaps this chunk's exit
-        const CHUNK_DUR = ENTER + HOLD + EXIT
+        // Ticker drifts in
+        if (ticker) {
+          masterTl.fromTo(ticker,
+            { autoAlpha: 0, y: 40 },
+            { autoAlpha: 0.06, y: -30, duration: CHUNK_ENTER },
+            off)
+        }
 
-        // Total duration: 5 chunks with overlap between them
-        // Each chunk starts at: i * (CHUNK_DUR - OVERLAP)
-        const totalDur = CHUNKS.length * (CHUNK_DUR - OVERLAP) + OVERLAP
-
-        const masterTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: chunkContainer,
-            start: 'top top',
-            end: `+=${CHUNKS.length * 50}%`,
-            pin: true,
-            pinSpacing: 'margin',
-            scrub: true,
-          },
-        })
-
-        panels.forEach((panel, i) => {
-          const chars = panel.querySelectorAll('.about-chunk-char')
-          const ticker = panel.querySelector('.about-chunk-ticker')
-          const lines = panel.querySelectorAll('.about-chunk-line')
-          const offset = i * (CHUNK_DUR - OVERLAP)
-
-          // Number chars stagger in — entrance only lasts until hold starts
-          if (chars.length) {
-            masterTl.fromTo(chars,
-              { autoAlpha: 0, y: 50 },
-              { autoAlpha: 1, y: 0, duration: ENTER, stagger: 0.03 },
-              offset)
-          }
-
-          // Ticker drifts in during entrance
-          if (ticker) {
-            masterTl.fromTo(ticker,
-              { autoAlpha: 0, y: 40 },
-              { autoAlpha: 0.06, y: -30, duration: ENTER },
-              offset)
-          }
-
-          // Lines stagger in
+        // Lines stagger in slowly — line by line
+        if (lines.length) {
           masterTl.fromTo(lines,
             { autoAlpha: 0, y: 25 },
-            { autoAlpha: 1, y: 0, duration: ENTER, stagger: ENTER / (lines.length + 1) },
-            offset)
-
-          // Lines fade out (overlaps with next chunk's enter)
-          masterTl.to(lines, {
-            autoAlpha: 0, y: -20, duration: EXIT, stagger: EXIT / (lines.length + 1),
-          }, offset + ENTER + HOLD)
-
-          // Number chars + ticker fade out
-          if (chars.length) {
-            masterTl.to(chars, { autoAlpha: 0, y: -40, duration: EXIT, stagger: 0.01 }, offset + ENTER + HOLD)
-          }
-          if (ticker) {
-            masterTl.to(ticker, { autoAlpha: 0, duration: EXIT }, offset + ENTER + HOLD)
-          }
-        })
-      }
-
-      // ── SKILLS ──
-      const skillScene = document.querySelector('.about-scene-skills')
-      const pills = gsap.utils.toArray<HTMLElement>('.about-skill-pill')
-      const skillTitle = document.querySelector('.about-skills-title')
-      const skillTitleWords = gsap.utils.toArray<HTMLElement>('.about-skills-title-word')
-
-      if (skillScene && pills.length) {
-        const skillTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: skillScene,
-            start: 'top top',
-            end: '+=250%',
-            pin: true,
-            pinSpacing: 'margin',
-            scrub: true,
-            refreshPriority: -10,
-          },
-        })
-
-        skillTl.fromTo(skillTitleWords,
-          { autoAlpha: 0, y: 20 },
-          { autoAlpha: 1, y: 0, duration: 0.1, stagger: 0.03 },
-          0)
-
-        skillTl.to({}, { duration: 0.15 })
-
-        skillTl.fromTo(pills, {
-          autoAlpha: 0, scale: 0, x: 0, y: 0,
-        }, {
-          autoAlpha: 1, scale: 1,
-          x: () => gsap.utils.random(-window.innerWidth * 0.35, window.innerWidth * 0.35),
-          y: () => gsap.utils.random(-window.innerHeight * 0.3, window.innerHeight * 0.3),
-          rotation: () => gsap.utils.random(-12, 12),
-          duration: 0.15, stagger: 0.01,
-        }, '>')
-
-        skillTl.to(pills, {
-          x: () => gsap.utils.random(-window.innerWidth * 0.3, window.innerWidth * 0.3),
-          y: () => gsap.utils.random(-window.innerHeight * 0.25, window.innerHeight * 0.25),
-          rotation: () => gsap.utils.random(-6, 6),
-          duration: 0.1, stagger: 0.005,
-        }, '>')
-
-        skillTl.to(pills, {
-          x: 0, y: 0, rotation: 0, scale: 1,
-          duration: 0.1, stagger: 0.005, ease: 'power2.inOut',
-        }, '>')
-
-        skillTl.to({}, { duration: 0.15 })
-
-        skillTl.to(pills, {
-          autoAlpha: 0, scale: 0.8, y: -20,
-          duration: 0.08, stagger: 0.005,
-        }, '>')
-        if (skillTitle) {
-          skillTl.to(skillTitle, {
-            autoAlpha: 0, y: -20, duration: 0.08,
-          }, '<')
+            { autoAlpha: 1, y: 0, duration: CHUNK_ENTER, stagger: CHUNK_ENTER * 0.4, ease: 'power2.out' },
+            off)
         }
+
+        // --- Hold: text stays visible for CHUNK_HOLD ---
+
+        // Lines fade out
+        if (lines.length) {
+          masterTl.to(lines, {
+            autoAlpha: 0, y: -20, duration: CHUNK_EXIT,
+            stagger: CHUNK_EXIT / (lines.length + 1),
+          }, off + CHUNK_ENTER + CHUNK_HOLD)
+        }
+
+        // Number + ticker fade out
+        if (chars.length) {
+          masterTl.to(chars, {
+            autoAlpha: 0, y: -40, duration: CHUNK_EXIT, stagger: 0.002,
+          }, off + CHUNK_ENTER + CHUNK_HOLD)
+        }
+        if (ticker) {
+          masterTl.to(ticker, {
+            autoAlpha: 0, duration: CHUNK_EXIT,
+          }, off + CHUNK_ENTER + CHUNK_HOLD)
+        }
+      })
+
+      // ── SKILL PILLS — bubble up during chunks, reverse, then take over ──
+      //
+      //  BUBBLE_START          BUBBLE_APEX            SKILLS_START
+      //      │  pills rise ↑       │  pills fall ↓        │  burst to full
+      //      │  from below         │  back down            │  opacity + explode
+      //      │  (low opacity)      │  (slightly brighter)  │
+      //      └─────────────────────┴───────────────────────┘
+      //
+      const pills = gsap.utils.toArray<HTMLElement>('.about-skill-pill')
+      const skillTitleWords = gsap.utils.toArray<HTMLElement>('.about-skills-title-word')
+      const skillTitle = document.querySelector('.about-skills-title')
+
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      // Per-pill random lanes so they don't clump
+      const pillData = pills.map(() => ({
+        laneX: gsap.utils.random(-vw * 0.4, vw * 0.4),
+        peakY: gsap.utils.random(-vh * 0.5, -vh * 0.3),  // how high they float
+        landY: gsap.utils.random(-vh * 0.05, vh * 0.15),  // where they settle before burst
+        rot: gsap.utils.random(-10, 10),
+        rotPeak: gsap.utils.random(-15, 15),
+      }))
+
+      // Timeline positions for the bubble phases
+      const BUBBLE_START = CHUNKS_START
+      const BUBBLE_APEX  = BUBBLE_START + (SKILLS_START - BUBBLE_START) * 0.55
+      const BUBBLE_LAND  = SKILLS_START
+
+      const RISE_DUR  = BUBBLE_APEX - BUBBLE_START
+      const FALL_DUR  = BUBBLE_LAND - BUBBLE_APEX
+
+      pills.forEach((pill, i) => {
+        const staggerOff = (i / pills.length) * RISE_DUR * 0.6
+
+        // Phase A: Rise — appear from below, float up
+        masterTl.fromTo(pill,
+          {
+            autoAlpha: 0,
+            scale: 0.65,
+            x: pillData[i].laneX,
+            y: vh * 0.7,
+            rotation: pillData[i].rot,
+          },
+          {
+            autoAlpha: 0.45,
+            scale: 0.8,
+            y: pillData[i].peakY,
+            x: pillData[i].laneX + gsap.utils.random(-30, 30),
+            rotation: pillData[i].rotPeak,
+            duration: RISE_DUR,
+            ease: 'power1.out',
+          },
+          BUBBLE_START + staggerOff)
+
+        // Phase B: Fall — reverse, drift back down
+        masterTl.to(pill, {
+          autoAlpha: 0.55,
+          scale: 0.9,
+          y: pillData[i].landY,
+          x: pillData[i].laneX + gsap.utils.random(-60, 60),
+          rotation: gsap.utils.random(-6, 6),
+          duration: FALL_DUR,
+          ease: 'power1.inOut',
+        }, BUBBLE_APEX + staggerOff * 0.3)
+      })
+
+      // Phase C: Skills takeover — pills brighten and explode outward
+      let sk = SKILLS_START
+
+      // Title words
+      masterTl.fromTo(skillTitleWords,
+        { autoAlpha: 0, y: 20 },
+        { autoAlpha: 1, y: 0, duration: SKILL_IN * 0.4, stagger: 0.005 },
+        sk)
+
+      // Pills burst to full opacity + scatter wide
+      masterTl.to(pills, {
+        autoAlpha: 1,
+        scale: 1,
+        x: () => gsap.utils.random(-vw * 0.35, vw * 0.35),
+        y: () => gsap.utils.random(-vh * 0.3, vh * 0.3),
+        rotation: () => gsap.utils.random(-12, 12),
+        duration: SKILL_IN,
+        stagger: 0.002,
+      }, sk)
+
+      sk += SKILL_IN
+
+      // Pills drift
+      masterTl.to(pills, {
+        x: () => gsap.utils.random(-vw * 0.3, vw * 0.3),
+        y: () => gsap.utils.random(-vh * 0.25, vh * 0.25),
+        rotation: () => gsap.utils.random(-6, 6),
+        duration: SKILL_HOLD, stagger: 0.001,
+      }, sk)
+
+      sk += SKILL_HOLD
+
+      // Pills settle back to grid
+      masterTl.to(pills, {
+        x: 0, y: 0, rotation: 0, scale: 1,
+        duration: SKILL_SETTLE, stagger: 0.001, ease: 'power2.inOut',
+      }, sk)
+
+      sk += SKILL_SETTLE
+
+      // Pause — pills visible in grid
+      sk += SKILL_PAUSE
+
+      // Everything fades out
+      masterTl.to(pills, {
+        autoAlpha: 0, scale: 0.8, y: -20,
+        duration: SKILL_OUT, stagger: 0.001,
+      }, sk)
+      if (skillTitle) {
+        masterTl.to(skillTitle, {
+          autoAlpha: 0, y: -20, duration: SKILL_OUT,
+        }, sk)
       }
 
       // ── CTA: use onEnter callback to avoid pin spacer position issues ──
@@ -333,72 +427,110 @@ export default function AboutClient(props: AboutClientProps) {
         })
       })
 
+      // ── Progress bar — placed last so all pins are registered ──
+      if (progressRef.current) {
+        const bar = progressRef.current
+        gsap.fromTo(bar,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: document.body,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: true,
+              refreshPriority: -100,
+              onUpdate: (self) => {
+                // Once full, slide out to bottom
+                if (self.progress >= 0.99) {
+                  gsap.to(bar, { y: 20, autoAlpha: 0, duration: 0.4, ease: 'power2.in', overwrite: true })
+                } else if (self.progress < 0.99) {
+                  gsap.set(bar, { y: 0, autoAlpha: 1, overwrite: true })
+                }
+              },
+            },
+          }
+        )
+      }
+
     }, containerRef)
 
-    return () => ctx.revert()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      ctx.revert()
+    }
   }, [])
 
   return (
     <div className="page about-page" ref={containerRef}>
+      <div className="about-progress" ref={progressRef} aria-hidden="true" />
+      {/* Debug overlay — uncomment to re-enable scroll stats
+      <div ref={debugRef} style={{
+        position: 'fixed', bottom: 12, right: 12, zIndex: 99999,
+        background: 'rgba(0,0,0,0.85)', color: '#f4ff26', padding: '6px 12px',
+        borderRadius: 6, fontSize: 13, fontFamily: 'monospace', pointerEvents: 'none',
+      }} />
+      */}
 
-      {/* SCENE 1: Hero */}
-      <section className="about-scene about-scene-hero">
-        <div className="about-hero-portrait">
-          {about.portrait && (
-            <Image
-              src={about.portrait}
-              alt={about.name ?? 'Benjamin Arnedo'}
-              width={420}
-              height={560}
-              style={{ width: 'auto', height: 'auto' }}
-              priority
-              unoptimized
-              data-tina-field={tinaField(about, 'portrait')}
-            />
-          )}
-        </div>
-        <div className="about-hero-text">
-          <h1 className="about-hero-name">{about.name ?? 'Benjamin Arnedo'}</h1>
-          <p className="about-hero-sub">Creative Director</p>
-        </div>
-        <div className="about-scroll-hint" aria-hidden="true">
-          <span className="about-scroll-hint-text">Scroll</span>
-          <span className="about-scroll-hint-line" />
-        </div>
-      </section>
-
-      {/* CHUNKS: all stacked in one pinned container for crossfade */}
-      <section className="about-scene about-chunks-container">
-        {CHUNKS.map(chunk => (
-          <div key={chunk.num} className="about-chunk-panel">
-            <span className="about-chunk-num" aria-hidden="true">
-              {chunk.num.split('').map((char, ci) => (
-                <span key={ci} className="about-chunk-char">{char}</span>
-              ))}
-            </span>
-            <span className="about-chunk-ticker" aria-hidden="true">{chunk.ticker}</span>
-            <div className="about-chunk-text">
-              {chunk.lines.map((line, li) => (
-                <p key={li} className="about-chunk-line">{line}</p>
-              ))}
-            </div>
+      {/* Single pinned stage — hero, chunks, skills all stacked */}
+      <div className="about-stage">
+        <section className="about-scene about-scene-hero">
+          <div className="about-hero-portrait">
+            {about.portrait && (
+              <Image
+                src={about.portrait}
+                alt={about.name ?? 'Benjamin Arnedo'}
+                width={420}
+                height={560}
+                style={{ width: 'auto', height: 'auto' }}
+                priority
+                unoptimized
+                data-tina-field={tinaField(about, 'portrait')}
+              />
+            )}
           </div>
-        ))}
-      </section>
+          <div className="about-hero-text">
+            <h1 className="about-hero-name">{about.name ?? 'Benjamin Arnedo'}</h1>
+            <p className="about-hero-sub">Creative Director</p>
+          </div>
+          <div className="about-scroll-hint" aria-hidden="true">
+            <span className="about-scroll-hint-text">Scroll</span>
+            <span className="about-scroll-hint-line" />
+          </div>
+        </section>
 
-      {/* SKILLS */}
-      <section className="about-scene about-scene-skills">
-        <p className="about-skills-title">
-          {'This is all I can do for your brand'.split(' ').map((word, i) => (
-            <span key={i} className="about-skills-title-word">{word}{' '}</span>
+        <section className="about-scene about-chunks-container">
+          {CHUNKS.map(chunk => (
+            <div key={chunk.num} className="about-chunk-panel">
+              <span className="about-chunk-num" aria-hidden="true">
+                {chunk.num.split('').map((char, ci) => (
+                  <span key={ci} className="about-chunk-char">{char}</span>
+                ))}
+              </span>
+              <span className="about-chunk-ticker" aria-hidden="true">{chunk.ticker}</span>
+              <div className="about-chunk-text">
+                {chunk.lines.map((line, li) => (
+                  <p key={li} className="about-chunk-line">{line}</p>
+                ))}
+              </div>
+            </div>
           ))}
-        </p>
-        <div className="about-skills-wrap">
-          {SKILLS.map(skill => (
-            <span key={skill} className="about-skill-pill">{skill}</span>
-          ))}
-        </div>
-      </section>
+        </section>
+
+        <section className="about-scene about-scene-skills">
+          <p className="about-skills-title">
+            {'This is all I can do for your brand'.split(' ').map((word, i) => (
+              <span key={i} className="about-skills-title-word">{word}{' '}</span>
+            ))}
+          </p>
+          <div className="about-skills-wrap">
+            {SKILLS.map(skill => (
+              <span key={skill} className="about-skill-pill">{skill}</span>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* CTA + Clients */}
       <section className="about-scene-cta">

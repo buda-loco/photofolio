@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { gsap } from 'gsap'
 import { initGridHovers } from '@/lib/animations'
 import GridItem from '@/components/GridItem'
@@ -26,26 +26,21 @@ const PATTERN = [
   { col: 6, row: 1 },  // medium ─┘
 ]
 
-function getServiceParam(): string {
-  if (typeof window === 'undefined') return 'All'
-  const params = new URLSearchParams(window.location.search)
-  return params.get('service') ?? 'All'
-}
-
 export default function WorkGrid({ projects, services }: WorkGridProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [active, setActive] = useState('All')
   const [visible, setVisible] = useState<Project[]>(projects)
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
 
-  // Read ?service= param on mount and on navigation
+  // Read ?service= param on mount and on navigation (including query changes)
   useEffect(() => {
-    const param = getServiceParam()
+    const param = searchParams.get('service') ?? 'All'
     const svc = param === 'All' || services.includes(param) ? param : 'All'
     setActive(svc)
     setVisible(svc === 'All' ? projects : projects.filter(p => p.services?.includes(svc)))
-  }, [pathname, services, projects])
+  }, [pathname, searchParams, services, projects])
 
   // Cleanup tweens on unmount
   useEffect(() => {
