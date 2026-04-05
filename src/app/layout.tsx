@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
 import { getDesign, getAllProjects } from '@/lib/content'
 import { buildDesignCss } from '@/lib/colors'
-import dynamic from 'next/dynamic'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Nav from '@/components/Nav'
 import PageTransition from '@/components/PageTransition'
 import { computeBasePill } from '@/lib/colors'
 
-const SmoothScroll = dynamic(() => import('@/components/SmoothScroll'), { ssr: false })
+import SmoothScroll from '@/components/SmoothScroll'
 import './globals.css'
 
 export const metadata: Metadata = {

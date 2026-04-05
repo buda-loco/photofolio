@@ -154,9 +154,9 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               allowFullScreen
               loading="lazy"
             />
-          ) : (
+          ) : videoSrc ? (
             <video
-              src={dropboxUrl(videoSrc ?? '')}
+              src={dropboxUrl(videoSrc)}
               poster={block.poster ?? undefined}
               controls
               playsInline
@@ -165,7 +165,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
               muted={!!block.muted}
               loop={!!block.loop}
             />
-          )}
+          ) : null}
         </div>
         {block.caption && <p className="block-caption label">{block.caption}</p>}
       </div>

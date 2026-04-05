@@ -6,7 +6,7 @@ import { queryProject, buildTinaResult } from '@/lib/tinaClient'
 import ProjectClient from './ProjectClient'
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -15,7 +15,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slug = decodeURIComponent(params.slug)
+  const { slug: rawSlug } = await params
+  const slug = decodeURIComponent(rawSlug)
   const project = getProject(slug)
   if (!project) return {}
 
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProjectPage({ params }: PageProps) {
-  const slug = decodeURIComponent(params.slug)
+  const { slug: rawSlug } = await params
+  const slug = decodeURIComponent(rawSlug)
 
   const [project, tinaQuery] = await Promise.all([
     getProject(slug),
