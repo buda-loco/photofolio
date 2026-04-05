@@ -1,0 +1,94 @@
+{
+  "slug": "qldneurostimulation",
+  "title": "Queensland Neuro Stimulation",
+  "category": "Digital Design",
+  "year": 2023,
+  "cover": "/images/projects/qldneurostimulation/medical-desktop-mockup-clean.jpg",
+  "coverAspect": "16/9",
+  "backgroundColor": "#A0B9F2",
+  "textColor": "#363f51",
+  "primaryColor": "white",
+  "secondaryColor": "#363f51",
+  "invertColors": false,
+  "services": [
+    "Web Design",
+    "UX/UI"
+  ],
+  "ctaLabel": "Visit website",
+  "ctaUrl": "https://qldneurostimulation.com.au/",
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "children": [
+            {
+              "text": "Queensland Neurostimulation Centre is a Brisbane-based mental health institution specialising in neurostimulation therapies including Transcranial Magnetic Stimulation (TMS). Founded in 2021, they've grown into a leading research and treatment centre, expanding from a focus on treatment-resistant depression to a broader range of mental health conditions."
+            }
+          ],
+          "type": "p",
+          "id": "T9AmI7v7C5"
+        },
+        {
+          "type": "p",
+          "id": "GyCZZnXii4",
+          "children": [
+            {
+              "text": "Working alongside Pat Rose at Oddjobs for Spoutlogic, we took a set of basic mockups and built out a complete, multi-page website on Elementor, developing a custom template system that could scale across the full site."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "IPpf_ay8vF",
+          "children": [
+            {
+              "text": "The result is a fast, responsive and accessible digital presence befitting a serious healthcare institution."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2023",
+    "place": "Brisbane, Australia",
+    "client": "Sprout Logic"
+  },
+  "blocks": [
+    {
+      "images": [
+        {
+          "src": "/images/projects/qldneurostimulation/qldneurostimulation-mockup-01.png",
+          "aspectRatio": "1"
+        },
+        {
+          "src": "/images/projects/qldneurostimulation/qldneurostimulation - Screen-cap-01.jpg",
+          "alt": "",
+          "aspectRatio": "1"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "provider": "dropbox",
+      "src": "https://www.dropbox.com/scl/fi/wh8z1psp486x52uoke68a/animated-mockup.mp4?rlkey=g5i7t2o51apviaeihnjlx3vcy&dl=0",
+      "poster": "/images/projects/qldneurostimulation/animated-mockup.jpeg",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "_template": "video"
+    },
+    {
+      "images": [
+        {
+          "src": "/images/projects/qldneurostimulation/qldneurostimulation-Screen-cap-04.jpg",
+          "aspectRatio": "1"
+        },
+        {
+          "src": "/images/projects/qldneurostimulation/qldneurostimulation-Screen-cap-03.jpg",
+          "aspectRatio": "1"
+        }
+      ],
+      "_template": "gallery"
+    }
+  ]
+}
