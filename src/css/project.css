@@ -398,25 +398,6 @@
   margin: 0;
 }
 
-.service-pill {
-  display: inline-block;
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.45em 0.9em;
-  background: var(--project-secondary, var(--pill-base-bg, #f4ff26));
-  color: var(--project-primary, var(--pill-base-text, #000000));
-  -webkit-text-fill-color: var(--project-primary, var(--pill-base-text, #000000));
-  line-height: 1;
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-}
-
-.service-pill:hover {
-  opacity: 0.75;
-  transform: translateY(-1px);
-}
 
 /* Project info section */
 .project-info {

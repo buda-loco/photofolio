@@ -12,7 +12,6 @@
   /* Typography */
   --font-sans: 'Adrianna', system-ui, -apple-system, sans-serif;
   --font-display: 'Adrianna Extended', system-ui, sans-serif;
-  --font-serif: var(--font-display);
 
   /* Fluid type scale */
   --text-xs:   clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);

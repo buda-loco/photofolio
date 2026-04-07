@@ -40,29 +40,21 @@
 }
 
 .grid-item img {
-  transition: transform 0.9s var(--ease-out), filter 0.5s var(--ease-out);
+  transition: transform 0.9s var(--ease-out);
 }
 
 .grid-item:hover img {
   transform: scale(1.04);
-  filter: grayscale(1);
 }
 
-/* Blur lives on the img-container so it can transition independently */
-.grid-item .img-container::after {
-  content: '';
+/* Dark gradient scrim for text readability — animated by GSAP */
+.grid-item-scrim {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
-  transition: backdrop-filter 1.6s var(--ease-out);
-  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 70%);
+  opacity: 0;
   z-index: 1;
-}
-
-.grid-item:hover .img-container::after {
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  pointer-events: none;
 }
 
 /* Title overlay */
@@ -77,12 +69,14 @@
   z-index: 2;
 }
 
-/* Rectangle — animates up from bottom via GSAP */
+/* Colour overlay — animates up from bottom via GSAP.
+   Opacity controls how much the project colour tints the image.
+   scaleY reveals it from bottom. Both managed by CSS initial state + GSAP. */
 .grid-item-overlay-bg {
   position: absolute;
   inset: 0;
   background: var(--project-bg, var(--color-accent, #f4ff26));
-  mix-blend-mode: color;
+  opacity: 0.55;
   transform: scaleY(0);
   transform-origin: bottom;
   will-change: transform;
@@ -129,6 +123,15 @@
   transform: translateY(110%);
   will-change: transform;
 }
+
+/* Service tags */
+.grid-item-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+}
+
 
 /* Responsive */
 @media (max-width: 1024px) {

@@ -18,17 +18,22 @@
   gap: var(--sp-4);
 }
 
-.home-intro-pitch {
+.home-intro-pitch,
+.home-intro-pitch-accent {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 0.5;
   letter-spacing: -0.015em;
+}
+
+.home-intro-pitch-accent {
+  color: var(--color-accent);
 }
 
 .home-intro-pitch-body {
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 300;
   line-height: 1.7;
   color: var(--color-text-muted);
@@ -93,6 +98,133 @@
   line-height: 0.9;
   letter-spacing: -0.03em;
   color: var(--color-text);
+}
+
+/* ═══════════════════════════════════════════
+   HERO 3D ROTATING CUBE
+
+   Three words stacked vertically, each in its
+   own perspective viewport. GSAP rotates each
+   cube on the X axis (-90deg per face) with a
+   staggered delay (slot 1→2→3).
+
+   Visual layout:
+
+     ┌──────────────────────┐
+     │  [Photographer]      │  ← cube 1 (rotates first)
+     │  [Director]          │  ← cube 2 (150ms later)
+     │  [Animator]          │  ← cube 3 (300ms later)
+     └──────────────────────┘
+
+   Each cube face (cross-section, side view):
+
+        ┌──────────┐
+        │  face 1  │  rotateX(90deg)
+   ┌────┤──────────├────┐
+   │    │  face 0  │    │  rotateX(0deg) — visible
+   └────┤──────────├────┘
+        │  face 3  │  rotateX(-90deg)
+        └──────────┘
+        │  face 2  │  rotateX(180deg)
+
+   --cube-size sets the face height AND the
+   translateZ radius so faces sit flush.
+   ═══════════════════════════════════════════ */
+
+.hero-tagline {
+  margin-bottom: var(--sp-2);
+}
+
+.hero-cubes-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.15em;
+}
+
+.hero-cube-viewport {
+  --cube-size: clamp(2.8rem, 7.5vw, 6.5rem);
+  display: block;
+  width: 100%;
+  perspective: 600px;
+  height: var(--cube-size);
+}
+
+.hero-cube {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  /* Pull back so face 0 is flush. GSAP takes over on mount. */
+  transform: translateZ(calc(var(--cube-size) / -2));
+}
+
+.hero-cube-face {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  font-family: 'Adrianna Extended', var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/*  Each face is rotated into position, then pushed outward
+    by half the cube size so it sits on the cube surface. */
+.hero-cube-face[data-face="0"] {
+  transform: rotateX(0deg)   translateZ(calc(var(--cube-size) / 2));
+}
+.hero-cube-face[data-face="1"] {
+  transform: rotateX(90deg)  translateZ(calc(var(--cube-size) / 2));
+}
+.hero-cube-face[data-face="2"] {
+  transform: rotateX(180deg) translateZ(calc(var(--cube-size) / 2));
+}
+.hero-cube-face[data-face="3"] {
+  transform: rotateX(270deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+/* Mobile: no rotation, show first word statically */
+@media (max-width: 768px) {
+  .hero-cubes-row {
+    flex-wrap: wrap;
+    gap: 0.2em;
+  }
+
+  .hero-cube-viewport {
+    display: inline-block;
+    perspective: none;
+    height: auto;
+    overflow: visible;
+  }
+
+  .hero-cube {
+    display: inline-block;
+    transform-style: flat;
+    transform: none;
+  }
+
+  .hero-cube-face {
+    position: relative;
+    display: inline-block;
+    font-size: clamp(2rem, 9vw, 3.5rem);
+  }
+
+  .hero-cube-face[data-face="0"] {
+    transform: none;
+  }
+
+  .hero-cube-face:not([data-face="0"]) {
+    display: none;
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -234,11 +366,10 @@
   transform: translateY(-50%);
   font-family: 'Adrianna Extended', var(--font-display);
   font-size: clamp(10rem, 22vw, 20rem);
-  font-weight: 100;
+  font-weight: 700;
   line-height: 0.75;
   letter-spacing: -0.04em;
   color: var(--color-accent);
-  font-weight: 700;
   pointer-events: none;
   z-index: 0;
 }
@@ -318,18 +449,11 @@
   max-width: 900px;
 }
 
+/* .about-skill-pill — GSAP targets this class for the bubble animation.
+   Base styles come from .pill in base.css. Override size for the about page. */
 .about-skill-pill {
-  display: inline-block;
-  font-family: var(--font-sans);
   font-size: clamp(0.75rem, 1.2vw, 0.95rem);
-  font-weight: 300;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   padding: 0.6em 1.4em;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-text-muted);
-  white-space: nowrap;
 }
 
 /* ── SCENE 7: CTA + Clients (unpinned) ── */
@@ -428,12 +552,6 @@
 
   .about-hero-portrait img {
     max-height: 40vh;
-  }
-
-  .about-chunk-num {
-    position: relative;
-    font-size: clamp(4rem, 16vw, 6rem);
-    margin-bottom: var(--sp-2);
   }
 
   .about-chunk-num {
@@ -671,13 +789,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .about-layout {
-    grid-template-columns: 1fr;
-    gap: var(--sp-8);
-  }
-
-  .about-image { order: -1; }
-
   .how-step {
     grid-template-columns: 2.5rem 1fr;
     gap: var(--sp-3);

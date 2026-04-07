@@ -3,6 +3,7 @@
 import { type CSSProperties } from 'react'
 import Image from 'next/image'
 import { useTransition } from './PageTransition'
+import Pill from './Pill'
 import type { Project } from '@/lib/content'
 
 interface GridItemProps {
@@ -70,6 +71,7 @@ export default function GridItem({ project, priority = false, animated = true }:
           />
         )}
         <div className="grid-item-overlay-bg" />
+        <div className="grid-item-scrim" />
         <div className="grid-item-overlay">
           <p className="grid-item-title" data-title={project.title}>
             {lines.map((line, li) => (
@@ -84,6 +86,13 @@ export default function GridItem({ project, priority = false, animated = true }:
           </p>
         </div>
       </div>
+      {project.services?.length ? (
+        <div className="grid-item-services">
+          {project.services.map(service => (
+            <Pill key={service} label={service} />
+          ))}
+        </div>
+      ) : null}
     </a>
   )
 }

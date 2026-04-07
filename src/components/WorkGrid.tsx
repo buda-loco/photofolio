@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { gsap } from 'gsap'
 import { initGridHovers } from '@/lib/animations'
@@ -50,8 +50,9 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     }
   }, [])
 
-  // Fade-in items and re-init hover effects after visible changes
-  useEffect(() => {
+  // Fade-in items and re-init hover effects after visible changes.
+  // useLayoutEffect runs BEFORE browser paint — prevents flash of unstyled items.
+  useLayoutEffect(() => {
     const items = gridRef.current?.querySelectorAll<HTMLElement>('.bento-item')
     if (!items?.length) return
     gsap.fromTo(

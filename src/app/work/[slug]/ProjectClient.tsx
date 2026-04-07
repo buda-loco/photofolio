@@ -130,7 +130,7 @@ export default function ProjectClient(props: ProjectClientProps) {
               <li key={service}>
                 <TransitionLink
                   href={`/work?service=${encodeURIComponent(service)}`}
-                  className="service-pill"
+                  className="pill pill--filled"
                 >
                   {service}
                 </TransitionLink>

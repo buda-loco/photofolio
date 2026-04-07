@@ -124,10 +124,12 @@ export function initGridHovers(container?: HTMLElement | null): () => void {
     if (!container && item.closest('.bento-grid')) return
 
     const bg = item.querySelector<HTMLElement>('.grid-item-overlay-bg')
+    const scrim = item.querySelector<HTMLElement>('.grid-item-scrim')
     const words = item.querySelectorAll<HTMLElement>('.word-inner')
     if (!bg || !words.length) return
 
     gsap.set(bg, { scaleY: 0 })
+    if (scrim) gsap.set(scrim, { opacity: 0 })
 
     const tl = gsap.timeline({ paused: true })
 
@@ -137,6 +139,14 @@ export function initGridHovers(container?: HTMLElement | null): () => void {
       ease: 'power3.out',
       transformOrigin: 'bottom',
     })
+
+    if (scrim) {
+      tl.to(scrim, {
+        opacity: 1,
+        duration: 0.35,
+        ease: 'power2.out',
+      }, 0)
+    }
 
     tl.fromTo(
       words,

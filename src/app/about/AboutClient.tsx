@@ -6,16 +6,11 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTina, tinaField } from 'tinacms/dist/react'
 import TransitionLink from '@/components/TransitionLink'
+import Pill from '@/components/Pill'
 import { type TinaQueryResult, buildTinaProps } from '@/lib/tinaHelpers'
+import { SKILLS } from '@/lib/skills'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const SKILLS = [
-  'Brand design', 'Advertising', 'Editorial', 'Packaging',
-  'Apparel', 'Digital design', 'Web', 'Apps',
-  'Motion graphics', 'Sound design', 'Cinematography',
-  'Photography', '3D design', 'Event visuals',
-]
 
 const CHUNKS = [
   {
@@ -526,7 +521,7 @@ export default function AboutClient(props: AboutClientProps) {
           </p>
           <div className="about-skills-wrap">
             {SKILLS.map(skill => (
-              <span key={skill} className="about-skill-pill">{skill}</span>
+              <Pill key={skill} label={skill} className="about-skill-pill" />
             ))}
           </div>
         </section>
