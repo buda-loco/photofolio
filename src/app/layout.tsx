@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getDesign, getAllProjects } from '@/lib/content'
 import { buildDesignCss } from '@/lib/colors'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Nav from '@/components/Nav'
 import PageTransition from '@/components/PageTransition'
