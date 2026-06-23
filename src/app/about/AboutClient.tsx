@@ -61,7 +61,9 @@ type AboutClientProps = TinaQueryResult<'about'>
 
 export default function AboutClient(props: AboutClientProps) {
   const { data } = useTina(buildTinaProps(props))
-  const about = data.about
+  // Tina's visual editor can briefly deliver `data.about` as undefined during
+  // live updates — default to {} so field reads (portrait, name, …) don't crash.
+  const about = data.about ?? {}
   const containerRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const debugRef = useRef<HTMLDivElement>(null)

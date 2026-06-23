@@ -33,6 +33,10 @@ function splitTitle(title: string): [string[], string[]] {
 export default function GridItem({ project, priority = false, animated = true }: GridItemProps) {
   const { triggerTransition } = useTransition()
 
+  // Tina's visual editor can pass an undefined project mid-update — skip
+  // rendering rather than crash on project.title / project.backgroundColor.
+  if (!project) return null
+
   // Hover animation is handled globally by initGridHovers() in animations.ts,
   // which AnimationsInit calls on every page. CSS handles initial state:
   //   .grid-item-overlay-bg  { transform: scaleY(0); transform-origin: bottom; }

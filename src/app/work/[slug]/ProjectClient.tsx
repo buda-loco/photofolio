@@ -16,7 +16,9 @@ interface ProjectClientProps extends TinaQueryResult<'projects'> {
 
 export default function ProjectClient(props: ProjectClientProps) {
   const { data } = useTina(buildTinaProps(props))
-  const project = data.projects
+  // Tina's visual editor can briefly deliver `data.projects` as undefined
+  // during live updates — default to {} so field reads don't crash the page.
+  const project = data.projects ?? {}
 
   // Build page background
   const bgColor = project.backgroundColor
