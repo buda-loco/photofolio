@@ -1,7 +1,7 @@
 // Server-only — imports the generated Tina client which uses Node APIs.
 // Client components must import from tinaHelpers.ts instead.
 
-// @ts-ignore — alias resolved by next.config.mjs webpack config.
+// @ts-ignore — `@tina-client` alias resolved in next.config.mjs (turbopack.resolveAlias + webpack).
 import tinaClient from '@tina-client'
 
 // Re-export shared types/helpers so server pages can import from one place
@@ -26,4 +26,8 @@ export function queryProject(slug: string) {
 
 export function queryAbout() {
   return queryCollection('about', 'about.json')
+}
+
+export function queryQuote(slug: string) {
+  return queryCollection('quotes', `${slug}.json`)
 }

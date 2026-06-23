@@ -340,6 +340,32 @@ Editable collections:
 - **About** — bio (rich-text), portrait, clients, social links
 - **How I Work** — steps (rich-text), CTA
 - **Design** — site-wide colours including `labelColor` (supports gradients)
+- **Quotes** — per-client interactive scope & pricing tools (see below)
+
+### Quote builder (`/quote/<client>`)
+Reusable, config-driven client quote tool. One JSON doc per client in
+`src/content/quotes/<slug>.json` → rendered at `/quote/<slug>` (statically
+generated, `noindex`). `/quote` redirects to the first available client.
+
+- **Edit in Tina:** "Quotes" collection. Each doc holds the work types
+  (hourly rates), budget slider bounds, focus options, and deliverables.
+- **Two pricing modes per deliverable** (Tina templates, `_template`
+  discriminator — same pattern as project blocks):
+  - **Job — by hours** (`hourly`): `category` (a work-type id) × `hours`.
+  - **Job — fixed price** (`fixed`): flat `amount`; optional `estHours` is
+    display-only and ignored by the math.
+- **Core vs extras:** each deliverable has `tier: "core" | "extra"`. Core
+  (the brief) is funded first; extras only fund once core is fully covered.
+  Lowering the budget drops extras before anything core.
+- **Logic lives in `src/lib/quote.ts`** (pure, unit-tested):
+  `normalizeQuote()` coerces any raw/partial doc so `cost()` never returns
+  `NaN`; `computeQuote()` does the greedy core-first funding. Loaded via
+  `getQuote()/getAllQuotes()` in `content.ts`; live editing via `useTina` in
+  `QuoteBuilder.tsx`. Coverage bar is by **core $ funded** (not hours, since
+  fixed jobs have none). Tests: `npm test` (`src/lib/quote.test.ts`).
+- Adding a work type that hourly jobs reference: set its `id`, then use that
+  id as a deliverable's `category`. Unknown category → that line is priced
+  `$0` with a build-time `console.warn` (never breaks the page).
 
 ### Rich-text fields
 `about`, `body` (text blocks), `intro`, and step `body` fields use Tina `rich-text` type, stored as AST nodes in JSON. Rendered via `TinaMarkdown` component (client) or `richToHtml()` / `richToPlain()` utilities (server).
@@ -380,6 +406,17 @@ Production build runs `next build` only — `tinacms build` is not included beca
 2. Add images to `public/images/projects/your-slug/`
 3. Set `"featured": true` (or omit — defaults to shown)
 4. Use hyphenated slugs only (e.g. `my-project`, not `my project`)
+5. Push to `main` — Vercel deploys automatically
+
+---
+
+## Adding a new client quote
+
+1. Create `src/content/quotes/your-slug.json` (or use the CMS "Quotes" collection)
+2. Set `workTypes` (ids + hourly rates), `budget` bounds, and `deliverables`
+   (each `core`/`extra`, priced `hourly` or `fixed`)
+3. Live at `/quote/your-slug` — statically generated, no extra wiring
+4. Use hyphenated slugs only; `placeworks.json` and `acme.json` are worked examples
 5. Push to `main` — Vercel deploys automatically
 
 ---

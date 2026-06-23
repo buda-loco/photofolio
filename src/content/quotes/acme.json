@@ -1,0 +1,37 @@
+{
+  "slug": "acme",
+  "client": "Acme Studio",
+  "currency": "USD",
+  "title": "Scope & pricing",
+  "contactEmail": "hello@benjaminarnedo.com",
+  "lead": "A sample quote for a product brand + build. Core scope ships the identity, design system and a working marketing site first; extras layer on motion, illustration and campaign work. Move the slider to see scope adjust to budget.",
+  "budget": { "min": 0, "max": 40000, "step": 1000, "default": 18000 },
+  "workTypes": [
+    { "id": "strategy", "label": "Strategy & research", "rate": 60 },
+    { "id": "design", "label": "Design", "rate": 110 },
+    { "id": "engineering", "label": "Engineering", "rate": 140 },
+    { "id": "motion", "label": "Motion", "rate": 150 }
+  ],
+  "focusOptions": [
+    { "id": "balanced", "label": "Balanced", "category": null },
+    { "id": "design", "label": "Design first", "category": "design" },
+    { "id": "engineering", "label": "Build first", "category": "engineering" }
+  ],
+  "deliverables": [
+    { "_template": "hourly", "id": "discovery", "name": "Discovery & user research", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 10 },
+    { "_template": "hourly", "id": "product-strategy", "name": "Product & positioning strategy", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 16 },
+
+    { "_template": "hourly", "id": "identity", "name": "Brand identity & logo", "phase": "Identity", "tier": "core", "category": "design", "hours": 20 },
+    { "_template": "hourly", "id": "design-system", "name": "Design system & UI kit", "phase": "Identity", "tier": "core", "category": "design", "hours": 24 },
+
+    { "_template": "hourly", "id": "site-design", "name": "Marketing site design", "phase": "Build", "tier": "core", "category": "design", "hours": 20 },
+    { "_template": "hourly", "id": "frontend", "name": "Marketing site frontend build", "phase": "Build", "tier": "core", "category": "engineering", "hours": 40 },
+
+    { "_template": "fixed", "id": "guidelines", "name": "Brand & component guidelines", "phase": "Guidelines", "tier": "core", "amount": 1500, "estHours": 12 },
+
+    { "_template": "hourly", "id": "illustration", "name": "Custom illustration set", "phase": "Extras", "tier": "extra", "category": "design", "hours": 16 },
+    { "_template": "hourly", "id": "motion", "name": "Launch motion & micro-interactions", "phase": "Extras", "tier": "extra", "category": "motion", "hours": 14 },
+    { "_template": "hourly", "id": "cms", "name": "CMS integration", "phase": "Extras", "tier": "extra", "category": "engineering", "hours": 20 },
+    { "_template": "fixed", "id": "campaign", "name": "Launch campaign kit", "phase": "Extras", "tier": "extra", "amount": 3000, "estHours": 20 }
+  ]
+}

@@ -45,3 +45,20 @@
 **Why:** `.pages.yml` is the config for Pages CMS (the previous CMS). Keeping both is confusing. Once Tina is working in production, `.pages.yml` should be removed to avoid editors accidentally using the old CMS.
 
 **When to do it:** After the first successful production deploy with Tina connected, and after confirming all content collections are editable via the Tina admin.
+
+---
+
+## Quote builder — PDF / print export
+
+**What:** Let a client save/share a finished quote as a document. Add a print
+stylesheet that hides the interactive controls (slider, focus buttons, rate
+card) and renders the chosen scope + proposal summary cleanly, plus a
+"Download PDF" button (browser print-to-PDF, or a lightweight client-side lib).
+
+**Why:** The "Copy" proposal-text button is the only share mechanism today.
+A polished PDF is the natural next step for a client-facing quote tool.
+
+**Effort:** M · **Priority:** P2
+
+**How to start:** Add an `@media print` block in `src/css/quote.css` and a
+print/download button in `src/app/quote/[client]/QuoteBuilder.tsx`.

@@ -443,6 +443,102 @@ export default defineConfig({
           },
         ],
       },
+
+      // ── Quotes (client quote builder) ───────────────────────────
+      {
+        name: 'quotes',
+        label: 'Quotes',
+        path: 'src/content/quotes',
+        format: 'json',
+        ui: {
+          filename: {
+            slugify: (values: any) =>
+              (values.slug || 'untitled')
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, ''),
+          },
+          router: ({ document }: { document: any }) => `/quote/${document._sys.filename}`,
+        },
+        fields: [
+          { name: 'slug', label: 'Slug (use hyphens, no spaces)', type: 'string', required: true },
+          { name: 'client', label: 'Client name', type: 'string', required: true },
+          { name: 'currency', label: 'Currency code (e.g. AUD)', type: 'string' },
+          { name: 'eyebrow', label: 'Eyebrow (optional — defaults to “{Client} · Quote builder”)', type: 'string' },
+          { name: 'title', label: 'Page title', type: 'string' },
+          { name: 'lead', label: 'Intro paragraph', type: 'string', ui: { component: 'textarea' } },
+          { name: 'contactEmail', label: 'Contact email (CTA)', type: 'string' },
+          {
+            name: 'budget',
+            label: 'Budget slider',
+            type: 'object',
+            fields: [
+              { name: 'min', label: 'Minimum', type: 'number' },
+              { name: 'max', label: 'Maximum', type: 'number' },
+              { name: 'step', label: 'Step', type: 'number' },
+              { name: 'default', label: 'Default value', type: 'number' },
+            ],
+          },
+          {
+            name: 'workTypes',
+            label: 'Types of work (hourly rates)',
+            type: 'object',
+            list: true,
+            ui: { itemProps: (i: any) => ({ label: i?.label ? `${i.label} — $${i.rate ?? '?'}/h` : 'Work type' }) },
+            fields: [
+              { name: 'id', label: 'ID (referenced by hourly jobs)', type: 'string', required: true },
+              { name: 'label', label: 'Label', type: 'string' },
+              { name: 'rate', label: 'Rate ($/hour)', type: 'number' },
+            ],
+          },
+          {
+            name: 'focusOptions',
+            label: 'Focus options (spend spare budget on)',
+            type: 'object',
+            list: true,
+            ui: { itemProps: (i: any) => ({ label: i?.label || 'Focus' }) },
+            fields: [
+              { name: 'id', label: 'ID', type: 'string' },
+              { name: 'label', label: 'Label', type: 'string' },
+              { name: 'category', label: 'Work-type ID to prioritise (blank = balanced)', type: 'string' },
+            ],
+          },
+          {
+            name: 'deliverables',
+            label: 'Deliverables',
+            type: 'object',
+            list: true,
+            templates: [
+              {
+                name: 'hourly',
+                label: 'Job — by hours',
+                ui: { itemProps: (i: any) => ({ label: i?.name ? `⏱ ${i.name}` : 'Hourly job' }) },
+                fields: [
+                  { name: 'id', label: 'ID', type: 'string', required: true },
+                  { name: 'name', label: 'Name', type: 'string' },
+                  { name: 'phase', label: 'Phase / group', type: 'string' },
+                  { name: 'tier', label: 'Tier', type: 'string', options: [{ value: 'core', label: 'Core (brief — funded first)' }, { value: 'extra', label: 'Extra (nice to have)' }] },
+                  { name: 'category', label: 'Work-type ID (must match a Type of work above)', type: 'string' },
+                  { name: 'hours', label: 'Hours', type: 'number' },
+                ],
+              },
+              {
+                name: 'fixed',
+                label: 'Job — fixed price',
+                ui: { itemProps: (i: any) => ({ label: i?.name ? `$ ${i.name}` : 'Fixed-price job' }) },
+                fields: [
+                  { name: 'id', label: 'ID', type: 'string', required: true },
+                  { name: 'name', label: 'Name', type: 'string' },
+                  { name: 'phase', label: 'Phase / group', type: 'string' },
+                  { name: 'tier', label: 'Tier', type: 'string', options: [{ value: 'core', label: 'Core (brief — funded first)' }, { value: 'extra', label: 'Extra (nice to have)' }] },
+                  { name: 'amount', label: 'Fixed price ($)', type: 'number' },
+                  { name: 'estHours', label: 'Estimated hours (optional, display only)', type: 'number' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 })
