@@ -1,4 +1,5 @@
 {
+  "buildCommand": "tinacms build && next build",
   "headers": [
     {
       "source": "/fonts/(.*)",
