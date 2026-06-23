@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import type { RichNode } from './richText'
+import { normalizeQuote, type QuoteConfig } from './quote'
 
 export type { RichNode } from './richText'
 
@@ -265,4 +266,37 @@ export function getHowIWork(): HowIWork {
 
 export function getDesign(): DesignData {
   return readJson<DesignData>(path.join(CONTENT_DIR, 'design.json'))
+}
+
+// ── Quotes (client quote builder) ────────────────────────────────
+const QUOTES_DIR = path.join(CONTENT_DIR, 'quotes')
+
+export function getQuoteSlugs(): string[] {
+  try {
+    return fs.readdirSync(QUOTES_DIR)
+      .filter(f => f.endsWith('.json'))
+      .map(f => f.replace(/\.json$/, ''))
+  } catch {
+    return []
+  }
+}
+
+export function getQuote(slug: string): QuoteConfig | null {
+  try {
+    const raw = readJson<unknown>(path.join(QUOTES_DIR, `${slug}.json`))
+    return normalizeQuote(raw, slug)
+  } catch {
+    // Missing slug is normal (→ notFound). Malformed JSON throws here too;
+    // surface it so an authoring mistake isn't silent.
+    if (fs.existsSync(path.join(QUOTES_DIR, `${slug}.json`))) {
+      console.warn(`[quote:${slug}] failed to parse quote JSON`)
+    }
+    return null
+  }
+}
+
+export function getAllQuotes(): QuoteConfig[] {
+  return getQuoteSlugs()
+    .map(getQuote)
+    .filter((q): q is QuoteConfig => q !== null)
 }
