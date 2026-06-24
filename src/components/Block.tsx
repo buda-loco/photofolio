@@ -38,7 +38,9 @@ function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
     style: 'dark',
     quality: 'auto',
     playButton: 'true',
-    ...(opts['poster'] ? { poster: opts['poster'] } : {}),
+    // Always pass a poster: with none, OneLinePlayer requests `onelineplayer.com/null`
+    // (harmless but a console 404). Fall back to a 1×1 black image on our origin.
+    poster: opts['poster'] || `${SITE_ORIGIN}/video-poster-fallback.png`,
   })
   return `https://onelineplayer.com/player.html?${params}`
 }
