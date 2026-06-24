@@ -385,15 +385,17 @@
 .qw-chip-label { font-family: var(--font-sans); font-weight: 700; font-size: var(--text-base); }
 .qw-chip-blurb { font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.4; }
 
-/* Pickable deliverable rows — unselected = normal selectable row (not "removed") */
+/* Pickable deliverable rows — unselected = normal selectable row (not "removed").
+   Qualified with .quote-item to out-specify the base .quote-item[data-scope]
+   rules (the CSS bundler can reorder, so a plain tie isn't safe). */
 .qw-pick { cursor: pointer; }
-.qw-pick[data-scope='out'] {
+.quote-item.qw-pick[data-scope='out'] {
   opacity: 1;
   border-color: var(--color-border);
   background: var(--color-surface);
 }
-.qw-pick[data-scope='out'] .quote-item-name { text-decoration: none; }
-.qw-pick[data-scope='in'] { border-color: var(--color-accent); }
+.quote-item.qw-pick[data-scope='out'] .quote-item-name { text-decoration: none; }
+.quote-item.qw-pick[data-scope='in'] { border-color: var(--color-accent); }
 .qw-pick:hover { border-color: var(--color-accent); }
 
 .qw-check {
