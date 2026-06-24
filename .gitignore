@@ -11,3 +11,6 @@ tina/__generated__/*
 # cacheDir, so we construct our own client in src/lib/tinaClient.ts instead).
 !tina/__generated__/types.ts
 tsconfig.tsbuildinfo
+
+# editor swap files
+*.swp
