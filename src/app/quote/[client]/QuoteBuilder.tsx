@@ -266,8 +266,8 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
             {/* Extras */}
             {plan.extraPhases.some((p) => p.deliverables.length) && (
               <div className="quote-section">
-                <h3 className="quote-section-head">Extras · nice to have</h3>
-                <p className="quote-section-sub">Optional enhancements beyond the brief. Funded only once core scope is fully covered.</p>
+                <h3 className="quote-section-head">Extras · beyond the brief</h3>
+                <p className="quote-section-sub">Optional enhancements not in the brief. Funded only once the brief’s deliverables are fully covered.</p>
                 {plan.extraPhases.map((phase) => (
                   <div key={phase.id} className="quote-phase">
                     {plan.extraPhases.length > 1 && <span className="label quote-subhead">{phase.label}</span>}

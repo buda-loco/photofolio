@@ -4,11 +4,10 @@
   "currency": "AUD",
   "title": "Scope & pricing",
   "contactEmail": "hello@benjaminarnedo.com",
-  "lead": "This quote delivers the brief first — core identity, the “form-own” adaptive system, applications and guidelines. Everything beyond that sits separately as optional extras. Lower the budget and the optional work drops away before anything the brief needs.",
+  "lead": "This quote covers the brief's four deliverables — core identity, the design system, application examples and guidelines. Anything beyond the brief sits separately as optional extras. Lower the budget and the optional work drops away before anything the brief needs.",
   "budget": { "min": 0, "max": 25000, "step": 500, "default": 13000 },
   "workTypes": [
-    { "id": "strategy", "label": "Brand & strategy", "rate": 50 },
-    { "id": "design", "label": "Design", "rate": 100 },
+    { "id": "design", "label": "Brand & design", "rate": 100 },
     { "id": "motion", "label": "Motion & video", "rate": 150 }
   ],
   "focusOptions": [
@@ -21,44 +20,34 @@
     { "minHours": 120, "percent": 20 },
     { "minHours": 200, "percent": 30 }
   ],
-  "promoCode": "BUNDLE",
+  "promoCode": "MATESRATES",
   "phases": [
     {
-      "id": "strategy",
-      "label": "Strategy",
-      "tier": "core",
-      "deliverables": [
-        { "_template": "hourly", "id": "discovery", "name": "Discovery, listening & stakeholder workshops", "category": "strategy", "hours": 8 },
-        { "_template": "hourly", "id": "positioning", "name": "Brand strategy & positioning", "category": "strategy", "hours": 12 },
-        { "_template": "hourly", "id": "tensions", "name": "Creative-tension & narrative mapping", "category": "strategy", "hours": 8 }
-      ]
-    },
-    {
       "id": "identity",
-      "label": "Identity",
+      "label": "Core identity",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "wordmark", "name": "Core wordmark / logotype", "category": "design", "hours": 16 },
-        { "_template": "hourly", "id": "type", "name": "Humanist typography system", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "colour", "name": "Soft, layered colour & transparency system", "category": "design", "hours": 8 }
+        { "_template": "hourly", "id": "wordmark", "name": "Logo / wordmark", "category": "design", "hours": 24 }
       ]
     },
     {
-      "id": "system",
-      "label": "System",
+      "id": "design-system",
+      "label": "Design system",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "formown", "name": "“Form-own” modular layout system", "category": "design", "hours": 18 }
+        { "_template": "hourly", "id": "type", "name": "Typography system", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "colour", "name": "Colour & palette system", "category": "design", "hours": 8 },
+        { "_template": "hourly", "id": "layout", "name": "Layout, grid & rules (“form-own” system)", "category": "design", "hours": 18 }
       ]
     },
     {
       "id": "applications",
-      "label": "Applications",
+      "label": "Application examples",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "reports", "name": "Report & document templates", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "slides", "name": "Presentation system", "category": "design", "hours": 8 },
-        { "_template": "hourly", "id": "digital", "name": "Conversational digital interface", "category": "design", "hours": 16 }
+        { "_template": "hourly", "id": "documents", "name": "Document & report templates", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "presentations", "name": "Presentation system", "category": "design", "hours": 8 },
+        { "_template": "hourly", "id": "digital", "name": "Digital templates & interface", "category": "design", "hours": 16 }
       ]
     },
     {
@@ -66,7 +55,7 @@
       "label": "Guidelines",
       "tier": "core",
       "deliverables": [
-        { "_template": "fixed", "id": "guidelines", "name": "Brand guidelines & usage playbook", "amount": 1200, "estHours": 12 }
+        { "_template": "fixed", "id": "guidelines", "name": "Brand guidelines & usage playbook", "amount": 1500, "estHours": 12 }
       ]
     },
     {
