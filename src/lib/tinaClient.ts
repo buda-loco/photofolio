@@ -32,8 +32,17 @@ export async function __tinaDiag(): Promise<Record<string, unknown>> {
     clientNull: !c,
     hasQueries: !!c?.queries,
     clientKeys: c ? Object.keys(c).slice(0, 12) : null,
-    hasToken: c ? !!c.apiUrl || !!c.url : null,
   }
+  try {
+    const fs = await import('fs')
+    const path = await import('path')
+    info.cwd = process.cwd()
+    info.clientExists = fs.existsSync(path.resolve('./tina/__generated__/client.ts'))
+    info.clientExistsAbs = fs.existsSync('/var/task/tina/__generated__/client.ts')
+    info.tinaDir = fs.existsSync(path.resolve('./tina')) ? fs.readdirSync(path.resolve('./tina')) : 'no tina dir'
+    info.envClientId = !!process.env.TINA_PUBLIC_CLIENT_ID
+    info.envToken = !!process.env.TINA_TOKEN
+  } catch (e) { info.fsErr = (e as Error)?.message }
   try {
     const r = await c.queries.quotes({ relativePath: 'placeworks.json' })
     info.queryOk = true
