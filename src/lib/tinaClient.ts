@@ -23,6 +23,30 @@ async function queryCollection<K extends string>(
   }
 }
 
+// TEMP diagnostic — remove after debugging Tina binding on Vercel.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function __tinaDiag(): Promise<Record<string, unknown>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c = tinaClient as any
+  const info: Record<string, unknown> = {
+    clientNull: !c,
+    hasQueries: !!c?.queries,
+    clientKeys: c ? Object.keys(c).slice(0, 12) : null,
+    hasToken: c ? !!c.apiUrl || !!c.url : null,
+  }
+  try {
+    const r = await c.queries.quotes({ relativePath: 'placeworks.json' })
+    info.queryOk = true
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    info.deliverables = (r as any)?.data?.quotes?.deliverables?.length ?? null
+  } catch (e) {
+    info.queryOk = false
+    info.error = (e as Error)?.message
+    info.stack = (e as Error)?.stack?.split('\n').slice(0, 4).join(' | ')
+  }
+  return info
+}
+
 export function queryProject(slug: string) {
   return queryCollection('projects', `${slug}.json`)
 }
