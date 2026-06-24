@@ -66,33 +66,9 @@ export default function AboutClient(props: AboutClientProps) {
   const about = data.about ?? {}
   const containerRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
-  const debugRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches
-
-    // ── DEBUG: live scroll stats ──
-    const debugEl = debugRef.current
-    const onScroll = () => {
-      if (!debugEl) return
-      const scrollY = window.scrollY
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-      const pct = maxScroll > 0 ? ((scrollY / maxScroll) * 100).toFixed(1) : '0'
-
-      // Find which scene is in view
-      // Determine active scene based on scroll percentage
-      const pctNum = parseFloat(pct)
-      let activeScene = '—'
-      if (pctNum < 3) activeScene = 'hero'
-      else if (pctNum < 60) activeScene = 'chunks'
-      else if (pctNum < 90) activeScene = 'skills'
-      else activeScene = 'cta'
-
-      debugEl.innerHTML =
-        `<b>${pct}%</b> · ${scrollY.toFixed(0)}px / ${maxScroll.toFixed(0)}px · <b>${activeScene}</b>`
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
 
     const ctx = gsap.context(() => {
 
@@ -454,7 +430,6 @@ export default function AboutClient(props: AboutClientProps) {
     }, containerRef)
 
     return () => {
-      window.removeEventListener('scroll', onScroll)
       ctx.revert()
     }
   }, [])
@@ -462,13 +437,6 @@ export default function AboutClient(props: AboutClientProps) {
   return (
     <div className="page about-page" ref={containerRef}>
       <div className="about-progress" ref={progressRef} aria-hidden="true" />
-      {/* Debug overlay — uncomment to re-enable scroll stats
-      <div ref={debugRef} style={{
-        position: 'fixed', bottom: 12, right: 12, zIndex: 99999,
-        background: 'rgba(0,0,0,0.85)', color: '#f4ff26', padding: '6px 12px',
-        borderRadius: 6, fontSize: 13, fontFamily: 'monospace', pointerEvents: 'none',
-      }} />
-      */}
 
       {/* Single pinned stage — hero, chunks, skills all stacked */}
       <div className="about-stage">
