@@ -199,6 +199,38 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Active hours-bundle tier */
+.quote-rate-row[data-active='true'],
+.quote-rate-row[data-active='true'] b {
+  color: var(--color-accent);
+}
+
+/* Volume-discount summary line + struck pre-discount price */
+.quote-discount {
+  margin-top: var(--sp-3);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.quote-discount b {
+  color: var(--color-text);
+}
+
+.quote-discount .accent {
+  color: var(--color-accent);
+}
+
+.quote-was {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
 /* ── Right: live scope ── */
 .quote-scope {
   display: flex;

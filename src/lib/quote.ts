@@ -1,5 +1,16 @@
 // Pure, dependency-free quote logic. Safe for both server and client.
 // No fs, no React — just types + math, so it's unit-testable in isolation.
+//
+// Data model:
+//   QuoteConfig
+//     ├─ workTypes[]            (hourly rates, referenced by deliverable.category)
+//     ├─ phases[]               (ordered; each is core or extra)
+//     │    └─ deliverables[]    (hourly = hours×rate | fixed = flat amount)
+//     └─ discounts[]            (volume bundles: minHours → percent off hourly work)
+//
+// Funding: core phases first (config order), then extra phases (focus-ordered),
+// greedily up to budget at FULL rates. The volume discount is then applied to
+// the funded hourly work as a saving — the client pays less than the budget.
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -12,21 +23,32 @@ export interface WorkType {
 interface DeliverableBase {
   id: string;
   name: string;
-  phase: string;
-  tier: 'core' | 'extra';
 }
 
 // Discriminated on `pricing`:
 //  hourly → cost = hours × rate(category)
-//  fixed  → cost = amount   (estHours is display-only, ignored by the math)
+//  fixed  → cost = amount   (estHours is display-only, ignored by the cost math)
 export type Deliverable =
   | (DeliverableBase & { pricing: 'hourly'; category: string; hours: number })
   | (DeliverableBase & { pricing: 'fixed'; amount: number; estHours?: number });
+
+export interface Phase {
+  id: string;
+  label: string;
+  tier: 'core' | 'extra';
+  deliverables: Deliverable[];
+}
 
 export interface FocusOption {
   id: string;
   label: string;
   category: string | null; // null = balanced; else boosts that work-type among extras
+}
+
+// Volume bundle: once total in-scope hours ≥ minHours, take `percent` off hourly work.
+export interface Discount {
+  minHours: number;
+  percent: number;
 }
 
 export interface QuoteConfig {
@@ -38,7 +60,8 @@ export interface QuoteConfig {
   lead: string;
   contactEmail: string;
   workTypes: WorkType[];
-  deliverables: Deliverable[];
+  phases: Phase[];
+  discounts: Discount[];
   focusOptions: FocusOption[];
   budget: { min: number; max: number; step: number; default: number };
 }
@@ -68,10 +91,14 @@ export const cost = (d: Deliverable, rates: Record<string, number>): number => {
 export const hoursOf = (d: Deliverable): number =>
   d.pricing === 'fixed' ? num(d.estHours) : num(d.hours);
 
+export const clamp = (v: number, lo: number, hi: number): number =>
+  Math.min(Math.max(num(v, lo), lo), hi);
+
 // ── Normalisation ────────────────────────────────────────────────
-// CMS authors will eventually save half-finished docs. This coerces any
-// raw shape (local JSON or Tina GraphQL, incl. _template/__typename) into a
-// valid QuoteConfig so the page degrades gracefully instead of throwing/NaN-ing.
+// CMS authors will eventually save half-finished docs. This coerces any raw
+// shape (local JSON or Tina GraphQL, incl. _template/__typename, and the older
+// flat-deliverables shape) into a valid QuoteConfig so the page degrades
+// gracefully instead of throwing/NaN-ing.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -86,8 +113,6 @@ const normalizeDeliverable = (d: any, i: number): Deliverable | null => {
   const base = {
     id: str(d.id) || `item-${i}`,
     name: str(d.name) || 'Untitled deliverable',
-    phase: str(d.phase) || 'Scope',
-    tier: d.tier === 'extra' ? ('extra' as const) : ('core' as const),
   };
   if (pricingOf(d) === 'fixed') {
     return { ...base, pricing: 'fixed', amount: Math.max(0, num(d.amount)), estHours: d.estHours != null ? Math.max(0, num(d.estHours)) : undefined };
@@ -95,8 +120,35 @@ const normalizeDeliverable = (d: any, i: number): Deliverable | null => {
   return { ...base, pricing: 'hourly', category: str(d.category), hours: Math.max(0, num(d.hours)) };
 };
 
+const normalizePhase = (p: any, i: number): Phase => ({
+  id: str(p?.id) || `phase-${i}`,
+  label: str(p?.label) || str(p?.id) || `Phase ${i + 1}`,
+  tier: p?.tier === 'extra' ? 'extra' : 'core',
+  deliverables: Array.isArray(p?.deliverables)
+    ? (p.deliverables.map(normalizeDeliverable).filter(Boolean) as Deliverable[])
+    : [],
+});
+
+// Back-compat: build phases from the older flat `deliverables` (each had its own
+// `phase` string + `tier`) so legacy/in-transition docs still render.
+const phasesFromFlat = (deliverables: any[]): Phase[] => {
+  const order: string[] = [];
+  const byPhase = new Map<string, { tier: 'core' | 'extra'; items: any[] }>();
+  for (const d of deliverables) {
+    const label = str(d?.phase) || 'Scope';
+    if (!byPhase.has(label)) { byPhase.set(label, { tier: d?.tier === 'extra' ? 'extra' : 'core', items: [] }); order.push(label); }
+    byPhase.get(label)!.items.push(d);
+  }
+  return order.map((label, i) => ({
+    id: label.toLowerCase().replace(/\s+/g, '-') || `phase-${i}`,
+    label,
+    tier: byPhase.get(label)!.tier,
+    deliverables: byPhase.get(label)!.items.map(normalizeDeliverable).filter(Boolean) as Deliverable[],
+  }));
+};
+
 const normalizeBudget = (b: any) => {
-  let min = Math.max(0, num(b?.min, 0));
+  const min = Math.max(0, num(b?.min, 0));
   let max = Math.max(min, num(b?.max, Math.max(min, 25000)));
   if (max <= min) max = min + 1000;
   const step = Math.max(1, num(b?.step, 500));
@@ -105,9 +157,6 @@ const normalizeBudget = (b: any) => {
   return { min, max, step, default: def };
 };
 
-export const clamp = (v: number, lo: number, hi: number): number =>
-  Math.min(Math.max(num(v, lo), lo), hi);
-
 export function normalizeQuote(raw: any, slug = 'quote'): QuoteConfig {
   const workTypes: WorkType[] = Array.isArray(raw?.workTypes)
     ? raw.workTypes
@@ -115,18 +164,29 @@ export function normalizeQuote(raw: any, slug = 'quote'): QuoteConfig {
         .map((w: any) => ({ id: str(w.id), label: str(w.label) || str(w.id), rate: Math.max(0, num(w.rate)) }))
     : [];
 
-  const deliverables = Array.isArray(raw?.deliverables)
-    ? (raw.deliverables.map(normalizeDeliverable).filter(Boolean) as Deliverable[])
-    : [];
+  const phases: Phase[] = Array.isArray(raw?.phases)
+    ? raw.phases.map(normalizePhase)
+    : Array.isArray(raw?.deliverables)
+      ? phasesFromFlat(raw.deliverables)
+      : [];
 
   // Warn (build/dev log) when an hourly job points at a missing work-type.
   const ids = new Set(workTypes.map((w) => w.id));
-  for (const d of deliverables) {
-    if (d.pricing === 'hourly' && d.category && !ids.has(d.category)) {
-      // eslint-disable-next-line no-console
-      console.warn(`[quote:${slug}] deliverable "${d.id}" references unknown work-type "${d.category}" — priced at $0`);
+  for (const p of phases) {
+    for (const d of p.deliverables) {
+      if (d.pricing === 'hourly' && d.category && !ids.has(d.category)) {
+        // eslint-disable-next-line no-console
+        console.warn(`[quote:${slug}] deliverable "${d.id}" references unknown work-type "${d.category}" — priced at $0`);
+      }
     }
   }
+
+  const discounts: Discount[] = Array.isArray(raw?.discounts)
+    ? raw.discounts
+        .map((x: any) => ({ minHours: Math.max(0, num(x?.minHours)), percent: clamp(num(x?.percent), 0, 100) }))
+        .filter((x: Discount) => x.minHours > 0 && x.percent > 0)
+        .sort((a: Discount, b: Discount) => a.minHours - b.minHours)
+    : [];
 
   const focusOptions: FocusOption[] = Array.isArray(raw?.focusOptions)
     ? raw.focusOptions.map((o: any, i: number) => ({
@@ -145,7 +205,8 @@ export function normalizeQuote(raw: any, slug = 'quote'): QuoteConfig {
     lead: str(raw?.lead),
     contactEmail: str(raw?.contactEmail) || 'hello@example.com',
     workTypes,
-    deliverables,
+    phases,
+    discounts,
     focusOptions,
     budget: normalizeBudget(raw?.budget),
   };
@@ -155,37 +216,44 @@ export function normalizeQuote(raw: any, slug = 'quote'): QuoteConfig {
 
 export interface QuotePlan {
   rates: Record<string, number>;
-  core: Deliverable[];
-  extras: Deliverable[];
-  corePhases: string[];
-  included: Deliverable[];
+  budget: number;             // clamped to config bounds
   includedIds: Set<string>;
-  budget: number;          // clamped to config bounds
-  spent: number;
-  remaining: number;
+  corePhases: Phase[];        // for grouped rendering
+  extraPhases: Phase[];
   coreCost: number;
   coreSpent: number;
-  coreCoverage: number;    // 0..100, by $ funded (hours stop being universal once fixed jobs exist)
+  coreCoverage: number;       // 0..100, by $ funded
   coreTotal: number;
   coreFunded: number;
   coreComplete: boolean;
   extrasFunded: number;
   coreShortfall: number;
-  hours: number;
+  spent: number;              // undiscounted included total
+  remaining: number;          // budget - spent
+  hours: number;              // total in-scope hours (hourly + fixed estHours)
+  hourlySpent: number;        // included hourly cost (the discountable base)
+  discountPercent: number;    // 0 if no bundle reached
+  discountMinHours: number;   // the reached tier's threshold (0 if none)
+  discountAmount: number;     // money saved
+  finalSpent: number;         // spent - discountAmount (what the client pays)
   nextCore?: Deliverable;
   nextExtra?: Deliverable;
 }
 
-/** Fund CORE first (config order), then EXTRAS (ordered by focus). Greedy. */
+/** Fund core phases first (config order), then extra phases (focus-ordered). Greedy. */
 export function computeQuote(config: QuoteConfig, rawBudget: number, focus: string | null): QuotePlan {
   const rates = rateMapOf(config.workTypes);
   const budget = clamp(rawBudget, config.budget.min, config.budget.max);
   const c = (d: Deliverable) => cost(d, rates);
 
-  const core = config.deliverables.filter((d) => d.tier === 'core');
-  const extras = config.deliverables.filter((d) => d.tier === 'extra');
+  const corePhases = config.phases.filter((p) => p.tier === 'core');
+  const extraPhases = config.phases.filter((p) => p.tier === 'extra');
 
-  const rankedExtras = extras
+  const coreDeliverables = corePhases.flatMap((p) => p.deliverables);
+  const extraDeliverables = extraPhases.flatMap((p) => p.deliverables);
+  const coreIds = new Set(coreDeliverables.map((d) => d.id));
+
+  const rankedExtras = extraDeliverables
     .map((d, i) => ({ d, i }))
     .sort((a, b) => {
       if (focus) {
@@ -201,7 +269,7 @@ export function computeQuote(config: QuoteConfig, rawBudget: number, focus: stri
   const included: Deliverable[] = [];
   const excluded: Deliverable[] = [];
   let spent = 0;
-  for (const d of [...core, ...rankedExtras]) {
+  for (const d of [...coreDeliverables, ...rankedExtras]) {
     if (spent + c(d) <= budget) {
       included.push(d);
       spent += c(d);
@@ -211,32 +279,43 @@ export function computeQuote(config: QuoteConfig, rawBudget: number, focus: stri
   }
 
   const includedIds = new Set(included.map((d) => d.id));
-  const coreCost = core.reduce((s, d) => s + c(d), 0);
-  const coreSpent = included.filter((d) => d.tier === 'core').reduce((s, d) => s + c(d), 0);
-  const coreFunded = included.filter((d) => d.tier === 'core').length;
+  const coreCost = coreDeliverables.reduce((s, d) => s + c(d), 0);
+  const coreSpent = included.filter((d) => coreIds.has(d.id)).reduce((s, d) => s + c(d), 0);
+  const coreFunded = included.filter((d) => coreIds.has(d.id)).length;
+  const hours = included.reduce((s, d) => s + hoursOf(d), 0);
+
+  // Volume bundle: highest-threshold tier whose minHours is reached.
+  const reached = config.discounts.filter((x) => hours >= x.minHours);
+  const tier = reached.length ? reached[reached.length - 1] : undefined;
+  const discountPercent = tier?.percent ?? 0;
+  const hourlySpent = included.filter((d) => d.pricing === 'hourly').reduce((s, d) => s + c(d), 0);
+  const discountAmount = hourlySpent * (discountPercent / 100);
 
   return {
     rates,
-    core,
-    extras,
-    corePhases: [...new Set(core.map((d) => d.phase))],
-    included,
-    includedIds,
     budget,
-    spent,
-    remaining: budget - spent,
+    includedIds,
+    corePhases,
+    extraPhases,
     coreCost,
     coreSpent,
     coreCoverage: coreCost > 0 ? Math.round((coreSpent / coreCost) * 100) : 100,
-    coreTotal: core.length,
+    coreTotal: coreDeliverables.length,
     coreFunded,
-    coreComplete: coreFunded === core.length,
-    extrasFunded: included.filter((d) => d.tier === 'extra').length,
+    coreComplete: coreFunded === coreDeliverables.length,
+    extrasFunded: included.filter((d) => !coreIds.has(d.id)).length,
     coreShortfall: Math.max(0, coreCost - budget),
-    hours: included.reduce((s, d) => s + hoursOf(d), 0),
-    nextCore: excluded.find((d) => d.tier === 'core'),
+    spent,
+    remaining: budget - spent,
+    hours,
+    hourlySpent,
+    discountPercent,
+    discountMinHours: tier?.minHours ?? 0,
+    discountAmount,
+    finalSpent: spent - discountAmount,
+    nextCore: excluded.find((d) => coreIds.has(d.id)),
     nextExtra: excluded
-      .filter((d) => d.tier === 'extra')
+      .filter((d) => !coreIds.has(d.id))
       .sort((a, b) => c(a) - c(b))
       .find((d) => c(d) > budget - spent),
   };

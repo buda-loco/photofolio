@@ -17,21 +17,56 @@
     { "id": "design", "label": "Design first", "category": "design" },
     { "id": "engineering", "label": "Build first", "category": "engineering" }
   ],
-  "deliverables": [
-    { "_template": "hourly", "id": "discovery", "name": "Discovery & user research", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 10 },
-    { "_template": "hourly", "id": "product-strategy", "name": "Product & positioning strategy", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 16 },
-
-    { "_template": "hourly", "id": "identity", "name": "Brand identity & logo", "phase": "Identity", "tier": "core", "category": "design", "hours": 20 },
-    { "_template": "hourly", "id": "design-system", "name": "Design system & UI kit", "phase": "Identity", "tier": "core", "category": "design", "hours": 24 },
-
-    { "_template": "hourly", "id": "site-design", "name": "Marketing site design", "phase": "Build", "tier": "core", "category": "design", "hours": 20 },
-    { "_template": "hourly", "id": "frontend", "name": "Marketing site frontend build", "phase": "Build", "tier": "core", "category": "engineering", "hours": 40 },
-
-    { "_template": "fixed", "id": "guidelines", "name": "Brand & component guidelines", "phase": "Guidelines", "tier": "core", "amount": 1500, "estHours": 12 },
-
-    { "_template": "hourly", "id": "illustration", "name": "Custom illustration set", "phase": "Extras", "tier": "extra", "category": "design", "hours": 16 },
-    { "_template": "hourly", "id": "motion", "name": "Launch motion & micro-interactions", "phase": "Extras", "tier": "extra", "category": "motion", "hours": 14 },
-    { "_template": "hourly", "id": "cms", "name": "CMS integration", "phase": "Extras", "tier": "extra", "category": "engineering", "hours": 20 },
-    { "_template": "fixed", "id": "campaign", "name": "Launch campaign kit", "phase": "Extras", "tier": "extra", "amount": 3000, "estHours": 20 }
+  "discounts": [
+    { "minHours": 100, "percent": 7 },
+    { "minHours": 160, "percent": 12 }
+  ],
+  "phases": [
+    {
+      "id": "strategy",
+      "label": "Strategy",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "discovery", "name": "Discovery & user research", "category": "strategy", "hours": 10 },
+        { "_template": "hourly", "id": "product-strategy", "name": "Product & positioning strategy", "category": "strategy", "hours": 16 }
+      ]
+    },
+    {
+      "id": "identity",
+      "label": "Identity",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "identity", "name": "Brand identity & logo", "category": "design", "hours": 20 },
+        { "_template": "hourly", "id": "design-system", "name": "Design system & UI kit", "category": "design", "hours": 24 }
+      ]
+    },
+    {
+      "id": "build",
+      "label": "Build",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "site-design", "name": "Marketing site design", "category": "design", "hours": 20 },
+        { "_template": "hourly", "id": "frontend", "name": "Marketing site frontend build", "category": "engineering", "hours": 40 }
+      ]
+    },
+    {
+      "id": "guidelines",
+      "label": "Guidelines",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "fixed", "id": "guidelines", "name": "Brand & component guidelines", "amount": 1500, "estHours": 12 }
+      ]
+    },
+    {
+      "id": "extras",
+      "label": "Extras",
+      "tier": "extra",
+      "deliverables": [
+        { "_template": "hourly", "id": "illustration", "name": "Custom illustration set", "category": "design", "hours": 16 },
+        { "_template": "hourly", "id": "motion", "name": "Launch motion & micro-interactions", "category": "motion", "hours": 14 },
+        { "_template": "hourly", "id": "cms", "name": "CMS integration", "category": "engineering", "hours": 20 },
+        { "_template": "fixed", "id": "campaign", "name": "Launch campaign kit", "amount": 3000, "estHours": 20 }
+      ]
+    }
   ]
 }

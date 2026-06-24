@@ -16,28 +16,70 @@
     { "id": "design", "label": "Design first", "category": "design" },
     { "id": "motion", "label": "Motion first", "category": "motion" }
   ],
-  "deliverables": [
-    { "_template": "hourly", "id": "discovery", "name": "Discovery, listening & stakeholder workshops", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 8 },
-    { "_template": "hourly", "id": "positioning", "name": "Brand strategy & positioning", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 12 },
-    { "_template": "hourly", "id": "tensions", "name": "Creative-tension & narrative mapping", "phase": "Strategy", "tier": "core", "category": "strategy", "hours": 8 },
-
-    { "_template": "hourly", "id": "wordmark", "name": "Core wordmark / logotype", "phase": "Identity", "tier": "core", "category": "design", "hours": 16 },
-    { "_template": "hourly", "id": "type", "name": "Humanist typography system", "phase": "Identity", "tier": "core", "category": "design", "hours": 10 },
-    { "_template": "hourly", "id": "colour", "name": "Soft, layered colour & transparency system", "phase": "Identity", "tier": "core", "category": "design", "hours": 8 },
-
-    { "_template": "hourly", "id": "formown", "name": "“Form-own” modular layout system", "phase": "System", "tier": "core", "category": "design", "hours": 18 },
-
-    { "_template": "hourly", "id": "reports", "name": "Report & document templates", "phase": "Applications", "tier": "core", "category": "design", "hours": 10 },
-    { "_template": "hourly", "id": "slides", "name": "Presentation system", "phase": "Applications", "tier": "core", "category": "design", "hours": 8 },
-    { "_template": "hourly", "id": "digital", "name": "Conversational digital interface", "phase": "Applications", "tier": "core", "category": "design", "hours": 16 },
-
-    { "_template": "fixed", "id": "guidelines", "name": "Brand guidelines & usage playbook", "phase": "Guidelines", "tier": "core", "amount": 1200, "estHours": 12 },
-
-    { "_template": "hourly", "id": "hoardings", "name": "Hoardings & site signage system", "phase": "Extras", "tier": "extra", "category": "design", "hours": 10 },
-    { "_template": "hourly", "id": "social", "name": "Social & campaign kit", "phase": "Extras", "tier": "extra", "category": "design", "hours": 10 },
-    { "_template": "hourly", "id": "generative", "name": "Fully generative identity engine", "phase": "Extras", "tier": "extra", "category": "design", "hours": 20 },
-    { "_template": "hourly", "id": "motion", "name": "Motion & interaction principles", "phase": "Extras", "tier": "extra", "category": "motion", "hours": 12 },
-    { "_template": "hourly", "id": "motion-guide", "name": "Motion language guide", "phase": "Extras", "tier": "extra", "category": "motion", "hours": 8 },
-    { "_template": "fixed", "id": "video", "name": "Launch film / hero video", "phase": "Extras", "tier": "extra", "amount": 2400, "estHours": 16 }
+  "discounts": [
+    { "minHours": 80, "percent": 5 },
+    { "minHours": 120, "percent": 10 },
+    { "minHours": 200, "percent": 15 }
+  ],
+  "phases": [
+    {
+      "id": "strategy",
+      "label": "Strategy",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "discovery", "name": "Discovery, listening & stakeholder workshops", "category": "strategy", "hours": 8 },
+        { "_template": "hourly", "id": "positioning", "name": "Brand strategy & positioning", "category": "strategy", "hours": 12 },
+        { "_template": "hourly", "id": "tensions", "name": "Creative-tension & narrative mapping", "category": "strategy", "hours": 8 }
+      ]
+    },
+    {
+      "id": "identity",
+      "label": "Identity",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "wordmark", "name": "Core wordmark / logotype", "category": "design", "hours": 16 },
+        { "_template": "hourly", "id": "type", "name": "Humanist typography system", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "colour", "name": "Soft, layered colour & transparency system", "category": "design", "hours": 8 }
+      ]
+    },
+    {
+      "id": "system",
+      "label": "System",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "formown", "name": "“Form-own” modular layout system", "category": "design", "hours": 18 }
+      ]
+    },
+    {
+      "id": "applications",
+      "label": "Applications",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "reports", "name": "Report & document templates", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "slides", "name": "Presentation system", "category": "design", "hours": 8 },
+        { "_template": "hourly", "id": "digital", "name": "Conversational digital interface", "category": "design", "hours": 16 }
+      ]
+    },
+    {
+      "id": "guidelines",
+      "label": "Guidelines",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "fixed", "id": "guidelines", "name": "Brand guidelines & usage playbook", "amount": 1200, "estHours": 12 }
+      ]
+    },
+    {
+      "id": "extras",
+      "label": "Extras",
+      "tier": "extra",
+      "deliverables": [
+        { "_template": "hourly", "id": "hoardings", "name": "Hoardings & site signage system", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "social", "name": "Social & campaign kit", "category": "design", "hours": 10 },
+        { "_template": "hourly", "id": "generative", "name": "Fully generative identity engine", "category": "design", "hours": 20 },
+        { "_template": "hourly", "id": "motion", "name": "Motion & interaction principles", "category": "motion", "hours": 12 },
+        { "_template": "hourly", "id": "motion-guide", "name": "Motion language guide", "category": "motion", "hours": 8 },
+        { "_template": "fixed", "id": "video", "name": "Launch film / hero video", "amount": 2400, "estHours": 16 }
+      ]
+    }
   ]
 }

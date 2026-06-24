@@ -44,24 +44,32 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
 
   const proposal = useMemo(() => {
     const L: string[] = [];
-    L.push(`QUOTE — ${currency} ${fmt(plan.budget)}  ·  ${config.client}`);
-    L.push(`Core brief: ${plan.coreFunded}/${plan.coreTotal} funded · ${plan.extrasFunded} extra${plan.extrasFunded === 1 ? '' : 's'} · ${plan.hours} hrs`);
-    L.push('');
-    L.push('CORE SCOPE — required for the brief');
-    for (const d of plan.core) {
-      const ok = plan.includedIds.has(d.id);
-      L.push(`  ${ok ? '+' : '–'} ${d.name} (${hoursLabel(d)})${ok ? '' : `  — needs +${currency} ${fmt(itemCost(d))}`}`);
+    L.push(`QUOTE — ${currency} ${fmt(plan.budget)} budget  ·  ${config.client}`);
+    L.push(`Core: ${plan.coreFunded}/${plan.coreTotal} funded · ${plan.extrasFunded} extra${plan.extrasFunded === 1 ? '' : 's'} · ${plan.hours} hrs`);
+    for (const phase of plan.corePhases) {
+      L.push('');
+      L.push(phase.label.toUpperCase());
+      for (const d of phase.deliverables) {
+        const ok = plan.includedIds.has(d.id);
+        L.push(`  ${ok ? '+' : '–'} ${d.name} (${hoursLabel(d)})${ok ? '' : `  — needs +${currency} ${fmt(itemCost(d))}`}`);
+      }
     }
-    if (plan.extras.length) {
+    if (plan.extraPhases.some((p) => p.deliverables.length)) {
       L.push('');
       L.push('EXTRAS — optional, nice to have');
-      for (const d of plan.extras) {
-        const ok = plan.includedIds.has(d.id);
-        L.push(`  ${ok ? '+' : '–'} ${d.name} (${hoursLabel(d)}${ok ? '' : ` · +${currency} ${fmt(itemCost(d))}`})`);
+      for (const phase of plan.extraPhases) {
+        for (const d of phase.deliverables) {
+          const ok = plan.includedIds.has(d.id);
+          L.push(`  ${ok ? '+' : '–'} ${d.name} (${hoursLabel(d)}${ok ? '' : ` · +${currency} ${fmt(itemCost(d))}`})`);
+        }
       }
     }
     L.push('');
-    L.push(`Investment: ${currency} ${fmt(plan.spent)} — fixed, all-inclusive.`);
+    L.push(`Subtotal: ${currency} ${fmt(plan.spent)}`);
+    if (plan.discountPercent > 0) {
+      L.push(`Hours bundle (−${plan.discountPercent}% on ${plan.hours} hrs): −${currency} ${fmt(plan.discountAmount)}`);
+    }
+    L.push(`Total: ${currency} ${fmt(plan.finalSpent)} — fixed, all-inclusive.`);
     if (!plan.coreComplete) L.push(`Add ${currency} ${fmt(plan.coreShortfall)} to deliver the complete brief.`);
     return L.join('\n');
   }, [plan, config.client, currency]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -75,9 +83,9 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
     } catch { /* clipboard unavailable */ }
   };
 
-  const renderItem = (d: Deliverable) => {
+  const renderItem = (d: Deliverable, isCore: boolean) => {
     const inScope = plan.includedIds.has(d.id);
-    const needed = d.tier === 'core' && !inScope;
+    const needed = isCore && !inScope;
     const c = itemCost(d);
     return (
       <li key={d.id} className="quote-item" data-scope={inScope ? 'in' : 'out'} data-need={needed}>
@@ -156,6 +164,19 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
                   </li>
                 ))}
               </ul>
+              {config.discounts.length > 0 && (
+                <>
+                  <span className="label quote-subhead" style={{ marginTop: 'var(--sp-3)' }}>Hours bundles</span>
+                  <ul className="quote-rates-list">
+                    {config.discounts.map((dsc) => (
+                      <li key={dsc.minHours} className="quote-rate-row" data-active={plan.discountMinHours === dsc.minHours}>
+                        <span>{dsc.minHours}+ hrs</span>
+                        <b>−{dsc.percent}%</b>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </section>
 
@@ -175,14 +196,22 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
                   </p>
                 </div>
                 <div className="quote-summary-price">
-                  ${fmt(plan.spent)}
-                  <small>fixed investment</small>
+                  {plan.discountPercent > 0 && <s className="quote-was">${fmt(plan.spent)}</s>}
+                  ${fmt(plan.finalSpent)}
+                  <small>{plan.discountPercent > 0 ? `after −${plan.discountPercent}% bundle` : 'fixed investment'}</small>
                 </div>
               </div>
 
               <div className="quote-bar">
                 <div className="quote-bar-fill" style={{ width: `${plan.coreCoverage}%` }} />
               </div>
+
+              {plan.discountPercent > 0 && (
+                <p className="quote-discount">
+                  <b>{plan.hours} hrs</b> reaches the <span className="accent">−{plan.discountPercent}% hours bundle</span> — you save{' '}
+                  <span className="accent">${fmt(plan.discountAmount)}</span>.
+                </p>
+              )}
 
               <p className="quote-tradeoff">
                 {!plan.coreComplete ? (
@@ -206,23 +235,28 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
               <h3 className="quote-section-head">Core scope</h3>
               <p className="quote-section-sub">Everything the brief asks for — quoted and funded first.</p>
               {plan.corePhases.map((phase) => (
-                <div key={phase} className="quote-phase">
-                  <span className="label quote-subhead">{phase}</span>
+                <div key={phase.id} className="quote-phase">
+                  <span className="label quote-subhead">{phase.label}</span>
                   <ul className="quote-list">
-                    {plan.core.filter((d) => d.phase === phase).map(renderItem)}
+                    {phase.deliverables.map((d) => renderItem(d, true))}
                   </ul>
                 </div>
               ))}
             </div>
 
             {/* Extras */}
-            {plan.extras.length > 0 && (
+            {plan.extraPhases.some((p) => p.deliverables.length) && (
               <div className="quote-section">
                 <h3 className="quote-section-head">Extras · nice to have</h3>
                 <p className="quote-section-sub">Optional enhancements beyond the brief. Funded only once core scope is fully covered.</p>
-                <ul className="quote-list">
-                  {plan.extras.map(renderItem)}
-                </ul>
+                {plan.extraPhases.map((phase) => (
+                  <div key={phase.id} className="quote-phase">
+                    {plan.extraPhases.length > 1 && <span className="label quote-subhead">{phase.label}</span>}
+                    <ul className="quote-list">
+                      {phase.deliverables.map((d) => renderItem(d, false))}
+                    </ul>
+                  </div>
+                ))}
               </div>
             )}
 

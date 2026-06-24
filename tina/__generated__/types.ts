@@ -834,27 +834,37 @@ export type QuotesFocusOptions = {
   category?: Maybe<Scalars['String']['output']>;
 };
 
-export type QuotesDeliverablesHourly = {
-  __typename?: 'QuotesDeliverablesHourly';
+export type QuotesPhasesDeliverablesHourly = {
+  __typename?: 'QuotesPhasesDeliverablesHourly';
   id: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  phase?: Maybe<Scalars['String']['output']>;
-  tier?: Maybe<Scalars['String']['output']>;
   category?: Maybe<Scalars['String']['output']>;
   hours?: Maybe<Scalars['Float']['output']>;
 };
 
-export type QuotesDeliverablesFixed = {
-  __typename?: 'QuotesDeliverablesFixed';
+export type QuotesPhasesDeliverablesFixed = {
+  __typename?: 'QuotesPhasesDeliverablesFixed';
   id: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  phase?: Maybe<Scalars['String']['output']>;
-  tier?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['Float']['output']>;
   estHours?: Maybe<Scalars['Float']['output']>;
 };
 
-export type QuotesDeliverables = QuotesDeliverablesHourly | QuotesDeliverablesFixed;
+export type QuotesPhasesDeliverables = QuotesPhasesDeliverablesHourly | QuotesPhasesDeliverablesFixed;
+
+export type QuotesPhases = {
+  __typename?: 'QuotesPhases';
+  id: Scalars['String']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  tier?: Maybe<Scalars['String']['output']>;
+  deliverables?: Maybe<Array<Maybe<QuotesPhasesDeliverables>>>;
+};
+
+export type QuotesDiscounts = {
+  __typename?: 'QuotesDiscounts';
+  minHours?: Maybe<Scalars['Float']['output']>;
+  percent?: Maybe<Scalars['Float']['output']>;
+};
 
 export type Quotes = Node & Document & {
   __typename?: 'Quotes';
@@ -868,7 +878,8 @@ export type Quotes = Node & Document & {
   budget?: Maybe<QuotesBudget>;
   workTypes?: Maybe<Array<Maybe<QuotesWorkTypes>>>;
   focusOptions?: Maybe<Array<Maybe<QuotesFocusOptions>>>;
-  deliverables?: Maybe<Array<Maybe<QuotesDeliverables>>>;
+  phases?: Maybe<Array<Maybe<QuotesPhases>>>;
+  discounts?: Maybe<Array<Maybe<QuotesDiscounts>>>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
@@ -893,27 +904,35 @@ export type QuotesFocusOptionsFilter = {
   category?: InputMaybe<StringFilter>;
 };
 
-export type QuotesDeliverablesHourlyFilter = {
+export type QuotesPhasesDeliverablesHourlyFilter = {
   id?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
-  phase?: InputMaybe<StringFilter>;
-  tier?: InputMaybe<StringFilter>;
   category?: InputMaybe<StringFilter>;
   hours?: InputMaybe<NumberFilter>;
 };
 
-export type QuotesDeliverablesFixedFilter = {
+export type QuotesPhasesDeliverablesFixedFilter = {
   id?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
-  phase?: InputMaybe<StringFilter>;
-  tier?: InputMaybe<StringFilter>;
   amount?: InputMaybe<NumberFilter>;
   estHours?: InputMaybe<NumberFilter>;
 };
 
-export type QuotesDeliverablesFilter = {
-  hourly?: InputMaybe<QuotesDeliverablesHourlyFilter>;
-  fixed?: InputMaybe<QuotesDeliverablesFixedFilter>;
+export type QuotesPhasesDeliverablesFilter = {
+  hourly?: InputMaybe<QuotesPhasesDeliverablesHourlyFilter>;
+  fixed?: InputMaybe<QuotesPhasesDeliverablesFixedFilter>;
+};
+
+export type QuotesPhasesFilter = {
+  id?: InputMaybe<StringFilter>;
+  label?: InputMaybe<StringFilter>;
+  tier?: InputMaybe<StringFilter>;
+  deliverables?: InputMaybe<QuotesPhasesDeliverablesFilter>;
+};
+
+export type QuotesDiscountsFilter = {
+  minHours?: InputMaybe<NumberFilter>;
+  percent?: InputMaybe<NumberFilter>;
 };
 
 export type QuotesFilter = {
@@ -927,7 +946,8 @@ export type QuotesFilter = {
   budget?: InputMaybe<QuotesBudgetFilter>;
   workTypes?: InputMaybe<QuotesWorkTypesFilter>;
   focusOptions?: InputMaybe<QuotesFocusOptionsFilter>;
-  deliverables?: InputMaybe<QuotesDeliverablesFilter>;
+  phases?: InputMaybe<QuotesPhasesFilter>;
+  discounts?: InputMaybe<QuotesDiscountsFilter>;
 };
 
 export type QuotesConnectionEdges = {
@@ -1319,27 +1339,35 @@ export type QuotesFocusOptionsMutation = {
   category?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type QuotesDeliverablesHourlyMutation = {
+export type QuotesPhasesDeliverablesHourlyMutation = {
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<Scalars['String']['input']>;
-  tier?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
   hours?: InputMaybe<Scalars['Float']['input']>;
 };
 
-export type QuotesDeliverablesFixedMutation = {
+export type QuotesPhasesDeliverablesFixedMutation = {
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<Scalars['String']['input']>;
-  tier?: InputMaybe<Scalars['String']['input']>;
   amount?: InputMaybe<Scalars['Float']['input']>;
   estHours?: InputMaybe<Scalars['Float']['input']>;
 };
 
-export type QuotesDeliverablesMutation = {
-  hourly?: InputMaybe<QuotesDeliverablesHourlyMutation>;
-  fixed?: InputMaybe<QuotesDeliverablesFixedMutation>;
+export type QuotesPhasesDeliverablesMutation = {
+  hourly?: InputMaybe<QuotesPhasesDeliverablesHourlyMutation>;
+  fixed?: InputMaybe<QuotesPhasesDeliverablesFixedMutation>;
+};
+
+export type QuotesPhasesMutation = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  tier?: InputMaybe<Scalars['String']['input']>;
+  deliverables?: InputMaybe<Array<InputMaybe<QuotesPhasesDeliverablesMutation>>>;
+};
+
+export type QuotesDiscountsMutation = {
+  minHours?: InputMaybe<Scalars['Float']['input']>;
+  percent?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type QuotesMutation = {
@@ -1353,7 +1381,8 @@ export type QuotesMutation = {
   budget?: InputMaybe<QuotesBudgetMutation>;
   workTypes?: InputMaybe<Array<InputMaybe<QuotesWorkTypesMutation>>>;
   focusOptions?: InputMaybe<Array<InputMaybe<QuotesFocusOptionsMutation>>>;
-  deliverables?: InputMaybe<Array<InputMaybe<QuotesDeliverablesMutation>>>;
+  phases?: InputMaybe<Array<InputMaybe<QuotesPhasesMutation>>>;
+  discounts?: InputMaybe<Array<InputMaybe<QuotesDiscountsMutation>>>;
 };
 
 export type ProjectsPartsFragment = { __typename: 'Projects', slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null };
@@ -1366,7 +1395,7 @@ export type ServicesPartsFragment = { __typename: 'Services', items?: Array<stri
 
 export type DesignPartsFragment = { __typename: 'Design', colors?: { __typename: 'DesignColors', background?: string | null, text?: string | null, textMuted?: string | null, textBright?: string | null, border?: string | null, labelColor?: string | null } | null, typography?: { __typename: 'DesignTypography', sans?: string | null, display?: string | null, headings?: { __typename: 'DesignTypographyHeadings', weight?: string | null, letterSpacing?: string | null, lineHeight?: string | null } | null, labels?: { __typename: 'DesignTypographyLabels', size?: string | null, letterSpacing?: string | null } | null, body?: { __typename: 'DesignTypographyBody', size?: string | null, lineHeight?: string | null } | null } | null, textBlock?: { __typename: 'DesignTextBlock', headingSize?: string | null, headingWeight?: string | null, headingLetterSpacing?: string | null, headingLineHeight?: string | null, bodySize?: string | null, bodyLineHeight?: string | null, maxWidth?: string | null, gap?: string | null } | null, buttons?: { __typename: 'DesignButtons', fontSize?: string | null, letterSpacing?: string | null, paddingV?: string | null, paddingH?: string | null } | null };
 
-export type QuotesPartsFragment = { __typename: 'Quotes', slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, deliverables?: Array<{ __typename: 'QuotesDeliverablesHourly', id: string, name?: string | null, phase?: string | null, tier?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesDeliverablesFixed', id: string, name?: string | null, phase?: string | null, tier?: string | null, amount?: number | null, estHours?: number | null } | null> | null };
+export type QuotesPartsFragment = { __typename: 'Quotes', slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, phases?: Array<{ __typename: 'QuotesPhases', id: string, label?: string | null, tier?: string | null, deliverables?: Array<{ __typename: 'QuotesPhasesDeliverablesHourly', id: string, name?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesPhasesDeliverablesFixed', id: string, name?: string | null, amount?: number | null, estHours?: number | null } | null> | null } | null> | null, discounts?: Array<{ __typename: 'QuotesDiscounts', minHours?: number | null, percent?: number | null } | null> | null };
 
 export type ProjectsQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -1468,7 +1497,7 @@ export type QuotesQueryVariables = Exact<{
 }>;
 
 
-export type QuotesQuery = { __typename?: 'Query', quotes: { __typename: 'Quotes', id: string, slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, deliverables?: Array<{ __typename: 'QuotesDeliverablesHourly', id: string, name?: string | null, phase?: string | null, tier?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesDeliverablesFixed', id: string, name?: string | null, phase?: string | null, tier?: string | null, amount?: number | null, estHours?: number | null } | null> | null } };
+export type QuotesQuery = { __typename?: 'Query', quotes: { __typename: 'Quotes', id: string, slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, phases?: Array<{ __typename: 'QuotesPhases', id: string, label?: string | null, tier?: string | null, deliverables?: Array<{ __typename: 'QuotesPhasesDeliverablesHourly', id: string, name?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesPhasesDeliverablesFixed', id: string, name?: string | null, amount?: number | null, estHours?: number | null } | null> | null } | null> | null, discounts?: Array<{ __typename: 'QuotesDiscounts', minHours?: number | null, percent?: number | null } | null> | null } };
 
 export type QuotesConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -1480,7 +1509,7 @@ export type QuotesConnectionQueryVariables = Exact<{
 }>;
 
 
-export type QuotesConnectionQuery = { __typename?: 'Query', quotesConnection: { __typename?: 'QuotesConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'QuotesConnectionEdges', cursor: string, node?: { __typename: 'Quotes', id: string, slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, deliverables?: Array<{ __typename: 'QuotesDeliverablesHourly', id: string, name?: string | null, phase?: string | null, tier?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesDeliverablesFixed', id: string, name?: string | null, phase?: string | null, tier?: string | null, amount?: number | null, estHours?: number | null } | null> | null } | null } | null> | null } };
+export type QuotesConnectionQuery = { __typename?: 'Query', quotesConnection: { __typename?: 'QuotesConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'QuotesConnectionEdges', cursor: string, node?: { __typename: 'Quotes', id: string, slug: string, client: string, currency?: string | null, eyebrow?: string | null, title?: string | null, lead?: string | null, contactEmail?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, budget?: { __typename: 'QuotesBudget', min?: number | null, max?: number | null, step?: number | null, default?: number | null } | null, workTypes?: Array<{ __typename: 'QuotesWorkTypes', id: string, label?: string | null, rate?: number | null } | null> | null, focusOptions?: Array<{ __typename: 'QuotesFocusOptions', id?: string | null, label?: string | null, category?: string | null } | null> | null, phases?: Array<{ __typename: 'QuotesPhases', id: string, label?: string | null, tier?: string | null, deliverables?: Array<{ __typename: 'QuotesPhasesDeliverablesHourly', id: string, name?: string | null, category?: string | null, hours?: number | null } | { __typename: 'QuotesPhasesDeliverablesFixed', id: string, name?: string | null, amount?: number | null, estHours?: number | null } | null> | null } | null> | null, discounts?: Array<{ __typename: 'QuotesDiscounts', minHours?: number | null, percent?: number | null } | null> | null } | null } | null> | null } };
 
 export const ProjectsPartsFragmentDoc = gql`
     fragment ProjectsParts on Projects {
@@ -1704,24 +1733,31 @@ export const QuotesPartsFragmentDoc = gql`
     label
     category
   }
-  deliverables {
+  phases {
     __typename
-    ... on QuotesDeliverablesHourly {
-      id
-      name
-      phase
-      tier
-      category
-      hours
+    id
+    label
+    tier
+    deliverables {
+      __typename
+      ... on QuotesPhasesDeliverablesHourly {
+        id
+        name
+        category
+        hours
+      }
+      ... on QuotesPhasesDeliverablesFixed {
+        id
+        name
+        amount
+        estHours
+      }
     }
-    ... on QuotesDeliverablesFixed {
-      id
-      name
-      phase
-      tier
-      amount
-      estHours
-    }
+  }
+  discounts {
+    __typename
+    minHours
+    percent
   }
 }
     `;
@@ -2153,7 +2189,7 @@ export const ExperimentalGetTinaClient = () =>
   getSdk(
     generateRequester(
       createClient({
-        url: "https://content.tinajs.io/2.2/content/92038ec2-d613-46af-82d5-a0a8deca27a6/github/main",
+        url: "http://localhost:4001/graphql",
         queries,
       })
     )
