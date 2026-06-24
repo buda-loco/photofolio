@@ -25,6 +25,11 @@ const tinaClientTurbo = hasGeneratedClient
 const config = {
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Images uploaded via the Tina Cloud media manager (/admin) are served from
+    // assets.tina.io — allowlist it so next/image can optimize them (else 400).
+    remotePatterns: [
+      { protocol: 'https', hostname: 'assets.tina.io' },
+    ],
   },
   turbopack: {
     resolveAlias: {
