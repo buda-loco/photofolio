@@ -2,7 +2,8 @@
 .home-intro {
   padding: var(--sp-16) var(--page-margin) var(--sp-8);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* col 1 wider so long role words (e.g. "Cinematographer") don't bleed into the pitch */
+  grid-template-columns: 1.6fr 1fr;
   gap: var(--sp-8);
   align-items: end;
 }
@@ -169,7 +170,8 @@
   height: 100%;
   backface-visibility: hidden;
   font-family: 'Adrianna Extended', var(--font-display);
-  font-size: clamp(2.5rem, 7vw, 6rem);
+  /* tamed vw + cap so the longest role word fits col 1 across desktop widths */
+  font-size: clamp(2.25rem, 4.8vw, 5.25rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -215,7 +217,8 @@
   .hero-cube-face {
     position: relative;
     display: inline-block;
-    font-size: clamp(2rem, 9vw, 3.5rem);
+    /* slightly tamed so "Cinematographer" fits even on small phones */
+    font-size: clamp(1.875rem, 8vw, 3.5rem);
   }
 
   .hero-cube-face[data-face="0"] {
