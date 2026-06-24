@@ -11,11 +11,14 @@ async function queryCollection<K extends string>(
   collection: K,
   relativePath: string,
 ) {
-  if (!tinaClient) return null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c = tinaClient as any
+  if (!c?.queries) return null
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return await (tinaClient as any).queries[collection]({ relativePath })
-  } catch {
+    return await c.queries[collection]({ relativePath })
+  } catch (e) {
+    // Don't fail the page — fall back to local JSON — but don't fail silently.
+    console.error(`[tina] query ${collection}/${relativePath} failed:`, (e as Error)?.message)
     return null
   }
 }
