@@ -4,10 +4,9 @@
   "currency": "USD",
   "title": "Scope & pricing",
   "contactEmail": "hello@benjaminarnedo.com",
-  "lead": "A sample quote for a product brand + build. Core scope ships the identity, design system and a working marketing site first; extras layer on motion, illustration and campaign work. Move the slider to see scope adjust to budget.",
+  "lead": "Core covers the four deliverables — brand identity, design system, marketing site and guidelines. Anything beyond that (illustration, motion, CMS, campaign) sits separately as optional extras. Lower the budget and the optional work drops away before anything core.",
   "budget": { "min": 0, "max": 40000, "step": 1000, "default": 18000 },
   "workTypes": [
-    { "id": "strategy", "label": "Strategy & research", "rate": 60 },
     { "id": "design", "label": "Design", "rate": 110 },
     { "id": "engineering", "label": "Engineering", "rate": 140 },
     { "id": "motion", "label": "Motion", "rate": 150 }
@@ -24,26 +23,25 @@
   "promoCode": "LAUNCH",
   "phases": [
     {
-      "id": "strategy",
-      "label": "Strategy",
-      "tier": "core",
-      "deliverables": [
-        { "_template": "hourly", "id": "discovery", "name": "Discovery & user research", "category": "strategy", "hours": 10 },
-        { "_template": "hourly", "id": "product-strategy", "name": "Product & positioning strategy", "category": "strategy", "hours": 16 }
-      ]
-    },
-    {
       "id": "identity",
-      "label": "Identity",
+      "label": "Brand identity",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "identity", "name": "Brand identity & logo", "category": "design", "hours": 20 },
-        { "_template": "hourly", "id": "design-system", "name": "Design system & UI kit", "category": "design", "hours": 24 }
+        { "_template": "hourly", "id": "identity", "name": "Logo & identity system", "category": "design", "hours": 20 }
       ]
     },
     {
-      "id": "build",
-      "label": "Build",
+      "id": "design-system",
+      "label": "Design system",
+      "tier": "core",
+      "deliverables": [
+        { "_template": "hourly", "id": "ui-kit", "name": "UI component kit", "category": "design", "hours": 16 },
+        { "_template": "hourly", "id": "tokens", "name": "Design tokens (type, colour, spacing)", "category": "design", "hours": 8 }
+      ]
+    },
+    {
+      "id": "marketing-site",
+      "label": "Marketing site",
       "tier": "core",
       "deliverables": [
         { "_template": "hourly", "id": "site-design", "name": "Marketing site design", "category": "design", "hours": 20 },
