@@ -3,34 +3,75 @@
   "client": "PlaceWorks",
   "currency": "AUD",
   "title": "Scope & pricing",
-  "contactEmail": "hello@benjaminarnedo.com",
   "lead": "This quote delivers the brief first — core identity, the “form-own” adaptive system, applications and guidelines. Everything beyond that sits separately as optional extras. Lower the budget and the optional work drops away before anything the brief needs.",
-  "budget": { "min": 0, "max": 25000, "step": 500, "default": 13000 },
+  "contactEmail": "hello@benjaminarnedo.com",
+  "budget": {
+    "min": 0,
+    "max": 25000,
+    "step": 500,
+    "default": 13000
+  },
   "workTypes": [
-    { "id": "strategy", "label": "Brand & strategy", "rate": 50 },
-    { "id": "design", "label": "Design", "rate": 100 },
-    { "id": "motion", "label": "Motion & video", "rate": 150 }
+    {
+      "id": "strategy",
+      "label": "Brand & strategy",
+      "rate": 50
+    },
+    {
+      "id": "design",
+      "label": "Design",
+      "rate": 100
+    },
+    {
+      "id": "motion",
+      "label": "Motion & video",
+      "rate": 150
+    }
   ],
   "focusOptions": [
-    { "id": "balanced", "label": "Balanced", "category": null },
-    { "id": "design", "label": "Design first", "category": "design" },
-    { "id": "motion", "label": "Motion first", "category": "motion" }
+    {
+      "id": "balanced",
+      "label": "Balanced",
+      "category": null
+    },
+    {
+      "id": "design",
+      "label": "Design first",
+      "category": "design"
+    },
+    {
+      "id": "motion",
+      "label": "Motion first",
+      "category": "motion"
+    }
   ],
-  "discounts": [
-    { "minHours": 80, "percent": 12 },
-    { "minHours": 120, "percent": 20 },
-    { "minHours": 200, "percent": 30 }
-  ],
-  "promoCode": "BUNDLE",
   "phases": [
     {
       "id": "strategy",
       "label": "Strategy",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "discovery", "name": "Discovery, listening & stakeholder workshops", "category": "strategy", "hours": 8 },
-        { "_template": "hourly", "id": "positioning", "name": "Brand strategy & positioning", "category": "strategy", "hours": 12 },
-        { "_template": "hourly", "id": "tensions", "name": "Creative-tension & narrative mapping", "category": "strategy", "hours": 8 }
+        {
+          "id": "discovery",
+          "name": "Discovery, listening & stakeholder workshops",
+          "category": "strategy",
+          "hours": 8,
+          "_template": "hourly"
+        },
+        {
+          "id": "positioning",
+          "name": "Brand strategy & positioning",
+          "category": "strategy",
+          "hours": 12,
+          "_template": "hourly"
+        },
+        {
+          "id": "tensions",
+          "name": "Creative-tension & narrative mapping",
+          "category": "strategy",
+          "hours": 8,
+          "_template": "hourly"
+        }
       ]
     },
     {
@@ -38,9 +79,27 @@
       "label": "Identity",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "wordmark", "name": "Core wordmark / logotype", "category": "design", "hours": 16 },
-        { "_template": "hourly", "id": "type", "name": "Humanist typography system", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "colour", "name": "Soft, layered colour & transparency system", "category": "design", "hours": 8 }
+        {
+          "id": "wordmark",
+          "name": "Core wordmark / logotype",
+          "category": "design",
+          "hours": 16,
+          "_template": "hourly"
+        },
+        {
+          "id": "type",
+          "name": "Humanist typography system",
+          "category": "design",
+          "hours": 10,
+          "_template": "hourly"
+        },
+        {
+          "id": "colour",
+          "name": "Soft, layered colour & transparency system",
+          "category": "design",
+          "hours": 8,
+          "_template": "hourly"
+        }
       ]
     },
     {
@@ -48,7 +107,13 @@
       "label": "System",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "formown", "name": "“Form-own” modular layout system", "category": "design", "hours": 18 }
+        {
+          "id": "formown",
+          "name": "“Form-own” modular layout system",
+          "category": "design",
+          "hours": 18,
+          "_template": "hourly"
+        }
       ]
     },
     {
@@ -56,9 +121,27 @@
       "label": "Applications",
       "tier": "core",
       "deliverables": [
-        { "_template": "hourly", "id": "reports", "name": "Report & document templates", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "slides", "name": "Presentation system", "category": "design", "hours": 8 },
-        { "_template": "hourly", "id": "digital", "name": "Conversational digital interface", "category": "design", "hours": 16 }
+        {
+          "id": "reports",
+          "name": "Report & document templates",
+          "category": "design",
+          "hours": 10,
+          "_template": "hourly"
+        },
+        {
+          "id": "slides",
+          "name": "Presentation system",
+          "category": "design",
+          "hours": 8,
+          "_template": "hourly"
+        },
+        {
+          "id": "digital",
+          "name": "Conversational digital interface",
+          "category": "design",
+          "hours": 16,
+          "_template": "hourly"
+        }
       ]
     },
     {
@@ -66,7 +149,13 @@
       "label": "Guidelines",
       "tier": "core",
       "deliverables": [
-        { "_template": "fixed", "id": "guidelines", "name": "Brand guidelines & usage playbook", "amount": 1200, "estHours": 12 }
+        {
+          "id": "guidelines",
+          "name": "Brand guidelines & usage playbook",
+          "amount": 1200,
+          "estHours": 12,
+          "_template": "fixed"
+        }
       ]
     },
     {
@@ -74,13 +163,64 @@
       "label": "Extras",
       "tier": "extra",
       "deliverables": [
-        { "_template": "hourly", "id": "hoardings", "name": "Hoardings & site signage system", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "social", "name": "Social & campaign kit", "category": "design", "hours": 10 },
-        { "_template": "hourly", "id": "generative", "name": "Fully generative identity engine", "category": "design", "hours": 20 },
-        { "_template": "hourly", "id": "motion", "name": "Motion & interaction principles", "category": "motion", "hours": 12 },
-        { "_template": "hourly", "id": "motion-guide", "name": "Motion language guide", "category": "motion", "hours": 8 },
-        { "_template": "fixed", "id": "video", "name": "Launch film / hero video", "amount": 2400, "estHours": 16 }
+        {
+          "id": "hoardings",
+          "name": "Hoardings & site signage system",
+          "category": "design",
+          "hours": 10,
+          "_template": "hourly"
+        },
+        {
+          "id": "social",
+          "name": "Social & campaign kit",
+          "category": "design",
+          "hours": 10,
+          "_template": "hourly"
+        },
+        {
+          "id": "generative",
+          "name": "Fully generative identity engine",
+          "category": "design",
+          "hours": 20,
+          "_template": "hourly"
+        },
+        {
+          "id": "motion",
+          "name": "Motion & interaction principles",
+          "category": "motion",
+          "hours": 12,
+          "_template": "hourly"
+        },
+        {
+          "id": "motion-guide",
+          "name": "Motion language guide",
+          "category": "motion",
+          "hours": 8,
+          "_template": "hourly"
+        },
+        {
+          "id": "video",
+          "name": "Launch film / hero video",
+          "amount": 2400,
+          "estHours": 16,
+          "_template": "fixed"
+        }
       ]
     }
-  ]
+  ],
+  "discounts": [
+    {
+      "minHours": 80,
+      "percent": 12
+    },
+    {
+      "minHours": 120,
+      "percent": 20
+    },
+    {
+      "minHours": 200,
+      "percent": 30
+    }
+  ],
+  "promoCode": "MATESRATES"
 }
