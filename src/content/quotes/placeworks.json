@@ -21,6 +21,11 @@
       "id": "motion",
       "label": "Motion & video",
       "rate": 150
+    },
+    {
+      "id": "web",
+      "label": "Web design",
+      "rate": 80
     }
   ],
   "focusOptions": [
