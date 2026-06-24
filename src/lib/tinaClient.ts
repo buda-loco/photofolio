@@ -1,11 +1,38 @@
-// Server-only — imports the generated Tina client which uses Node APIs.
-// Client components must import from tinaHelpers.ts instead.
+// Server-only. Constructs the Tina Cloud client directly from env vars +
+// the committed generated `queries`.
+//
+// Why not import the generated client (tina/__generated__/client.ts)?
+// That file is gitignored and only created by `tinacms build`. On Vercel the
+// `@tina-client` build alias resolved to a null stub (the file wasn't present
+// when Next bundled), so every query returned null and visual editing couldn't
+// bind. Building the client here from env vars is deterministic and avoids the
+// baked token + local cacheDir in the generated client.
 
-// @ts-ignore — `@tina-client` alias resolved in next.config.mjs (turbopack.resolveAlias + webpack).
-import tinaClient from '@tina-client'
+import { createClient } from 'tinacms/dist/client'
+import { queries } from '../../tina/__generated__/types'
 
 // Re-export shared types/helpers so server pages can import from one place
 export { type TinaQueryResult, buildTinaResult, buildTinaProps } from './tinaHelpers'
+
+const branch =
+  process.env.GITHUB_BRANCH ||
+  process.env.VERCEL_GIT_COMMIT_REF ||
+  'main'
+
+const clientId = process.env.TINA_PUBLIC_CLIENT_ID
+const token = process.env.TINA_TOKEN
+
+// Tina GraphQL content-API major version (matches tina/config.ts + generated client).
+const TINA_API_VERSION = '2.2'
+
+const tinaClient =
+  clientId && token
+    ? createClient({
+        url: `https://content.tinajs.io/${TINA_API_VERSION}/content/${clientId}/github/${branch}`,
+        token,
+        queries,
+      })
+    : null
 
 async function queryCollection<K extends string>(
   collection: K,
@@ -17,43 +44,10 @@ async function queryCollection<K extends string>(
   try {
     return await c.queries[collection]({ relativePath })
   } catch (e) {
-    // Don't fail the page — fall back to local JSON — but don't fail silently.
+    // Fall back to local JSON, but don't fail silently.
     console.error(`[tina] query ${collection}/${relativePath} failed:`, (e as Error)?.message)
     return null
   }
-}
-
-// TEMP diagnostic — remove after debugging Tina binding on Vercel.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function __tinaDiag(): Promise<Record<string, unknown>> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const c = tinaClient as any
-  const info: Record<string, unknown> = {
-    clientNull: !c,
-    hasQueries: !!c?.queries,
-    clientKeys: c ? Object.keys(c).slice(0, 12) : null,
-  }
-  try {
-    const fs = await import('fs')
-    const path = await import('path')
-    info.cwd = process.cwd()
-    info.clientExists = fs.existsSync(path.resolve('./tina/__generated__/client.ts'))
-    info.clientExistsAbs = fs.existsSync('/var/task/tina/__generated__/client.ts')
-    info.tinaDir = fs.existsSync(path.resolve('./tina')) ? fs.readdirSync(path.resolve('./tina')) : 'no tina dir'
-    info.envClientId = !!process.env.TINA_PUBLIC_CLIENT_ID
-    info.envToken = !!process.env.TINA_TOKEN
-  } catch (e) { info.fsErr = (e as Error)?.message }
-  try {
-    const r = await c.queries.quotes({ relativePath: 'placeworks.json' })
-    info.queryOk = true
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    info.deliverables = (r as any)?.data?.quotes?.deliverables?.length ?? null
-  } catch (e) {
-    info.queryOk = false
-    info.error = (e as Error)?.message
-    info.stack = (e as Error)?.stack?.split('\n').slice(0, 4).join(' | ')
-  }
-  return info
 }
 
 export function queryProject(slug: string) {

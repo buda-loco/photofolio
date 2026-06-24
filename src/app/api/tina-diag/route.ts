@@ -1,9 +1,15 @@
-import { __tinaDiag } from '@/lib/tinaClient'
+import { queryQuote } from '@/lib/tinaClient'
 
-// TEMP diagnostic route — remove after debugging Tina binding on Vercel.
+// TEMP diagnostic route — remove after verifying Tina binding on Vercel.
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const info = await __tinaDiag()
-  return Response.json(info)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r = (await queryQuote('placeworks')) as any
+  return Response.json({
+    bound: !!r?.data,
+    deliverables: r?.data?.quotes?.deliverables?.length ?? null,
+    envClientId: !!process.env.TINA_PUBLIC_CLIENT_ID,
+    envToken: !!process.env.TINA_TOKEN,
+  })
 }

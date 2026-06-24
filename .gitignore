@@ -5,5 +5,9 @@ node_modules
 .env
 .env.local
 .vercel
-tina/__generated__
+tina/__generated__/*
+# Keep the generated types/queries committed so the Tina client can be built
+# from env vars at runtime (the generated client.ts has a baked token + local
+# cacheDir, so we construct our own client in src/lib/tinaClient.ts instead).
+!tina/__generated__/types.ts
 tsconfig.tsbuildinfo
