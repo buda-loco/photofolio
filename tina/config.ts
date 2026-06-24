@@ -564,6 +564,7 @@ export default defineConfig({
               { name: 'percent', label: 'Discount % (off hourly work)', type: 'number' },
             ],
           },
+          { name: 'promoCode', label: 'Promo code (blank = bundles open; set = locked until entered)', type: 'string' },
         ],
       },
     ],

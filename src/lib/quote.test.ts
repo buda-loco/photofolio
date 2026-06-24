@@ -15,11 +15,12 @@ const fixed = (over: Partial<Deliverable> = {}): Deliverable =>
 const phase = (id: string, tier: 'core' | 'extra', deliverables: Deliverable[]): Phase =>
   ({ id, label: id, tier, deliverables });
 
-const baseConfig = (phases: Phase[], max = 25000, discounts: { minHours: number; percent: number }[] = []): QuoteConfig => ({
+const baseConfig = (phases: Phase[], max = 25000, discounts: { minHours: number; percent: number }[] = [], promoCode = ''): QuoteConfig => ({
   slug: 't', client: 'T', currency: 'AUD', title: 'x', lead: '', contactEmail: 'a@b.c',
   workTypes: [{ id: 'strategy', label: 'S', rate: 50 }, { id: 'design', label: 'D', rate: 100 }],
   phases,
   discounts,
+  promoCode,
   focusOptions: [{ id: 'balanced', label: 'Balanced', category: null }],
   budget: { min: 0, max, step: 500, default: 13000 },
 });
@@ -169,5 +170,36 @@ describe('computeQuote — volume discount', () => {
     const p = computeQuote(cfg, 4000, null);
     expect(p.discountPercent).toBe(12);
     expect(p.discountMinHours).toBe(35);
+  });
+});
+
+describe('computeQuote — promo gate', () => {
+  const big = hourly({ id: 'b', category: 'design', hours: 30 }); // 30h, $3000
+  const gated = baseConfig([phase('core', 'core', [big])], 25000, [{ minHours: 20, percent: 10 }], 'SAVE10');
+
+  it('is locked (no discount) without a code', () => {
+    const p = computeQuote(gated, 3000, null, '');
+    expect(p.promoRequired).toBe(true);
+    expect(p.promoUnlocked).toBe(false);
+    expect(p.discountPercent).toBe(0);
+    expect(p.finalSpent).toBe(p.spent);
+  });
+
+  it('unlocks with the correct code (case/space-insensitive)', () => {
+    const p = computeQuote(gated, 3000, null, '  save10 ');
+    expect(p.promoUnlocked).toBe(true);
+    expect(p.discountPercent).toBe(10);
+    expect(p.finalSpent).toBe(2700);
+  });
+
+  it('stays locked with a wrong code', () => {
+    expect(computeQuote(gated, 3000, null, 'nope').discountPercent).toBe(0);
+  });
+
+  it('applies openly when no promo code is configured', () => {
+    const open = baseConfig([phase('core', 'core', [big])], 25000, [{ minHours: 20, percent: 10 }]);
+    const p = computeQuote(open, 3000, null, '');
+    expect(p.promoRequired).toBe(false);
+    expect(p.discountPercent).toBe(10);
   });
 });

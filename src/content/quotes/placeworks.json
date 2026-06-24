@@ -17,10 +17,11 @@
     { "id": "motion", "label": "Motion first", "category": "motion" }
   ],
   "discounts": [
-    { "minHours": 80, "percent": 5 },
-    { "minHours": 120, "percent": 10 },
-    { "minHours": 200, "percent": 15 }
+    { "minHours": 80, "percent": 12 },
+    { "minHours": 120, "percent": 20 },
+    { "minHours": 200, "percent": 30 }
   ],
+  "promoCode": "BUNDLE",
   "phases": [
     {
       "id": "strategy",

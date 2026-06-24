@@ -29,13 +29,14 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
 
   const [budget, setBudget] = useState(config.budget.default);
   const [focus, setFocus] = useState<string | null>(null);
+  const [promo, setPromo] = useState('');
 
   // Live edits can move the slider bounds out from under the current value.
   useEffect(() => {
     setBudget((b) => clamp(b, config.budget.min, config.budget.max));
   }, [config.budget.min, config.budget.max]);
 
-  const plan = useMemo(() => computeQuote(config, budget, focus), [config, budget, focus]);
+  const plan = useMemo(() => computeQuote(config, budget, focus, promo), [config, budget, focus, promo]);
   const { currency } = config;
 
   const itemCost = (d: Deliverable) => cost(d, plan.rates);
@@ -166,8 +167,10 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
               </ul>
               {config.discounts.length > 0 && (
                 <>
-                  <span className="label quote-subhead" style={{ marginTop: 'var(--sp-3)' }}>Hours bundles</span>
-                  <ul className="quote-rates-list">
+                  <span className="label quote-subhead" style={{ marginTop: 'var(--sp-3)' }}>
+                    Hours bundles {plan.promoRequired && (plan.promoUnlocked ? '· unlocked' : '· locked')}
+                  </span>
+                  <ul className="quote-rates-list" data-locked={plan.promoRequired && !plan.promoUnlocked}>
                     {config.discounts.map((dsc) => (
                       <li key={dsc.minHours} className="quote-rate-row" data-active={plan.discountMinHours === dsc.minHours}>
                         <span>{dsc.minHours}+ hrs</span>
@@ -175,6 +178,22 @@ export default function QuoteBuilder(props: TinaQueryResult<'quotes'>) {
                       </li>
                     ))}
                   </ul>
+                  {plan.promoRequired && (
+                    <div className="quote-promo">
+                      <input
+                        className="quote-promo-input"
+                        type="text"
+                        value={promo}
+                        onChange={(e) => setPromo(e.target.value)}
+                        placeholder="Promo code"
+                        aria-label="Promo code"
+                        data-ok={plan.promoUnlocked}
+                      />
+                      <span className="quote-promo-status" data-ok={plan.promoUnlocked}>
+                        {plan.promoUnlocked ? '✓ unlocked' : 'Enter code to unlock'}
+                      </span>
+                    </div>
+                  )}
                 </>
               )}
             </div>

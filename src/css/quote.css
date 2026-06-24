@@ -231,6 +231,56 @@
   opacity: 0.7;
 }
 
+/* Promo-gated bundles */
+.quote-rates-list[data-locked='true'] {
+  opacity: 0.45;
+}
+
+.quote-promo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.quote-promo-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55em 0.8em;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: border-color 0.2s var(--ease-out);
+}
+
+.quote-promo-input::placeholder {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-muted);
+}
+
+.quote-promo-input:focus,
+.quote-promo-input[data-ok='true'] {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.quote-promo-status {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.quote-promo-status[data-ok='true'] {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 /* ── Right: live scope ── */
 .quote-scope {
   display: flex;

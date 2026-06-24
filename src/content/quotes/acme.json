@@ -18,9 +18,10 @@
     { "id": "engineering", "label": "Build first", "category": "engineering" }
   ],
   "discounts": [
-    { "minHours": 100, "percent": 7 },
-    { "minHours": 160, "percent": 12 }
+    { "minHours": 100, "percent": 15 },
+    { "minHours": 160, "percent": 25 }
   ],
+  "promoCode": "LAUNCH",
   "phases": [
     {
       "id": "strategy",

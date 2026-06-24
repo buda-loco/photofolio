@@ -62,6 +62,7 @@ export interface QuoteConfig {
   workTypes: WorkType[];
   phases: Phase[];
   discounts: Discount[];
+  promoCode: string; // '' = bundles apply openly; set = bundles locked until entered
   focusOptions: FocusOption[];
   budget: { min: number; max: number; step: number; default: number };
 }
@@ -207,6 +208,7 @@ export function normalizeQuote(raw: any, slug = 'quote'): QuoteConfig {
     workTypes,
     phases,
     discounts,
+    promoCode: str(raw?.promoCode),
     focusOptions,
     budget: normalizeBudget(raw?.budget),
   };
@@ -232,7 +234,9 @@ export interface QuotePlan {
   remaining: number;          // budget - spent
   hours: number;              // total in-scope hours (hourly + fixed estHours)
   hourlySpent: number;        // included hourly cost (the discountable base)
-  discountPercent: number;    // 0 if no bundle reached
+  promoRequired: boolean;     // a promo code gates the bundles
+  promoUnlocked: boolean;     // bundles currently apply (no gate, or correct code)
+  discountPercent: number;    // 0 if no bundle reached / locked
   discountMinHours: number;   // the reached tier's threshold (0 if none)
   discountAmount: number;     // money saved
   finalSpent: number;         // spent - discountAmount (what the client pays)
@@ -240,8 +244,9 @@ export interface QuotePlan {
   nextExtra?: Deliverable;
 }
 
-/** Fund core phases first (config order), then extra phases (focus-ordered). Greedy. */
-export function computeQuote(config: QuoteConfig, rawBudget: number, focus: string | null): QuotePlan {
+/** Fund core phases first (config order), then extra phases (focus-ordered). Greedy.
+ *  Volume bundles only apply when unlocked: no promo code set, or `promoInput` matches. */
+export function computeQuote(config: QuoteConfig, rawBudget: number, focus: string | null, promoInput = ''): QuotePlan {
   const rates = rateMapOf(config.workTypes);
   const budget = clamp(rawBudget, config.budget.min, config.budget.max);
   const c = (d: Deliverable) => cost(d, rates);
@@ -284,8 +289,11 @@ export function computeQuote(config: QuoteConfig, rawBudget: number, focus: stri
   const coreFunded = included.filter((d) => coreIds.has(d.id)).length;
   const hours = included.reduce((s, d) => s + hoursOf(d), 0);
 
-  // Volume bundle: highest-threshold tier whose minHours is reached.
-  const reached = config.discounts.filter((x) => hours >= x.minHours);
+  // Volume bundle: highest-threshold tier whose minHours is reached — but only
+  // when unlocked (no promo code configured, or the entered code matches).
+  const promoRequired = !!config.promoCode;
+  const promoUnlocked = !promoRequired || promoInput.trim().toLowerCase() === config.promoCode.trim().toLowerCase();
+  const reached = promoUnlocked ? config.discounts.filter((x) => hours >= x.minHours) : [];
   const tier = reached.length ? reached[reached.length - 1] : undefined;
   const discountPercent = tier?.percent ?? 0;
   const hourlySpent = included.filter((d) => d.pricing === 'hourly').reduce((s, d) => s + c(d), 0);
@@ -309,6 +317,8 @@ export function computeQuote(config: QuoteConfig, rawBudget: number, focus: stri
     remaining: budget - spent,
     hours,
     hourlySpent,
+    promoRequired,
+    promoUnlocked,
     discountPercent,
     discountMinHours: tier?.minHours ?? 0,
     discountAmount,
