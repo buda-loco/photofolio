@@ -44,6 +44,13 @@ src/
       AboutClient.tsx
     how-i-work/page.tsx
     contact/page.tsx
+    presentations/          # private client pitch decks (noindex)
+      placeworks/           # PlaceWorks interactive identity deck
+        layout.tsx          # .pw-pitch wrapper — hides site nav/footer, warm palette
+        page.tsx            # deck index — hero, brief, "why interactive", concept cards
+        01|02|03/page.tsx   # one page per concept (rationale + live generators)
+        _components/         # interactive generators + proof mockups
+        presentations.css   # self-contained deck styles
     robots.ts
     sitemap.ts
   components/
@@ -83,6 +90,7 @@ src/
 public/
   fonts/                  # WOFF2 font files (served statically)
   images/                 # project images
+  presentations/          # deck assets (slider proofs, wordmarks, tree.glb)
   llms.txt                # agentic discoverability (AI crawlers)
   logo.svg                # site wordmark logo (used in desktop nav)
   logo-mini.svg           # icon logo (used in scroll mini, footer, mobile nav)
@@ -407,6 +415,50 @@ Production build runs `next build` only — `tinacms build` is not included beca
 3. Set `"featured": true` (or omit — defaults to shown)
 4. Use hyphenated slugs only (e.g. `my-project`, not `my project`)
 5. Push to `main` — Vercel deploys automatically
+
+---
+
+## Presentations (client pitch decks)
+
+Private, self-contained pitch decks under `/presentations/<client>` — used to
+present brand/identity work directly in the browser instead of a static PDF.
+First deck: **PlaceWorks** (`/presentations/placeworks`).
+
+- **Noindex + isolated chrome:** `placeworks/layout.tsx` sets
+  `robots: { index: false, follow: false }` and wraps everything in a
+  `.pw-pitch` div. That class triggers `:has()` rules in `presentations.css`
+  that hide the global site nav/footer and switch to the deck's warm "paper"
+  palette — so the deck doesn't inherit the main site shell.
+- **Self-contained styles:** all deck CSS lives in
+  `placeworks/presentations.css` (imported by the layout), prefixed `pw-`. It
+  is NOT part of the global `globals.css` pipeline.
+- **Structure:** `page.tsx` is the index (hero → brief → "why interactive"
+  framing → concept cards). Each concept is its own route (`01/`, `02/`, `03/`)
+  with a rationale block followed by one or more live generators.
+- **Interactive generators** live in `placeworks/_components/` (all
+  `'use client'`):
+  - `Concept1Room` / `Concept1Forest` — 3D scenes built with **three** +
+    **cannon-es** physics (the `three`/`cannon-es`/`@types/three` deps exist
+    only for these). `tree.glb` model is in `public/presentations/placeworks/`.
+  - `YarnGenerator` — Concept 02 entropy/untangle generator.
+  - `ShapePlayground` — Concept 03 shape-kit builder.
+  - `ProofSlider` — proof image carousel; `Concept{1,2,3}Mockup` — static
+    proof mockups.
+- **The decks are interactive on purpose:** the pitch is that the brand is a
+  *system that generates itself*, so each concept ships the actual generator,
+  not a screenshot. The index page's "why interactive" section explains this to
+  the client — keep that framing if editing copy.
+- **Assets:** deck images/models go in `public/presentations/<client>/`
+  (slider proofs, wordmark SVGs, GLB models).
+
+### Adding a new presentation
+
+1. Create `src/app/presentations/<client>/layout.tsx` (copy PlaceWorks: noindex
+   + `.pw-pitch` wrapper + import its CSS) and `page.tsx`.
+2. Put deck-only styles in a co-located `presentations.css`; put assets in
+   `public/presentations/<client>/`.
+3. Keep it `noindex` — these are private client links, not public pages.
+4. Push to `main` — Vercel deploys automatically.
 
 ---
 
