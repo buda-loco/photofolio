@@ -279,4 +279,64 @@ describe('buildRibbonPath', () => {
   it('throws on mismatched points/widths length', () => {
     expect(() => buildRibbonPath(points, [1, 2])).toThrow()
   })
+
+  it('handles variable (non-constant) per-point widths without throwing', () => {
+    const variableWidths = points.map((_, i) => 1 + i * 0.7)
+    const d = buildRibbonPath(points, variableWidths)
+    expect(d.startsWith('M')).toBe(true)
+    expect(d.trim().endsWith('Z')).toBe(true)
+  })
+
+  it('handles a curved, noisy centerline (the actual buildStrokes use case) without throwing', () => {
+    const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
+    const harmonics = buildHarmonics(3)
+    const params: BuildParams = {
+      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, seed: 3,
+      thickness: { preset: 'thin-thick-thin', min: 2, max: 10, transitionPos: 0.5, transitionWidth: 0.2 },
+    }
+    const [stroke] = buildStrokes(harmonics, params)
+    const d = buildRibbonPath(stroke.points, stroke.widths)
+    expect(d.startsWith('M')).toBe(true)
+    expect(d.trim().endsWith('Z')).toBe(true)
+    // every coordinate emitted into the path must be finite — a noisy
+    // centerline is exactly the case that could expose NaN/Infinity from
+    // a zero-length normal or similar edge case
+    const nums = d.match(/-?\d+\.\d/g) ?? []
+    expect(nums.length).toBeGreaterThan(0)
+    for (const n of nums) expect(Number.isFinite(Number(n))).toBe(true)
+  })
+
+  it('returns empty string for fewer than 2 points (mirrors catmullRom)', () => {
+    expect(buildRibbonPath([{ x: 0, y: 0 }], [4])).toBe('')
+  })
+
+  it('returns empty string for empty points/widths arrays instead of throwing', () => {
+    expect(buildRibbonPath([], [])).toBe('')
+  })
+
+  it('clamps negative widths so left/right edges stay on consistent sides (no self-intersecting bowtie)', () => {
+    const pts: Pt[] = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 20, y: 0 }]
+    const raw = [4, -4, 4]
+    const d = buildRibbonPath(pts, raw)
+    expect(d.startsWith('M')).toBe(true)
+
+    // normals are (0, 1) for every sample on this straight horizontal line,
+    // so the left edge should never dip below the centerline and the right
+    // edge should never rise above it -- if the negative width weren't
+    // clamped to 0, the middle sample's offset would flip sign and the two
+    // edges would cross there.
+    const clamped = raw.map((w) => Math.max(0, w))
+    const left = pts.map((p, i) => ({ x: p.x, y: p.y + clamped[i] / 2 }))
+    const right = pts.map((p, i) => ({ x: p.x, y: p.y - clamped[i] / 2 })).reverse()
+    expect(left.every((p) => p.y >= 0)).toBe(true)
+    expect(right.every((p) => p.y <= 0)).toBe(true)
+
+    // and the actual output matches stitching those exact clamped edges
+    const expectedLeft = catmullRom(left)
+    const expectedRight = catmullRom(right).replace(
+      /^M [\d.-]+ [\d.-]+/,
+      ` L ${right[0].x.toFixed(1)} ${right[0].y.toFixed(1)}`
+    )
+    expect(d).toBe(`${expectedLeft}${expectedRight} Z`)
+  })
 })

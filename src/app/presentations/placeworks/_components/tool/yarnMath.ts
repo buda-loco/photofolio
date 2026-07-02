@@ -235,10 +235,21 @@ function polylineNormals(points: Pt[]): Pt[] {
 
 /** Builds a closed, filled ribbon path from a centerline + per-point widths (each full width is split half-left/half-right of the centerline along its local normal). */
 export function buildRibbonPath(points: Pt[], widths: number[]): string {
+  // Length-mismatch is always a caller bug (the two arrays should be built
+  // together, e.g. from a Stroke) — check it first so it always surfaces as
+  // a clear error, regardless of how short either array is.
   if (points.length !== widths.length) throw new Error('points and widths must be the same length')
+  // A ribbon needs at least 2 points to have a direction/normal; mirrors
+  // catmullRom's own convention of returning '' for degenerate input rather
+  // than throwing or emitting a garbage path (e.g. a bare " Z").
+  if (points.length < 2) return ''
   const normals = polylineNormals(points)
-  const left = points.map((p, i) => ({ x: p.x + normals[i].x * widths[i] / 2, y: p.y + normals[i].y * widths[i] / 2 }))
-  const right = points.map((p, i) => ({ x: p.x - normals[i].x * widths[i] / 2, y: p.y - normals[i].y * widths[i] / 2 })).reverse()
+  // Defensive clamp — consistent with this file's established style (oct,
+  // tmS, transitionWidth, lineCount all get one). A negative width would
+  // flip the left/right edges at that sample and self-intersect the ribbon.
+  const w = widths.map((width) => Math.max(0, width))
+  const left = points.map((p, i) => ({ x: p.x + normals[i].x * w[i] / 2, y: p.y + normals[i].y * w[i] / 2 }))
+  const right = points.map((p, i) => ({ x: p.x - normals[i].x * w[i] / 2, y: p.y - normals[i].y * w[i] / 2 })).reverse()
   const leftPath = catmullRom(left)
   const rightPath = catmullRom(right)
   // drop the leading "M x y" of the right half — it continues the same path
