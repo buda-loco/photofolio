@@ -8,11 +8,18 @@ type Props = { color: string; className?: string }
  *  The source file's outer group transform and per-path group transforms
  *  are preserved exactly (not flattened/recomputed) — only the per-path
  *  `style="fill:rgb(35,31,32)..."` overrides were dropped, since `fill`
- *  is now supplied once on the outer group and inherited by every path. */
+ *  is now supplied once on the outer group and inherited by every path.
+ *  fill-rule was intentionally normalized/dropped (forced to `nonzero` below)
+ *  rather than reproducing the source's mixed rules (root defaults to
+ *  `evenodd`, the 2 "CO" paths override to `nonzero`, the 10 Wordmark paths
+ *  inherit `evenodd`) — the counters in this artwork use opposite-winding
+ *  subpaths, so `evenodd` and `nonzero` render pixel-identical (verified via
+ *  rasterized pixel-diff during implementation, AE=0). Re-verify this
+ *  equivalence if any path is ever edited or a new glyph/counter is added. */
 const PlaceWorksLogo = forwardRef<SVGSVGElement, Props>(function PlaceWorksLogo({ color, className }, ref) {
   return (
     <svg ref={ref} viewBox="0 0 2221 754" className={className} xmlns="http://www.w3.org/2000/svg">
-      <g transform="matrix(0.94,0,0,0.319145,0,0)" fill={color}>
+      <g transform="matrix(0.94,0,0,0.319145,0,0)" fill={color} fillRule="nonzero">
         {/* CO */}
         <g>
           <g transform="matrix(0.190279,0,0,0.560442,1903.345161,328.929674)">
