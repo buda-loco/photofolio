@@ -1,5 +1,17 @@
 import { describe, it, expect } from 'vitest'
-import { mulberry32, smoothstep, fractal, buildHarmonics, STRAND_MAX, OCT_MAX, type Octave } from './yarnMath'
+import {
+  mulberry32,
+  smoothstep,
+  fractal,
+  buildHarmonics,
+  STRAND_MAX,
+  OCT_MAX,
+  type Octave,
+  bezierPoint,
+  bezierTangent,
+  bezierNormal,
+  type Bezier,
+} from './yarnMath'
 
 describe('mulberry32', () => {
   it('is deterministic for a given seed', () => {
@@ -54,5 +66,40 @@ describe('buildHarmonics', () => {
       expect(s.tmJit).toBeGreaterThanOrEqual(-0.5)
       expect(s.tmJit).toBeLessThan(0.5)
     })
+  })
+})
+
+// append to yarnMath.test.ts
+// p1/p2 are exact thirds (not 33/66) so the curve is truly linear in t —
+// bezier x(t) simplifies to p0 + t*(p3-p0) only when control points are
+// evenly spaced; rounded thirds would fail the toBeCloseTo(50, 5) below.
+const straightLine: Bezier = {
+  p0: { x: 0, y: 0 }, p1: { x: 100 / 3, y: 0 }, p2: { x: 200 / 3, y: 0 }, p3: { x: 100, y: 0 },
+}
+
+describe('bezierPoint', () => {
+  it('t=0 is p0, t=1 is p3', () => {
+    expect(bezierPoint(straightLine, 0)).toEqual({ x: 0, y: 0 })
+    expect(bezierPoint(straightLine, 1)).toEqual({ x: 100, y: 0 })
+  })
+  it('a straight-line bezier is linear at any t', () => {
+    const mid = bezierPoint(straightLine, 0.5)
+    expect(mid.x).toBeCloseTo(50, 5)
+    expect(mid.y).toBeCloseTo(0, 5)
+  })
+})
+
+describe('bezierTangent / bezierNormal', () => {
+  it('tangent of a horizontal line points along +x, normal points +y or -y', () => {
+    const tan = bezierTangent(straightLine, 0.5)
+    expect(tan.x).toBeGreaterThan(0)
+    expect(Math.abs(tan.y)).toBeLessThan(1e-6)
+    const nrm = bezierNormal(straightLine, 0.5)
+    expect(Math.abs(nrm.x)).toBeLessThan(1e-6)
+    expect(Math.abs(Math.abs(nrm.y) - 1)).toBeLessThan(1e-6)
+  })
+  it('tangent and normal are unit vectors', () => {
+    const tan = bezierTangent(straightLine, 0.3)
+    expect(Math.hypot(tan.x, tan.y)).toBeCloseTo(1, 5)
   })
 })

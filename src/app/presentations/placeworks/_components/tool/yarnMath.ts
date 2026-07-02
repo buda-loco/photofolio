@@ -51,3 +51,30 @@ export function buildHarmonics(seed: number): Strand[] {
   }
   return strands
 }
+
+// append to yarnMath.ts
+export type Bezier = { p0: Pt; p1: Pt; p2: Pt; p3: Pt }
+
+export function bezierPoint({ p0, p1, p2, p3 }: Bezier, t: number): Pt {
+  const mt = 1 - t
+  const a = mt * mt * mt, b = 3 * mt * mt * t, c = 3 * mt * t * t, d = t * t * t
+  return {
+    x: a * p0.x + b * p1.x + c * p2.x + d * p3.x,
+    y: a * p0.y + b * p1.y + c * p2.y + d * p3.y,
+  }
+}
+
+/** Unit tangent (direction of travel) at t. */
+export function bezierTangent({ p0, p1, p2, p3 }: Bezier, t: number): Pt {
+  const mt = 1 - t
+  const dx = 3 * mt * mt * (p1.x - p0.x) + 6 * mt * t * (p2.x - p1.x) + 3 * t * t * (p3.x - p2.x)
+  const dy = 3 * mt * mt * (p1.y - p0.y) + 6 * mt * t * (p2.y - p1.y) + 3 * t * t * (p3.y - p2.y)
+  const len = Math.hypot(dx, dy) || 1
+  return { x: dx / len, y: dy / len }
+}
+
+/** Unit normal (perpendicular to travel), consistent left-hand rotation of the tangent. */
+export function bezierNormal(bez: Bezier, t: number): Pt {
+  const tan = bezierTangent(bez, t)
+  return { x: -tan.y, y: tan.x }
+}
