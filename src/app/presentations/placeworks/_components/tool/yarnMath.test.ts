@@ -177,4 +177,28 @@ describe('thicknessAt', () => {
       }
     }
   })
+
+  it('transitionWidth <= 0 stays finite (no NaN/Infinity) for a Gaussian preset', () => {
+    for (const transitionWidth of [0, -1]) {
+      const p: ThicknessParams = { ...base, preset: 'thick-thin-thick', transitionWidth }
+      for (let t = 0; t <= 1; t += 0.25) {
+        const v = thicknessAt(t, p)
+        expect(Number.isFinite(v)).toBe(true)
+      }
+    }
+  })
+
+  it('min > max (swapped) still bounds output between the two given values', () => {
+    const swapped = { min: 8, max: 2, transitionPos: 0.5, transitionWidth: 0.15 }
+    const lo = Math.min(swapped.min, swapped.max)
+    const hi = Math.max(swapped.min, swapped.max)
+    for (const preset of ['thick-thin', 'thick-thin-thick'] as const) {
+      const p: ThicknessParams = { ...swapped, preset }
+      for (let t = 0; t <= 1; t += 0.1) {
+        const w = thicknessAt(t, p)
+        expect(w).toBeGreaterThanOrEqual(lo - 1e-6)
+        expect(w).toBeLessThanOrEqual(hi + 1e-6)
+      }
+    }
+  })
 })

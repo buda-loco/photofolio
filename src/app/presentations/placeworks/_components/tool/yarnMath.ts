@@ -104,6 +104,19 @@ export type ThicknessParams = {
   transitionWidth: number // 0..1, how gradual it is
 }
 
+// The Gaussian presets (thick-thin-thick / thin-thick-thin) use transitionWidth
+// directly as sigma, but that makes them visually much wider than the linear
+// presets (thick-thin / thin-thick) at the same transitionWidth value: the
+// linear presets fully saturate at delta = w/2 from transitionPos, while an
+// unscaled Gaussian (sigma = w) only reaches ~90% saturation (bump ~= 0.1) at
+// delta ~= 2*w. Since transitionWidth is one shared field a future UI slider
+// will drive across all 5 presets, that mismatch reads as a broken control.
+// Scale sigma down so the Gaussian's "visually saturated" point (bump falls
+// to 5% of its peak) lands at the same delta = w/2 as the linear presets:
+// solving exp(-(w/2)^2 / (2*sigma^2)) = 0.05 for sigma gives
+// sigma = (w/2) / sqrt(-2*ln(0.05)) ~= w / 4.9.
+const GAUSSIAN_SIGMA_SCALE = 4.9
+
 export function thicknessAt(t: number, p: ThicknessParams): number {
   const { preset, min, max, transitionPos, transitionWidth } = p
   const w = Math.max(1e-3, transitionWidth)
@@ -115,11 +128,13 @@ export function thicknessAt(t: number, p: ThicknessParams): number {
     case 'thin-thick':
       return min + (max - min) * smoothstep(transitionPos - w / 2, transitionPos + w / 2, t)
     case 'thick-thin-thick': {
-      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * w * w))
+      const sigma = w / GAUSSIAN_SIGMA_SCALE
+      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * sigma * sigma))
       return max - (max - min) * bump
     }
     case 'thin-thick-thin': {
-      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * w * w))
+      const sigma = w / GAUSSIAN_SIGMA_SCALE
+      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * sigma * sigma))
       return min + (max - min) * bump
     }
   }
