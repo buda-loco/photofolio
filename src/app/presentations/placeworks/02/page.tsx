@@ -62,6 +62,9 @@ export default function PlaceWorksConcept02() {
             A tangle resolving into order. Pick a direction, dial the mess and
             detail, and set where and how sharply it resolves. Export clean SVG.
           </p>
+          <Link href="/presentations/placeworks/tool" className="pw-btn pw-btn--solid">
+            Try the generator yourself &rarr;
+          </Link>
         </div>
         <YarnGenerator />
       </section>
