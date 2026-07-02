@@ -43,6 +43,12 @@ describe('resolveSwatch', () => {
   it('resolves a SwatchRef to the matching shade', () => {
     expect(resolveSwatch({ base: 'seafoam', shadeStep: 2 }).toLowerCase()).toBe('#9ec0c7')
   })
+
+  it('clamps out-of-range shadeStep to the first/last shade instead of returning undefined', () => {
+    const shades = shadesOf('navy')
+    expect(resolveSwatch({ base: 'navy', shadeStep: -1 })).toBe(shades[0])
+    expect(resolveSwatch({ base: 'navy', shadeStep: 99 })).toBe(shades[shades.length - 1])
+  })
 })
 
 describe('contrastRatio', () => {

@@ -18,7 +18,6 @@ export type PaletteKey = keyof typeof PALETTE
 export type SwatchRef = { base: PaletteKey; shadeStep: number } // 0..4, 2 = base hex
 
 const SHADE_STEPS = 5
-const MID_STEP = 2
 const MAX_LIGHTEN = 0.7 // cap toward white so the lightest step stays tinted
 const MAX_DARKEN = 0.55 // cap toward black so the darkest step stays tinted
 
@@ -96,15 +95,14 @@ export function shadesOf(key: PaletteKey, steps = SHADE_STEPS): string[] {
 }
 
 export function resolveSwatch(ref: SwatchRef): string {
-  return shadesOf(ref.base)[ref.shadeStep]
+  const shades = shadesOf(ref.base)
+  const step = Math.max(0, Math.min(shades.length - 1, ref.shadeStep))
+  return shades[step]
 }
 
-/** WCAG relative luminance + contrast ratio. Kept local/self-contained here
- *  rather than importing from src/lib/colors.ts — that file's contrastRatio
- *  is HSL-oriented and not exported, and this tool's OKLab-based mixing has
- *  no other overlap with that file's pill-colour logic, so duplicating this
- *  ~10-line formula is simpler than threading a partial shared dependency
- *  through an unrelated production file for a private internal tool. */
+/** WCAG relative luminance + contrast ratio. src/lib/colors.ts has the same
+ *  formula but doesn't export it — duplicated here rather than exporting it
+ *  from that unrelated production file for one small private-tool use. */
 function relLuminance(hex: string): number {
   const [r, g, b] = hexToRgb(hex).map((c) => {
     const s = c / 255
