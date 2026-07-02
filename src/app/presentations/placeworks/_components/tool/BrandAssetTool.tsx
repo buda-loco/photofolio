@@ -9,6 +9,7 @@ import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
 import PathEditor from './PathEditor'
 import ColourPanel from './ColourPanel'
+import ThicknessPanel from './ThicknessPanel'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -189,6 +190,8 @@ export default function BrandAssetTool() {
         onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
         onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
       />
+
+      <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
     </div>
   )
 }
