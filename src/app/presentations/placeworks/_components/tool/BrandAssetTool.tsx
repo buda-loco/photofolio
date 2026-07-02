@@ -62,6 +62,17 @@ const MEASURE_X = -9999
 const MEASURE_WIDTH = 400
 const MEASURE_HEIGHT = 136
 
+// The measured ink bbox (from getBBox()) is in the logo's own local viewBox
+// coordinate system (0 0 2221 754 units) — NOT canvas pixels, so its raw
+// width/height can't be used directly as canvas-pixel dimensions. Only the
+// *ratio* (width/height, i.e. aspect ratio) survives the coordinate-space
+// change; the absolute size has to be redefined in canvas terms. "Natural"
+// (scale=1.0) logo width is deliberately defined as a fraction of the canvas
+// width, not derived from the SVG file itself. Task 7.4's mask-rectangle
+// clamping must reuse this same formula (LOGO_BASE_WIDTH_FRACTION * canvas
+// width, scaled by aspect) to stay consistent with what "scale=1.0" means here.
+const LOGO_BASE_WIDTH_FRACTION = 0.22 // logo's natural (scale=1.0) width, as a fraction of canvas width
+
 export default function BrandAssetTool() {
   const [params, setParams] = useState<ToolParams>(DEFAULT_PARAMS)
   const logoRef = useRef<SVGSVGElement>(null)
@@ -93,8 +104,11 @@ export default function BrandAssetTool() {
   const { widthPx: W, heightPx: H } = params.canvas
   const maskId = 'pw-tool-mask'
 
-  const scaledWidth = logoInkBBox ? logoInkBBox.width * params.logo.scale : 0
-  const scaledHeight = logoInkBBox ? logoInkBBox.height * params.logo.scale : 0
+  const logoAspect = logoInkBBox ? logoInkBBox.width / logoInkBBox.height : 1
+  const baseWidthPx = W * LOGO_BASE_WIDTH_FRACTION
+  const baseHeightPx = baseWidthPx / logoAspect
+  const scaledWidth = logoInkBBox ? baseWidthPx * params.logo.scale : 0
+  const scaledHeight = logoInkBBox ? baseHeightPx * params.logo.scale : 0
   const logoX = params.mask.x + (params.mask.width - scaledWidth) / 2
   const logoY = params.mask.y + (params.mask.height - scaledHeight) / 2
 
