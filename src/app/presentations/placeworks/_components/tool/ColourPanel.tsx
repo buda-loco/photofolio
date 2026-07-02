@@ -13,15 +13,23 @@ type Props = {
 
 const KEYS = Object.keys(PALETTE) as PaletteKey[]
 
-function SwatchPicker({ value, onChange }: { value: SwatchRef; onChange: (r: SwatchRef) => void }) {
+// Hoisted to module scope: shadesOf() is pure over the static PALETTE, so its
+// output never changes — computing it once avoids 21 OKLab-conversion calls
+// (7 keys × 3 pickers, 5 shades each) on every render, including re-renders
+// triggered by unrelated slider changes elsewhere in ToolParams. Mirrors the
+// same hoisting already done for CREAM_BACKING in BrandAssetTool.tsx.
+const SHADE_TABLE: Record<PaletteKey, string[]> = Object.fromEntries(KEYS.map((k) => [k, shadesOf(k)])) as Record<PaletteKey, string[]>
+
+function SwatchPicker({ value, onChange }: { value: SwatchRef | null; onChange: (r: SwatchRef) => void }) {
   return (
     <div className="pw-swatch-grid">
-      {KEYS.flatMap((key) => shadesOf(key).map((hex, step) => (
+      {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => (
         <button
           key={`${key}-${step}`}
-          className={`pw-swatch${value.base === key && value.shadeStep === step ? ' pw-swatch--active' : ''}`}
+          className={`pw-swatch${value !== null && value.base === key && value.shadeStep === step ? ' pw-swatch--active' : ''}`}
           style={{ background: hex }}
           title={`${key} · shade ${step}`}
+          aria-label={`${key} shade ${step}`}
           onClick={() => onChange({ base: key, shadeStep: step })}
         />
       )))}
@@ -46,23 +54,28 @@ export default function ColourPanel({ background, lines, logo, onBackgroundChang
 
       <span className="pw-slider">Lines&nbsp;(1&ndash;4 active)</span>
       <div className="pw-swatch-grid">
-        {KEYS.flatMap((key) => shadesOf(key).map((hex, step) => (
-          <button
-            key={`${key}-${step}`}
-            className={`pw-swatch${lines.some((l) => l.base === key && l.shadeStep === step) ? ' pw-swatch--active' : ''}`}
-            style={{ background: hex }}
-            title={`${key} · shade ${step}`}
-            onClick={() => toggleLine(key, step)}
-          />
-        )))}
+        {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => {
+          const isActive = lines.some((l) => l.base === key && l.shadeStep === step)
+          return (
+            <button
+              key={`${key}-${step}`}
+              className={`pw-swatch${isActive ? ' pw-swatch--active' : ''}`}
+              style={{ background: hex }}
+              title={`${key} · shade ${step}`}
+              aria-label={`${key} shade ${step}`}
+              aria-pressed={isActive}
+              onClick={() => toggleLine(key, step)}
+            />
+          )
+        }))}
       </div>
 
       <span className="pw-slider">Logo colour</span>
       <div className="pw-swatch-grid">
-        <button className={`pw-swatch${logo === 'black' ? ' pw-swatch--active' : ''}`} style={{ background: '#000' }} title="Black" onClick={() => onLogoChange('black')} />
-        <button className={`pw-swatch${logo === 'white' ? ' pw-swatch--active' : ''}`} style={{ background: '#fff' }} title="White" onClick={() => onLogoChange('white')} />
+        <button className={`pw-swatch${logo === 'black' ? ' pw-swatch--active' : ''}`} style={{ background: '#000' }} title="Black" aria-label="Black" onClick={() => onLogoChange('black')} />
+        <button className={`pw-swatch${logo === 'white' ? ' pw-swatch--active' : ''}`} style={{ background: '#fff' }} title="White" aria-label="White" onClick={() => onLogoChange('white')} />
       </div>
-      <SwatchPicker value={typeof logo === 'string' ? { base: 'nearBlack', shadeStep: 2 } : logo} onChange={onLogoChange} />
+      <SwatchPicker value={typeof logo === 'string' ? null : logo} onChange={onLogoChange} />
     </div>
   )
 }
