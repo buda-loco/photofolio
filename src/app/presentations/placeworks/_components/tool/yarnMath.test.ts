@@ -15,6 +15,7 @@ import {
   type ThicknessParams,
   buildStrokes,
   type BuildParams,
+  SAMPLES,
 } from './yarnMath'
 
 describe('mulberry32', () => {
@@ -221,7 +222,7 @@ describe('buildStrokes', () => {
   it('each stroke has matching points[] and widths[] of equal length', () => {
     const [s] = buildStrokes(harmonics, params)
     expect(s.points.length).toBe(s.widths.length)
-    expect(s.points.length).toBeGreaterThan(50)
+    expect(s.points.length).toBe(SAMPLES + 1)
   })
 
   it('is deterministic for the same seed/params', () => {
@@ -234,5 +235,21 @@ describe('buildStrokes', () => {
     const strokes = buildStrokes(harmonics, { ...params, mess: 0 })
     const last = strokes[0].points[strokes[0].points.length - 1]
     expect(Math.hypot(last.x - bez.p3.x, last.y - bez.p3.y)).toBeLessThan(20)
+  })
+
+  it('lines: 1 does not crash and produces a sane single stroke', () => {
+    const strokes = buildStrokes(harmonics, { ...params, lines: 1 })
+    expect(strokes).toHaveLength(1)
+    expect(strokes[0].points.length).toBe(SAMPLES + 1)
+  })
+
+  it('mess: 100 (raised ceiling) keeps every point finite', () => {
+    const strokes = buildStrokes(harmonics, { ...params, mess: 100 })
+    for (const stroke of strokes) {
+      for (const pt of stroke.points) {
+        expect(Number.isFinite(pt.x)).toBe(true)
+        expect(Number.isFinite(pt.y)).toBe(true)
+      }
+    }
   })
 })

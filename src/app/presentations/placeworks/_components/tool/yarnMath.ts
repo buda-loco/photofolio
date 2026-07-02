@@ -158,6 +158,12 @@ export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
 
 export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   const { bezier, lines, mess, detail, resolve, sharp, spread, thickness } = params
+  // defensive clamp — buildStrokes is a standalone exported function future
+  // tasks may call directly (not just from a bounded UI slider); a stray
+  // large `lines` would allocate lines*(SAMPLES+1) points/widths and blow
+  // up downstream SVG rendering. 500 is a generous sanity ceiling, well
+  // above any planned UI max.
+  const lineCount = Math.max(1, Math.min(500, Math.round(lines)))
   const amp = (mess / 100) * 0.95 // was 0.58 — raised chaos ceiling
   const oct = Math.max(1, Math.min(OCT_MAX, Math.round(detail)))
   const tm = 0.1 + (resolve / 100) * 0.85
@@ -168,9 +174,9 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   const crossScale = spineLen * 0.35 // ties noise amplitude to how far apart the endpoints are
 
   const out: Stroke[] = []
-  for (let i = 0; i < lines; i++) {
+  for (let i = 0; i < lineCount; i++) {
     const s = h[i % STRAND_MAX]
-    const lane = 0.5 + ((i + 0.5) / lines - 0.5) * laneSpread
+    const lane = 0.5 + ((i + 0.5) / lineCount - 0.5) * laneSpread
     const tmS = Math.max(0.04, Math.min(0.97, tm + s.tmJit * 0.16))
 
     const points: Pt[] = []
