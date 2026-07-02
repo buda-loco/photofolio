@@ -139,3 +139,62 @@ export function thicknessAt(t: number, p: ThicknessParams): number {
     }
   }
 }
+
+export const SAMPLES = 220
+
+export type BuildParams = {
+  bezier: Bezier
+  lines: number
+  mess: number    // 0..100
+  detail: number  // 1..OCT_MAX
+  resolve: number // 0..100 — where along the run the mess resolves
+  sharp: number   // 0..100 — how abrupt the resolve transition is
+  spread: number  // 0..100 — how much lines gather toward the centerline when resolved
+  thickness: ThicknessParams
+  seed: number
+}
+
+export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
+
+export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
+  const { bezier, lines, mess, detail, resolve, sharp, spread, thickness } = params
+  const amp = (mess / 100) * 0.95 // was 0.58 — raised chaos ceiling
+  const oct = Math.max(1, Math.min(OCT_MAX, Math.round(detail)))
+  const tm = 0.1 + (resolve / 100) * 0.85
+  const width = 0.5 - (sharp / 100) * 0.46
+  const laneSpread = (spread / 100) * 0.96
+
+  const spineLen = Math.hypot(bezier.p3.x - bezier.p0.x, bezier.p3.y - bezier.p0.y) || 1
+  const crossScale = spineLen * 0.35 // ties noise amplitude to how far apart the endpoints are
+
+  const out: Stroke[] = []
+  for (let i = 0; i < lines; i++) {
+    const s = h[i % STRAND_MAX]
+    const lane = 0.5 + ((i + 0.5) / lines - 0.5) * laneSpread
+    const tmS = Math.max(0.04, Math.min(0.97, tm + s.tmJit * 0.16))
+
+    const points: Pt[] = []
+    const widths: number[] = []
+    for (let j = 0; j <= SAMPLES; j++) {
+      const p = j / SAMPLES
+      const win = 1 - smoothstep(tmS - width / 2, tmS + width / 2, p)
+      const tAlong = Math.max(0, Math.min(1, p + amp * 0.5 * win * fractal(s.along, oct, p)))
+      // `amp` scales the whole perpendicular displacement — both the
+      // structured lane/spread term and the noise term — not just the
+      // noise. Unlike the old canvas-mapped model, `perpOffset` here is a
+      // *displacement from the bezier spine*, not an absolute position.
+      // If the lane term were left unscaled by `amp` (mess), a resolved
+      // strand at mess=0 would still sit `spread`-widths away from the
+      // spine instead of hugging it — mess=0 must mean zero tangle, i.e.
+      // every strand collapses onto the spine itself.
+      const perpOffset = amp * ((lane - 0.5) * 2 + win * fractal(s.perp, oct, p))
+
+      const base = bezierPoint(bezier, tAlong)
+      const normal = bezierNormal(bezier, tAlong)
+      points.push({ x: base.x + normal.x * perpOffset * crossScale, y: base.y + normal.y * perpOffset * crossScale })
+      widths.push(thicknessAt(p, thickness))
+    }
+    out.push({ points, widths, opacity: 0.5 + (i % 4) * 0.12 })
+  }
+  return out
+}

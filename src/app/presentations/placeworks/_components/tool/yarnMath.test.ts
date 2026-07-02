@@ -13,6 +13,8 @@ import {
   type Bezier,
   thicknessAt,
   type ThicknessParams,
+  buildStrokes,
+  type BuildParams,
 } from './yarnMath'
 
 describe('mulberry32', () => {
@@ -200,5 +202,37 @@ describe('thicknessAt', () => {
         expect(w).toBeLessThanOrEqual(hi + 1e-6)
       }
     }
+  })
+})
+
+describe('buildStrokes', () => {
+  const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
+  const harmonics = buildHarmonics(7)
+  const params: BuildParams = {
+    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, seed: 7,
+    thickness: { preset: 'flat', min: 2, max: 6, transitionPos: 0.5, transitionWidth: 0.15 },
+  }
+
+  it('returns one entry per requested line', () => {
+    const strokes = buildStrokes(harmonics, params)
+    expect(strokes).toHaveLength(5)
+  })
+
+  it('each stroke has matching points[] and widths[] of equal length', () => {
+    const [s] = buildStrokes(harmonics, params)
+    expect(s.points.length).toBe(s.widths.length)
+    expect(s.points.length).toBeGreaterThan(50)
+  })
+
+  it('is deterministic for the same seed/params', () => {
+    const a = buildStrokes(harmonics, params)
+    const b = buildStrokes(harmonics, params)
+    expect(a[0].points[10]).toEqual(b[0].points[10])
+  })
+
+  it('resolved lines end up close to the bezier end point (low mess at t=1)', () => {
+    const strokes = buildStrokes(harmonics, { ...params, mess: 0 })
+    const last = strokes[0].points[strokes[0].points.length - 1]
+    expect(Math.hypot(last.x - bez.p3.x, last.y - bez.p3.y)).toBeLessThan(20)
   })
 })
