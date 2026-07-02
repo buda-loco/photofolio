@@ -1,6 +1,16 @@
 import { forwardRef } from 'react'
 
-type Props = { color: string; className?: string }
+type Props = {
+  color: string
+  className?: string
+  /** Real SVG geometry attributes (not CSS) so this nests as a positioned
+   *  viewport inside a parent <svg> — see BrandAssetTool.tsx. x/y default to
+   *  0; width/height are left unset (auto/backward-compatible) when omitted. */
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+}
 
 /** Inlined from public/presentations/placeworks/just-logo.svg — all 12 paths
  *  shared one fill in the source file, so a single `color` prop recolours
@@ -16,9 +26,21 @@ type Props = { color: string; className?: string }
  *  subpaths, so `evenodd` and `nonzero` render pixel-identical (verified via
  *  rasterized pixel-diff during implementation, AE=0). Re-verify this
  *  equivalence if any path is ever edited or a new glyph/counter is added. */
-const PlaceWorksLogo = forwardRef<SVGSVGElement, Props>(function PlaceWorksLogo({ color, className }, ref) {
+const PlaceWorksLogo = forwardRef<SVGSVGElement, Props>(function PlaceWorksLogo(
+  { color, className, x = 0, y = 0, width, height },
+  ref
+) {
   return (
-    <svg ref={ref} viewBox="0 0 2221 754" className={className} xmlns="http://www.w3.org/2000/svg">
+    <svg
+      ref={ref}
+      viewBox="0 0 2221 754"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+    >
       <g transform="matrix(0.94,0,0,0.319145,0,0)" fill={color} fillRule="nonzero">
         {/* CO */}
         <g>
