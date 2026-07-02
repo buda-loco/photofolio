@@ -16,6 +16,9 @@ import {
   buildStrokes,
   type BuildParams,
   SAMPLES,
+  buildRibbonPath,
+  catmullRom,
+  type Pt,
 } from './yarnMath'
 
 describe('mulberry32', () => {
@@ -251,5 +254,29 @@ describe('buildStrokes', () => {
         expect(Number.isFinite(pt.y)).toBe(true)
       }
     }
+  })
+})
+
+describe('catmullRom', () => {
+  it('starts with an M command at the first point', () => {
+    const d = catmullRom([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 20, y: 0 }])
+    expect(d.startsWith('M 0.0 0.0')).toBe(true)
+  })
+  it('returns empty string for fewer than 2 points', () => {
+    expect(catmullRom([{ x: 0, y: 0 }])).toBe('')
+  })
+})
+
+describe('buildRibbonPath', () => {
+  const points: Pt[] = Array.from({ length: 10 }, (_, i) => ({ x: i * 10, y: 0 }))
+  const widths = points.map(() => 4)
+
+  it('produces a non-empty closed SVG path', () => {
+    const d = buildRibbonPath(points, widths)
+    expect(d.startsWith('M')).toBe(true)
+    expect(d.trim().endsWith('Z')).toBe(true)
+  })
+  it('throws on mismatched points/widths length', () => {
+    expect(() => buildRibbonPath(points, [1, 2])).toThrow()
   })
 })

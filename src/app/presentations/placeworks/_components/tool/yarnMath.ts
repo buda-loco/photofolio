@@ -204,3 +204,44 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   }
   return out
 }
+
+export function catmullRom(points: Pt[]): string {
+  if (points.length < 2) return ''
+  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2] || p2
+    const c1x = p1.x + (p2.x - p0.x) / 6
+    const c1y = p1.y + (p2.y - p0.y) / 6
+    const c2x = p2.x - (p3.x - p1.x) / 6
+    const c2y = p2.y - (p3.y - p1.y) / 6
+    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
+  }
+  return d
+}
+
+/** Per-vertex normal from neighbouring points (central difference; forward/backward at the ends). */
+function polylineNormals(points: Pt[]): Pt[] {
+  return points.map((_, i) => {
+    const a = points[Math.max(0, i - 1)]
+    const b = points[Math.min(points.length - 1, i + 1)]
+    const dx = b.x - a.x, dy = b.y - a.y
+    const len = Math.hypot(dx, dy) || 1
+    return { x: -dy / len, y: dx / len }
+  })
+}
+
+/** Builds a closed, filled ribbon path from a centerline + per-point widths (each full width is split half-left/half-right of the centerline along its local normal). */
+export function buildRibbonPath(points: Pt[], widths: number[]): string {
+  if (points.length !== widths.length) throw new Error('points and widths must be the same length')
+  const normals = polylineNormals(points)
+  const left = points.map((p, i) => ({ x: p.x + normals[i].x * widths[i] / 2, y: p.y + normals[i].y * widths[i] / 2 }))
+  const right = points.map((p, i) => ({ x: p.x - normals[i].x * widths[i] / 2, y: p.y - normals[i].y * widths[i] / 2 })).reverse()
+  const leftPath = catmullRom(left)
+  const rightPath = catmullRom(right)
+  // drop the leading "M x y" of the right half — it continues the same path
+  const rightContinuation = rightPath.replace(/^M [\d.-]+ [\d.-]+/, ` L ${right[0].x.toFixed(1)} ${right[0].y.toFixed(1)}`)
+  return `${leftPath}${rightContinuation} Z`
+}
