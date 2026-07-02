@@ -52,7 +52,6 @@ export function buildHarmonics(seed: number): Strand[] {
   return strands
 }
 
-// append to yarnMath.ts
 export type Bezier = { p0: Pt; p1: Pt; p2: Pt; p3: Pt }
 
 export function bezierPoint({ p0, p1, p2, p3 }: Bezier, t: number): Pt {
@@ -69,11 +68,28 @@ export function bezierTangent({ p0, p1, p2, p3 }: Bezier, t: number): Pt {
   const mt = 1 - t
   const dx = 3 * mt * mt * (p1.x - p0.x) + 6 * mt * t * (p2.x - p1.x) + 3 * t * t * (p3.x - p2.x)
   const dy = 3 * mt * mt * (p1.y - p0.y) + 6 * mt * t * (p2.y - p1.y) + 3 * t * t * (p3.y - p2.y)
-  const len = Math.hypot(dx, dy) || 1
+  const len = Math.hypot(dx, dy)
+  if (len < 1e-9) {
+    // cusp / zero-derivative point (freeform user-dragged spines can create
+    // these) — fall back to the chord direction so the tangent stays a
+    // genuine unit vector instead of collapsing to {0,0} and zeroing the
+    // ribbon width/normal downstream
+    const cdx = p3.x - p0.x, cdy = p3.y - p0.y
+    const clen = Math.hypot(cdx, cdy) || 1
+    return { x: cdx / clen, y: cdy / clen }
+  }
   return { x: dx / len, y: dy / len }
 }
 
-/** Unit normal (perpendicular to travel), consistent left-hand rotation of the tangent. */
+/**
+ * Unit normal (perpendicular to travel), a 90° rotation of the tangent:
+ * {x: -tan.y, y: tan.x}. Rotation sense (left vs right of travel) depends on
+ * the caller's coordinate system — in screen/SVG space (y-down) this points
+ * to the left of the direction of travel; in math space (y-up) it points to
+ * the right. Callers only need consistency (same side along the whole spine
+ * for ribbon-edge offsetting), which this guarantees regardless of which
+ * convention is in play.
+ */
 export function bezierNormal(bez: Bezier, t: number): Pt {
   const tan = bezierTangent(bez, t)
   return { x: -tan.y, y: tan.x }

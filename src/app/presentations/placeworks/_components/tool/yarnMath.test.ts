@@ -69,12 +69,28 @@ describe('buildHarmonics', () => {
   })
 })
 
-// append to yarnMath.test.ts
 // p1/p2 are exact thirds (not 33/66) so the curve is truly linear in t —
 // bezier x(t) simplifies to p0 + t*(p3-p0) only when control points are
 // evenly spaced; rounded thirds would fail the toBeCloseTo(50, 5) below.
 const straightLine: Bezier = {
   p0: { x: 0, y: 0 }, p1: { x: 100 / 3, y: 0 }, p2: { x: 200 / 3, y: 0 }, p3: { x: 100, y: 0 },
+}
+
+// Non-collinear control points and an asymmetric t so the p1/p2 Bernstein
+// coefficients (b=0.421875 vs c=0.140625 at t=0.25) are numerically distinct
+// — a p1/p2 coefficient-swap bug would be caught here (it wouldn't be by
+// straightLine at t=0.5, where the two coefficients happen to be equal).
+const curve: Bezier = {
+  p0: { x: 0, y: 0 }, p1: { x: 0, y: 100 }, p2: { x: 100, y: 100 }, p3: { x: 100, y: 0 },
+}
+
+// A genuine cusp: derivative is exactly zero at t=0.5 (solved from
+// B'(0.5) = 0.75*(P1-P0) + 1.5*(P2-P1) + 0.75*(P3-P2) = 0), while the chord
+// P3-P0 = (0,-10) is nonzero — so this also exercises bezierTangent's
+// chord-direction fallback meaningfully (unlike P0===P3 constructions,
+// where the fallback chord would itself be zero-length).
+const cusp: Bezier = {
+  p0: { x: 0, y: 0 }, p1: { x: 10, y: 0 }, p2: { x: 10, y: 10 }, p3: { x: 0, y: -10 },
 }
 
 describe('bezierPoint', () => {
@@ -86,6 +102,13 @@ describe('bezierPoint', () => {
     const mid = bezierPoint(straightLine, 0.5)
     expect(mid.x).toBeCloseTo(50, 5)
     expect(mid.y).toBeCloseTo(0, 5)
+  })
+  it('matches the Bernstein formula by hand for a curved bezier at an asymmetric t', () => {
+    // t=0.25: coefficients are a=0.421875, b=0.421875, c=0.140625, d=0.015625
+    // x = c*100 + d*100 = 15.625; y = b*100 + c*100 = 56.25
+    const p = bezierPoint(curve, 0.25)
+    expect(p.x).toBeCloseTo(15.625, 5)
+    expect(p.y).toBeCloseTo(56.25, 5)
   })
 })
 
@@ -101,5 +124,12 @@ describe('bezierTangent / bezierNormal', () => {
   it('tangent and normal are unit vectors', () => {
     const tan = bezierTangent(straightLine, 0.3)
     expect(Math.hypot(tan.x, tan.y)).toBeCloseTo(1, 5)
+  })
+  it('falls back to the chord direction at a cusp (zero derivative) instead of collapsing to {0,0}', () => {
+    const tan = bezierTangent(cusp, 0.5)
+    expect(Math.hypot(tan.x, tan.y)).toBeCloseTo(1, 5)
+    // chord P3-P0 = (0,-10) normalized = (0,-1)
+    expect(tan.x).toBeCloseTo(0, 5)
+    expect(tan.y).toBeCloseTo(-1, 5)
   })
 })
