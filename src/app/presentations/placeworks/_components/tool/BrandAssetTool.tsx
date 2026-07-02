@@ -8,6 +8,7 @@ import type { SwatchRef } from './palette'
 import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
 import PathEditor from './PathEditor'
+import ColourPanel from './ColourPanel'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -181,6 +182,13 @@ export default function BrandAssetTool() {
         </svg>
         {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its cream backing panel.</p>}
       </div>
+
+      <ColourPanel
+        background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo}
+        onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
+        onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
+        onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
+      />
     </div>
   )
 }
