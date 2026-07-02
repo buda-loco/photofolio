@@ -7,6 +7,7 @@ import { resolveSwatch, shadesOf, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
 import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
+import PathEditor from './PathEditor'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -76,6 +77,7 @@ const LOGO_BASE_WIDTH_FRACTION = 0.22 // logo's natural (scale=1.0) width, as a 
 export default function BrandAssetTool() {
   const [params, setParams] = useState<ToolParams>(DEFAULT_PARAMS)
   const logoRef = useRef<SVGSVGElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
   const logoInkBBox = useLogoBBox(logoRef)
 
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
@@ -115,7 +117,7 @@ export default function BrandAssetTool() {
   return (
     <div className="pw-tool">
       <div className="pw-tool-stage">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
+        <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
             <clipPath id={`${maskId}-hard`}>
               {/* everything EXCEPT the mask rect — approximated with 4 surrounding rects since SVG clipPath has no native "subtract" */}
@@ -165,6 +167,17 @@ export default function BrandAssetTool() {
           {logoInkBBox && (
             <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={scaledWidth} height={scaledHeight} />
           )}
+
+          <PathEditor
+            start={params.path.start}
+            startHandle={params.path.startHandle}
+            end={params.path.end}
+            endHandle={params.path.endHandle}
+            onChange={(path) => setParams((p) => ({ ...p, path }))}
+            svgRef={svgRef}
+            viewBoxW={W}
+            viewBoxH={H}
+          />
         </svg>
         {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its cream backing panel.</p>}
       </div>
