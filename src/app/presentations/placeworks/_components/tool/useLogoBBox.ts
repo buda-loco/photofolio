@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export type BBox = { width: number; height: number }
 
@@ -6,7 +6,7 @@ export type BBox = { width: number; height: number }
  *  Do NOT use `display: none` on the element being measured — getBBox()
  *  returns all-zero for display:none elements. Keep it in normal flow but
  *  visually hidden (off-screen absolute + zero-size clip) instead. */
-export function useLogoBBox(ref: React.RefObject<SVGSVGElement>): BBox | null {
+export function useLogoBBox(ref: React.RefObject<SVGSVGElement | null>): BBox | null {
   const [bbox, setBBox] = useState<BBox | null>(null)
 
   useEffect(() => {
