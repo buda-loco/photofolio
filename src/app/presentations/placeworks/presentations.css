@@ -553,3 +553,70 @@ body:has(.pw-pitch) {
   .pw-card,
   .pw-card-arrow { transition: none; }
 }
+
+/* ── Brand tool — path/mask drag handles ─────────────────── */
+.pw-handle {
+  fill: var(--pw-accent);
+  stroke: var(--pw-paper-pure);
+  stroke-width: 2;
+  cursor: grab;
+}
+.pw-handle:active { cursor: grabbing; }
+.pw-handle-line {
+  stroke: var(--pw-ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+.pw-mask-rect {
+  fill: none;
+  stroke: var(--pw-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  cursor: move;
+}
+
+/* ── Brand tool — min/max range pair (randomiser) ────────── */
+.pw-range-pair {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 22rem;
+  min-width: 16rem;
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pw-stone);
+}
+.pw-range-pair input[type="number"] {
+  width: 3.4rem;
+  background: transparent;
+  border: 1px solid var(--pw-hair);
+  color: var(--pw-ink);
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  padding: 0.2em 0.4em;
+  border-radius: 2px;
+}
+
+/* ── Brand tool — swatch grid ─────────────────────────────── */
+.pw-swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.pw-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0;
+}
+.pw-swatch--active { border: 2px solid var(--pw-accent); box-shadow: 0 0 0 1px var(--pw-accent); }
+.pw-contrast-warning {
+  font-family: var(--pw-mono);
+  font-size: 0.68rem;
+  color: var(--pw-accent);
+}
