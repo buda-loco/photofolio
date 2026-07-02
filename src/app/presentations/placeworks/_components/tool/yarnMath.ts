@@ -94,3 +94,33 @@ export function bezierNormal(bez: Bezier, t: number): Pt {
   const tan = bezierTangent(bez, t)
   return { x: -tan.y, y: tan.x }
 }
+
+export type ThicknessPreset = 'flat' | 'thick-thin' | 'thin-thick' | 'thick-thin-thick' | 'thin-thick-thin'
+export type ThicknessParams = {
+  preset: ThicknessPreset
+  min: number
+  max: number
+  transitionPos: number   // 0..1, where along the line the transition/peak sits
+  transitionWidth: number // 0..1, how gradual it is
+}
+
+export function thicknessAt(t: number, p: ThicknessParams): number {
+  const { preset, min, max, transitionPos, transitionWidth } = p
+  const w = Math.max(1e-3, transitionWidth)
+  switch (preset) {
+    case 'flat':
+      return max
+    case 'thick-thin':
+      return max - (max - min) * smoothstep(transitionPos - w / 2, transitionPos + w / 2, t)
+    case 'thin-thick':
+      return min + (max - min) * smoothstep(transitionPos - w / 2, transitionPos + w / 2, t)
+    case 'thick-thin-thick': {
+      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * w * w))
+      return max - (max - min) * bump
+    }
+    case 'thin-thick-thin': {
+      const bump = Math.exp(-((t - transitionPos) ** 2) / (2 * w * w))
+      return min + (max - min) * bump
+    }
+  }
+}

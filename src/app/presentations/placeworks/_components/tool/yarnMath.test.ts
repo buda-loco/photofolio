@@ -11,6 +11,8 @@ import {
   bezierTangent,
   bezierNormal,
   type Bezier,
+  thicknessAt,
+  type ThicknessParams,
 } from './yarnMath'
 
 describe('mulberry32', () => {
@@ -131,5 +133,48 @@ describe('bezierTangent / bezierNormal', () => {
     // chord P3-P0 = (0,-10) normalized = (0,-1)
     expect(tan.x).toBeCloseTo(0, 5)
     expect(tan.y).toBeCloseTo(-1, 5)
+  })
+})
+
+describe('thicknessAt', () => {
+  const base: ThicknessParams = { preset: 'flat', min: 2, max: 8, transitionPos: 0.5, transitionWidth: 0.15 }
+
+  it('flat preset returns max at every t', () => {
+    expect(thicknessAt(0, base)).toBe(8)
+    expect(thicknessAt(0.5, base)).toBe(8)
+    expect(thicknessAt(1, base)).toBe(8)
+  })
+
+  it('thick-thin preset starts near max, ends near min', () => {
+    const p: ThicknessParams = { ...base, preset: 'thick-thin' }
+    expect(thicknessAt(0, p)).toBeGreaterThan(thicknessAt(1, p))
+  })
+
+  it('thin-thick preset starts near min, ends near max', () => {
+    const p: ThicknessParams = { ...base, preset: 'thin-thick' }
+    expect(thicknessAt(0, p)).toBeLessThan(thicknessAt(1, p))
+  })
+
+  it('thick-thin-thick preset dips to min at transitionPos', () => {
+    const p: ThicknessParams = { ...base, preset: 'thick-thin-thick', transitionPos: 0.5 }
+    expect(thicknessAt(0.5, p)).toBeLessThan(thicknessAt(0, p))
+    expect(thicknessAt(0.5, p)).toBeLessThan(thicknessAt(1, p))
+  })
+
+  it('thin-thick-thin preset peaks to max at transitionPos', () => {
+    const p: ThicknessParams = { ...base, preset: 'thin-thick-thin', transitionPos: 0.5 }
+    expect(thicknessAt(0.5, p)).toBeGreaterThan(thicknessAt(0, p))
+    expect(thicknessAt(0.5, p)).toBeGreaterThan(thicknessAt(1, p))
+  })
+
+  it('stays within [min, max] for all presets', () => {
+    for (const preset of ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const) {
+      const p: ThicknessParams = { ...base, preset }
+      for (let t = 0; t <= 1; t += 0.1) {
+        const w = thicknessAt(t, p)
+        expect(w).toBeGreaterThanOrEqual(base.min - 1e-6)
+        expect(w).toBeLessThanOrEqual(base.max + 1e-6)
+      }
+    }
   })
 })
