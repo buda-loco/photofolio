@@ -427,6 +427,20 @@ body:has(.pw-pitch) {
   border: 1px solid var(--pw-hair);
 }
 
+/* Below ~900px there's no room for a side-by-side layout — .pw-tool stays a
+   plain block and .pw-tool-stage / .pw-tool-sidebar simply stack (stage on
+   top, controls below), matching how this tool worked before the sidebar
+   existed. At ≥900px the tools move beside the canvas instead of below it —
+   easier to reach mid-drag, and the canvas doesn't get pushed offscreen by a
+   long stack of panels above the fold. */
+@media (min-width: 900px) {
+  .pw-tool {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 23rem;
+    align-items: stretch;
+  }
+}
+
 .pw-tool-stage {
   position: relative;
   width: 100%;
@@ -435,6 +449,28 @@ body:has(.pw-pitch) {
 }
 
 .pw-tool-stage svg { display: block; width: 100%; height: auto; }
+
+.pw-tool-sidebar {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--pw-hair);
+}
+
+@media (min-width: 900px) {
+  .pw-tool-sidebar {
+    border-top: none;
+    border-left: 1px solid var(--pw-hair);
+    /* min-height: 0 overrides the grid item's default min-height:auto (which
+       would otherwise force the row — and the canvas beside it — to grow to
+       fit the sidebar's full content). With it stretched to the canvas's
+       rendered height and capped from growing further, overflow-y:auto
+       scrolls the panel stack internally instead. */
+    min-height: 0;
+    max-height: min(85vh, 62rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 
 /* Controls */
 .pw-controls {
@@ -589,6 +625,14 @@ body:has(.pw-pitch) {
   opacity: 0.6;
   pointer-events: none;
 }
+.pw-move-handle {
+  fill: var(--pw-paper-pure);
+  stroke: var(--pw-accent);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+  cursor: move;
+}
+.pw-move-handle:active { cursor: grabbing; }
 
 /* ── Brand tool — min/max range pair (randomiser) ────────── */
 .pw-range-pair {

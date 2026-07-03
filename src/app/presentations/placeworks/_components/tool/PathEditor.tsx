@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef } from 'react'
-import { SCALE_MIN, SCALE_MAX, type Pt } from './yarnMath'
+import { SCALE_MIN, SCALE_MAX, bezierPoint, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
 
 export type PathValue = { start: Pt; startHandle: Pt; end: Pt; endHandle: Pt; startScale: number; endScale: number }
@@ -22,7 +22,8 @@ type Props = PathValue & {
 
 type PositionKey = 'start' | 'startHandle' | 'end' | 'endHandle'
 type ScaleKey = 'startScale' | 'endScale'
-type DragKey = PositionKey | ScaleKey
+type MoveKey = 'move'
+type DragKey = PositionKey | ScaleKey | MoveKey
 
 // Rest position (not dragging) of a scale handle: offset perpendicular to the
 // anchor->handle segment, from that segment's midpoint — "on the center of
@@ -56,6 +57,11 @@ export default function PathEditor({
   onChange, svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH,
 }: Props) {
   const dragging = useRef<DragKey | null>(null)
+  // Only used while dragging the 'move' handle: a delta-drag needs a fixed
+  // reference (pointer position + all 4 points at drag start), unlike the
+  // position dots which just set the dragged point straight to the live
+  // pointer SVG coordinate each move event.
+  const moveOrigin = useRef<{ pointerStart: Pt; start: Pt; startHandle: Pt; end: Pt; endHandle: Pt } | null>(null)
 
   const toSvgPoint = useCallback(
     (clientX: number, clientY: number): Pt => {
@@ -83,6 +89,9 @@ export default function PathEditor({
       // no-op — see comment above
     }
     dragging.current = key
+    if (key === 'move') {
+      moveOrigin.current = { pointerStart: toSvgPoint(e.clientX, e.clientY), start, startHandle, end, endHandle }
+    }
   }
 
   // Handlers live on the wrapping <g> (not the individual circles) so that
@@ -95,6 +104,23 @@ export default function PathEditor({
     const key = dragging.current
     if (!key) return
     const p = toSvgPoint(e.clientX, e.clientY)
+
+    if (key === 'move') {
+      const origin = moveOrigin.current
+      if (!origin) return
+      const dx = p.x - origin.pointerStart.x
+      const dy = p.y - origin.pointerStart.y
+      const shift = (pt: Pt): Pt => ({ x: pt.x + dx, y: pt.y + dy })
+      onChange({
+        start: shift(origin.start),
+        startHandle: shift(origin.startHandle),
+        end: shift(origin.end),
+        endHandle: shift(origin.endHandle),
+        startScale,
+        endScale,
+      })
+      return
+    }
 
     if (key === 'startScale' || key === 'endScale') {
       const anchor = key === 'startScale' ? start : end
@@ -113,6 +139,7 @@ export default function PathEditor({
 
   const onPointerUp = () => {
     dragging.current = null
+    moveOrigin.current = null
   }
 
   const dot = (key: PositionKey, pt: Pt) => (
@@ -127,6 +154,11 @@ export default function PathEditor({
   const endMid = segmentMid(end, endHandle)
   const startScalePos = scaleHandlePos(start, startHandle, startScale)
   const endScalePos = scaleHandlePos(end, endHandle, endScale)
+  // Sits on the actual curve (t=0.5), not the straight start->end midpoint —
+  // it's the visually obvious "grab the middle of the tangle" spot, and
+  // dragging it translates all 4 points together so the whole composition
+  // moves as a rigid shape without needing to touch each point in turn.
+  const movePos = bezierPoint({ p0: start, p1: startHandle, p2: endHandle, p3: end }, 0.5)
 
   return (
     <g className={EXPORT_EXCLUDE_CLASS} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
@@ -140,6 +172,7 @@ export default function PathEditor({
       {dot('endHandle', endHandle)}
       {scaleDot('startScale', startScalePos)}
       {scaleDot('endScale', endScalePos)}
+      <circle className="pw-move-handle" cx={movePos.x} cy={movePos.y} r={10} onPointerDown={onPointerDown('move')} />
     </g>
   )
 }

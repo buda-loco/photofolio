@@ -388,101 +388,121 @@ export default function BrandAssetTool() {
         {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its container background.</p>}
       </div>
 
-      <div className="pw-controls">
-        <span className="pw-slider" style={{ flex: 'none' }}>Zoom</span>
-        {ZOOM_STEPS.map((z) => (
+      {/* Side panel on wide viewports (below the canvas stacked on narrow
+          ones — see the min-width: 900px breakpoint in presentations.css).
+          Scrolls independently of the canvas so it stays reachable mid-drag
+          instead of pushing the canvas out of view above the fold. */}
+      <div className="pw-tool-sidebar">
+        <div className="pw-controls">
+          <span className="pw-slider" style={{ flex: 'none' }}>Zoom</span>
+          {ZOOM_STEPS.map((z) => (
+            <button
+              key={z}
+              type="button"
+              className={`pw-btn${zoomStep === z ? ' pw-btn--solid' : ''}`}
+              onClick={() => setZoomStep(z)}
+            >
+              {Math.round(z * 100)}%
+            </button>
+          ))}
+        </div>
+
+        <div className="pw-controls">
+          <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportSVG}>Export SVG</button>
           <button
-            key={z}
             type="button"
-            className={`pw-btn${zoomStep === z ? ' pw-btn--solid' : ''}`}
-            onClick={() => setZoomStep(z)}
+            className="pw-btn pw-btn--solid"
+            onClick={handleExportPNG}
+            disabled={pngExportState === 'exporting'}
           >
-            {Math.round(z * 100)}%
+            {pngExportState === 'exporting' ? 'Exporting…' : 'Export PNG'}
           </button>
-        ))}
-      </div>
-
-      <div className="pw-controls">
-        <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportSVG}>Export SVG</button>
-        <button
-          type="button"
-          className="pw-btn pw-btn--solid"
-          onClick={handleExportPNG}
-          disabled={pngExportState === 'exporting'}
-        >
-          {pngExportState === 'exporting' ? 'Exporting…' : 'Export PNG'}
-        </button>
-        <button type="button" className="pw-btn" onClick={handleReset}>Reset to defaults</button>
-      </div>
-
-      {/* Whole-tool action, like Export/Reset above it, rather than a
-          per-property panel — placed right after them so it reads as part of
-          the same "act on the whole composition" group before the
-          property-by-property panels (colours, thickness, canvas, mask)
-          below. */}
-      <RandomiserPanel params={params} onRandomise={setParams} />
-
-      {sizeCapBlocked && (
-        <div className="pw-tool-hint" role="alert">
-          This export is {params.canvas.widthPx}&times;{params.canvas.heightPx}px &mdash; larger than the {PNG_SIZE_CAP}px safety cap and may hang your browser.
-          Reduce canvas size or DPI to continue.
-          <button type="button" className="pw-btn" onClick={() => setSizeCapBlocked(false)}>Dismiss</button>
+          <button type="button" className="pw-btn" onClick={handleReset}>Reset to defaults</button>
         </div>
-      )}
 
-      {pngExportState === 'error' && (
-        <div className="pw-tool-hint" role="alert">
-          PNG export failed &mdash; your browser may be low on memory at this canvas size, or the export was interrupted. Try again, or reduce canvas size/DPI.
-          <button type="button" className="pw-btn" onClick={() => setPngExportState('idle')}>Dismiss</button>
+        {/* Whole-tool action, like Export/Reset above it, rather than a
+            per-property panel — placed right after them so it reads as part of
+            the same "act on the whole composition" group before the
+            property-by-property panels (colours, thickness, canvas, mask)
+            below. */}
+        <RandomiserPanel params={params} onRandomise={setParams} />
+
+        {sizeCapBlocked && (
+          <div className="pw-tool-hint" role="alert">
+            This export is {params.canvas.widthPx}&times;{params.canvas.heightPx}px &mdash; larger than the {PNG_SIZE_CAP}px safety cap and may hang your browser.
+            Reduce canvas size or DPI to continue.
+            <button type="button" className="pw-btn" onClick={() => setSizeCapBlocked(false)}>Dismiss</button>
+          </div>
+        )}
+
+        {pngExportState === 'error' && (
+          <div className="pw-tool-hint" role="alert">
+            PNG export failed &mdash; your browser may be low on memory at this canvas size, or the export was interrupted. Try again, or reduce canvas size/DPI.
+            <button type="button" className="pw-btn" onClick={() => setPngExportState('idle')}>Dismiss</button>
+          </div>
+        )}
+
+        <ColourPanel
+          background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
+          onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
+          onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
+          onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
+          onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
+        />
+
+        <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+
+        <div className="pw-controls">
+          <span className="pw-slider">
+            Mess&nbsp;end
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={params.resolve}
+              onChange={(e) => setParams((p) => ({ ...p, resolve: +e.target.value }))}
+            />
+          </span>
         </div>
-      )}
 
-      <ColourPanel
-        background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
-        onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
-        onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
-        onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
-        onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
-      />
+        <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
 
-      <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+        {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
+            LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
+            so the mask can never be shrunk smaller than the logo actually
+            renders at. Before the ink bbox is measured (logoInkBBox === null),
+            scaledWidth/scaledHeight are 0, so the sliders simply have no
+            enforced minimum yet (harmless — they're re-clamped the instant the
+            measurement lands and this component re-renders with real values). */}
+        <MaskPanel
+          value={params.mask}
+          onChange={(mask) => setParams((p) => ({ ...p, mask }))}
+          canvasW={W}
+          canvasH={H}
+          minWidth={scaledWidth}
+          minHeight={scaledHeight}
+        />
 
-      <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
-
-      {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
-          LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
-          so the mask can never be shrunk smaller than the logo actually
-          renders at. Before the ink bbox is measured (logoInkBBox === null),
-          scaledWidth/scaledHeight are 0, so the sliders simply have no
-          enforced minimum yet (harmless — they're re-clamped the instant the
-          measurement lands and this component re-renders with real values). */}
-      <MaskPanel
-        value={params.mask}
-        onChange={(mask) => setParams((p) => ({ ...p, mask }))}
-        canvasW={W}
-        canvasH={H}
-        minWidth={scaledWidth}
-        minHeight={scaledHeight}
-      />
-
-      <div className="pw-controls">
-        <span className="pw-slider">
-          Logo&nbsp;scale
-          <input
-            type="range"
-            min={1}
-            // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
-            // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
-            // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
-            // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
-            // overflow that MaskPanel's clampMask currently only sees via the height axis
-            // (e.g. a very short canvas) or an even larger scale.
-            max={4}
-            step={0.1}
-            value={params.logo.scale}
-            onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
-          />
-        </span>
+        <div className="pw-controls">
+          <span className="pw-slider">
+            Logo&nbsp;scale
+            <input
+              type="range"
+              min={1}
+              // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
+              // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
+              // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
+              // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
+              // overflow that MaskPanel's clampMask currently only sees via the height axis
+              // (e.g. a very short canvas) or an even larger scale.
+              max={4}
+              step={0.1}
+              value={params.logo.scale}
+              onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
+            />
+          </span>
+        </div>
       </div>
     </div>
   )
