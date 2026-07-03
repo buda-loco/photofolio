@@ -49,10 +49,17 @@ export default function ColourPanel({ background, lines, logo, onBackgroundChang
 
   return (
     <div className="pw-controls" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-      <span className="pw-slider">Background</span>
+      {/* flex: 'none' overrides .pw-slider's `flex: 1 1 22rem` (which sizes
+          along the *main* axis — normally width, in the row-flex .pw-controls
+          used by every other panel). Here .pw-controls is switched to
+          flex-direction: column above, which makes that same flex-basis
+          apply to *height* instead, so a bare text label (no input, unlike
+          every other .pw-slider usage) would otherwise claim a 22rem-tall
+          empty box. */}
+      <span className="pw-slider" style={{ flex: 'none' }}>Background</span>
       <SwatchPicker value={background} onChange={onBackgroundChange} />
 
-      <span className="pw-slider">Lines&nbsp;(1&ndash;4 active)</span>
+      <span className="pw-slider" style={{ flex: 'none' }}>Lines&nbsp;(1&ndash;4 active)</span>
       <div className="pw-swatch-grid">
         {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => {
           const isActive = lines.some((l) => l.base === key && l.shadeStep === step)
@@ -70,7 +77,7 @@ export default function ColourPanel({ background, lines, logo, onBackgroundChang
         }))}
       </div>
 
-      <span className="pw-slider">Logo colour</span>
+      <span className="pw-slider" style={{ flex: 'none' }}>Logo colour</span>
       <div className="pw-swatch-grid">
         <button className={`pw-swatch${logo === 'black' ? ' pw-swatch--active' : ''}`} style={{ background: '#000' }} title="Black" aria-label="Black" onClick={() => onLogoChange('black')} />
         <button className={`pw-swatch${logo === 'white' ? ' pw-swatch--active' : ''}`} style={{ background: '#fff' }} title="White" aria-label="White" onClick={() => onLogoChange('white')} />
