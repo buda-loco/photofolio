@@ -15,6 +15,7 @@ import {
   thicknessAt,
   type ThicknessParams,
   avoidRect,
+  relaxPolyline,
   type AvoidRect,
   buildStrokes,
   type BuildParams,
@@ -240,18 +241,31 @@ describe('avoidRect', () => {
     expect(moved.y).toBeCloseTo(p.y, 5) // straight-line case: no vertical component
   })
 
-  it('a point inside the rect is pushed outward from its center', () => {
+  it('a point inside the rect is pushed out through its nearest edge', () => {
     const center = { x: 125, y: 125 } // exact center of the rect
-    const offCenter = { x: 130, y: 125 } // inside, but off-center toward +x
+    const offCenter = { x: 130, y: 125 } // inside; nearest edge is the right one (20px) vs left 30 / top 25 / bottom 25
     const movedOffCenter = avoidRect(offCenter, rect, 1, 40)
-    // pushed further in the +x direction it was already offset toward
-    expect(movedOffCenter.x).toBeGreaterThan(offCenter.x)
-    // exact center has no defined direction, but must still move somewhere
-    // (never left sitting exactly on top of the obstacle) and stay finite
+    // pushed in +x, through that nearest right edge, and all the way clear of it
+    expect(movedOffCenter.x).toBeGreaterThan(rect.x + rect.width)
+    expect(movedOffCenter.y).toBeCloseTo(offCenter.y, 5)
+    // exact center is equidistant from all four edges — direction is a
+    // tie-break, but it must still move somewhere (never left sitting on
+    // top of the obstacle) and stay finite
     const movedCenter = avoidRect(center, rect, 1, 40)
     expect(Number.isFinite(movedCenter.x)).toBe(true)
     expect(Number.isFinite(movedCenter.y)).toBe(true)
     expect(movedCenter.x === center.x && movedCenter.y === center.y).toBe(false)
+  })
+
+  it('push magnitude is continuous across the rect boundary (no fill-artifact jump)', () => {
+    // Straddle the right edge (x=150) by 0.1px on each side: the two push
+    // magnitudes must nearly agree — a discontinuity here is exactly what
+    // kinked the ribbon centerline into self-intersecting filled blobs.
+    const justInside = avoidRect({ x: 149.9, y: 125 }, rect, 1, 40)
+    const justOutside = avoidRect({ x: 150.1, y: 125 }, rect, 1, 40)
+    const insidePush = justInside.x - 149.9
+    const outsidePush = justOutside.x - 150.1
+    expect(Math.abs(insidePush - outsidePush)).toBeLessThan(1)
   })
 
   it('push strength scales with the strength parameter', () => {
@@ -261,6 +275,44 @@ describe('avoidRect', () => {
     const weakPush = weak.x - p.x
     const strongPush = strong.x - p.x
     expect(strongPush).toBeGreaterThan(weakPush)
+  })
+})
+
+describe('relaxPolyline', () => {
+  const zigzag: Pt[] = Array.from({ length: 9 }, (_, i) => ({ x: i * 10, y: i % 2 === 0 ? 0 : 20 }))
+
+  it('zero influence leaves every point untouched', () => {
+    const out = relaxPolyline(zigzag, zigzag.map(() => 0), 3)
+    expect(out).toEqual(zigzag)
+  })
+
+  it('endpoints never move even at full influence', () => {
+    const out = relaxPolyline(zigzag, zigzag.map(() => 1), 5)
+    expect(out[0]).toEqual(zigzag[0])
+    expect(out[out.length - 1]).toEqual(zigzag[zigzag.length - 1])
+  })
+
+  it('full influence reduces the zigzag amplitude', () => {
+    const out = relaxPolyline(zigzag, zigzag.map(() => 1), 3)
+    // interior peaks (odd indices, y=20) must have been pulled down toward
+    // the valleys, and valleys pulled up — total deviation from the y=10
+    // midline strictly shrinks
+    const deviation = (pts: Pt[]) => pts.slice(1, -1).reduce((sum, p) => sum + Math.abs(p.y - 10), 0)
+    expect(deviation(out)).toBeLessThan(deviation(zigzag))
+  })
+
+  it('partial influence smooths only the weighted span', () => {
+    const influence = zigzag.map((_, i) => (i >= 3 && i <= 5 ? 1 : 0))
+    const out = relaxPolyline(zigzag, influence, 3)
+    // outside the span: bit-exact
+    expect(out[1]).toEqual(zigzag[1])
+    expect(out[7]).toEqual(zigzag[7])
+    // inside the span: moved
+    expect(out[4]).not.toEqual(zigzag[4])
+  })
+
+  it('throws on mismatched points/influence length', () => {
+    expect(() => relaxPolyline(zigzag, [1, 0], 1)).toThrow()
   })
 })
 

@@ -150,9 +150,20 @@ export type AvoidRect = { x: number; y: number; width: number; height: number }
  * Repels `p` away from an axis-aligned rect, falling off smoothly to zero at
  * `radius` px from the rect's nearest edge (measured from the edge, not the
  * center, so a bigger rect doesn't need a bigger radius to still "reach"
- * points just outside it). Points already inside/on the rect get pushed
- * away from its center at full strength instead, since the edge-relative
- * direction used for outside points is undefined (zero-length) there.
+ * points just outside it).
+ *
+ * The field is CONTINUOUS across the rect boundary — this matters because the
+ * strands are rendered as filled ribbon polygons, and any jump in the
+ * displacement between adjacent samples kinks the centerline hard enough to
+ * self-intersect the ribbon outline, which renders as solid filled blobs.
+ * So both branches agree at the boundary:
+ * - outside (0 < dist < radius): pushed away from the nearest point on the
+ *   rect, magnitude strength·radius·(1 - dist/radius)² — approaches
+ *   strength·radius as dist → 0.
+ * - inside/on the rect: pushed out through the NEAREST EDGE (the direction
+ *   the outside branch converges to), magnitude strength·(radius + depth) —
+ *   equals strength·radius at depth 0, and grows with depth so deeper points
+ *   still clear the rect at full strength.
  * `strength` is 0..1, scaling the push at the edge as a fraction of
  * `radius`; `strength <= 0` or `radius <= 0` is a no-op.
  */
@@ -165,20 +176,24 @@ export function avoidRect(p: Pt, rect: AvoidRect, strength: number, radius: numb
   const dist = Math.hypot(dx, dy)
 
   if (dist === 0) {
-    const rcx = rect.x + rect.width / 2
-    const rcy = rect.y + rect.height / 2
-    const ex = p.x - rcx
-    const ey = p.y - rcy
-    const elen = Math.hypot(ex, ey)
-    // `p` sitting exactly on the rect's center (elen === 0) has no offset to
-    // normalize into a direction — `ex / elen` would be 0/0. Fall back to a
-    // fixed direction (straight up) rather than an `|| 1` denominator guard,
-    // which would silently leave the point unmoved (0 numerator / 1 is still
-    // 0): the point must actually move off the obstacle, and which way
-    // doesn't matter for the single-point coincidence of landing dead-center.
-    const nx = elen > 0 ? ex / elen : 0
-    const ny = elen > 0 ? ey / elen : -1
-    const push = strength * radius
+    // Inside (or exactly on) the rect. Exit through the nearest edge — the
+    // same direction the outside branch's push converges to as a point
+    // approaches this edge from outside, which is what keeps the field
+    // continuous across the boundary. (The old version pushed inside points
+    // away from the rect *center*, which disagrees with the outside
+    // direction almost everywhere on the boundary — that discontinuity was
+    // the source of the self-intersecting-ribbon "fill" artifacts.)
+    const dl = p.x - rect.x
+    const dr = rect.x + rect.width - p.x
+    const dt = p.y - rect.y
+    const db = rect.y + rect.height - p.y
+    const depth = Math.min(dl, dr, dt, db)
+    let nx = 0, ny = 0
+    if (depth === dl) nx = -1
+    else if (depth === dr) nx = 1
+    else if (depth === dt) ny = -1
+    else ny = 1
+    const push = strength * (radius + depth)
     return { x: p.x + nx * push, y: p.y + ny * push }
   }
 
@@ -190,6 +205,43 @@ export function avoidRect(p: Pt, rect: AvoidRect, strength: number, radius: numb
   const falloff = 1 - dist / radius
   const push = falloff * falloff * strength * radius
   return { x: p.x + (dx / dist) * push, y: p.y + (dy / dist) * push }
+}
+
+/**
+ * Laplacian relaxation of a polyline, weighted per-point: each interior
+ * point moves toward the midpoint of its neighbours by
+ * 0.5 · clamp(influence[i], 0, 1) per iteration; endpoints never move.
+ * Used after avoidRect displacement to round off the direction flips the
+ * field necessarily has along the rect's diagonals (nearest-edge changes
+ * side there) — without it those flips kink the centerline and the filled
+ * ribbon outline self-intersects. Influence-weighted so undeflected spans
+ * keep their high-frequency mess detail exactly (weight 0 = untouched).
+ */
+export function relaxPolyline(points: Pt[], influence: number[], iterations: number): Pt[] {
+  if (points.length !== influence.length) throw new Error('points and influence must be the same length')
+  let cur = points
+  for (let it = 0; it < iterations; it++) {
+    cur = cur.map((p, i) => {
+      if (i === 0 || i === cur.length - 1) return p
+      const w = 0.5 * Math.min(1, Math.max(0, influence[i]))
+      if (w === 0) return p
+      const mx = (cur[i - 1].x + cur[i + 1].x) / 2
+      const my = (cur[i - 1].y + cur[i + 1].y) / 2
+      return { x: p.x + (mx - p.x) * w, y: p.y + (my - p.y) * w }
+    })
+  }
+  return cur
+}
+
+/** Per-element max over a ±w window — spreads relaxation influence a few
+ *  samples past where the field actually displaced points, so the smoothed
+ *  span blends into the untouched span instead of stopping dead at it. */
+function dilateInfluence(vals: number[], w: number): number[] {
+  return vals.map((_, i) => {
+    let m = 0
+    for (let k = Math.max(0, i - w); k <= Math.min(vals.length - 1, i + w); k++) m = Math.max(m, vals[k])
+    return m
+  })
 }
 
 export type BuildParams = {
@@ -261,11 +313,26 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
 
       const base = bezierPoint(bezier, tAlong)
       const normal = bezierNormal(bezier, tAlong)
-      const rawPoint = { x: base.x + normal.x * perpOffset * crossScale, y: base.y + normal.y * perpOffset * crossScale }
-      points.push(avoidRect(rawPoint, avoid.rect, avoidStrength, avoidRadius))
+      points.push({ x: base.x + normal.x * perpOffset * crossScale, y: base.y + normal.y * perpOffset * crossScale })
       widths.push(thicknessAt(p, thickness))
     }
-    out.push({ points, widths, opacity: 0.5 + (i % 4) * 0.12 })
+
+    // Avoidance is a whole-polyline pass, not per-point-in-the-loop: after
+    // displacing, the deflected span is relaxed (influence-weighted, so
+    // untouched spans keep their mess detail bit-exactly) to round off the
+    // direction flips the field has along the rect's diagonals — see
+    // relaxPolyline's doc comment for why skipping this shows up as filled
+    // blobs rather than clean lines.
+    let finalPoints = points
+    if (avoidStrength > 0) {
+      const displaced = points.map((pt) => avoidRect(pt, avoid.rect, avoidStrength, avoidRadius))
+      const influence = displaced.map((q, k) => {
+        const moved = Math.hypot(q.x - points[k].x, q.y - points[k].y)
+        return Math.min(1, moved / (avoidRadius * 0.25))
+      })
+      finalPoints = relaxPolyline(displaced, dilateInfluence(influence, 4), 3)
+    }
+    out.push({ points: finalPoints, widths, opacity: 0.5 + (i % 4) * 0.12 })
   }
   return out
 }
