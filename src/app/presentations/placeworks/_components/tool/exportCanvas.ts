@@ -34,8 +34,8 @@ export function getCleanExportSVGString(svg: SVGSVGElement): string {
   // image viewers/design tools (a viewBox-only SVG has no intrinsic size and
   // typically renders at a UA default like 300x150 when opened flat, even
   // though it fills any container fine when embedded in HTML).
-  const width = svg.viewBox.baseVal.width || svg.getAttribute('width')
-  const height = svg.viewBox.baseVal.height || svg.getAttribute('height')
+  const width = svg.viewBox.baseVal?.width || svg.getAttribute('width')
+  const height = svg.viewBox.baseVal?.height || svg.getAttribute('height')
   if (width) clone.setAttribute('width', String(width))
   if (height) clone.setAttribute('height', String(height))
 
