@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { buildHarmonics, buildStrokes, buildRibbonPath, OCT_MAX } from './yarnMath'
+import { buildHarmonics, buildStrokes, buildRibbonPath, OCT_MAX, STRAND_MAX } from './yarnMath'
 import type { Bezier, Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
@@ -47,13 +47,16 @@ export const DEFAULT_PARAMS: ToolParams = {
     start: { x: 160, y: 700 }, startHandle: { x: 500, y: 200 }, end: { x: 1440, y: 300 }, endHandle: { x: 1100, y: 750 },
     startScale: 1, endScale: 1,
   },
-  lines: 12,
+  // Start minimal — ONE thin line — and build up from there with the Lines/
+  // Width sliders, rather than opening on a dense 12-strand tangle the user
+  // has to deconstruct before making it theirs.
+  lines: 1,
   mess: 68,
   detail: 4,
   resolve: 58,
   sharp: 45,
   spread: 72,
-  thickness: { preset: 'thick-thin', min: 1.5, max: 6, transitionPos: 0.6, transitionWidth: 0.3 },
+  thickness: { preset: 'thick-thin', min: 1, max: 3, transitionPos: 0.6, transitionWidth: 0.3 },
   colours: {
     background: { base: 'nearBlack', shadeStep: 2 },
     lines: [{ base: 'terracotta', shadeStep: 2 }, { base: 'lavender', shadeStep: 2 }],
@@ -377,6 +380,11 @@ export default function BrandAssetTool() {
   // (the draw surface owns the canvas); committing a stroke fits a cubic
   // bezier through it (fitCubicBezier) and swaps it in as the new path.
   const [drawMode, setDrawMode] = useState(false)
+  // Rope-stabiliser length (canvas px) for the pencil — tool preference,
+  // not artwork state, same reasoning as zoomStep. Defaults to a light
+  // touch of smoothing rather than 0 so the first drawn stroke already
+  // feels like a pen tool, not a raw mouse trace.
+  const [stabiliser, setStabiliser] = useState(30)
 
   useEffect(() => {
     if (!drawMode) return
@@ -426,6 +434,43 @@ export default function BrandAssetTool() {
     ),
     line: (
       <>
+        <div className="pw-controls">
+          {/* Direct line-count control — previously only reachable through
+              the randomiser's bounds, which made "start with one line and
+              build up" impossible to do deliberately. */}
+          <span className="pw-slider">
+            Lines
+            <input
+              type="range"
+              min={1}
+              max={STRAND_MAX}
+              step={1}
+              value={params.lines}
+              onChange={(e) => setParams((p) => ({ ...p, lines: +e.target.value }))}
+            />
+          </span>
+          {/* Master width: one slider that scales the whole stroke. It moves
+              thickness.max and keeps min at the same RATIO to it, so the
+              thick-to-thin profile shaped by ThicknessPanel's own Min/Max
+              sliders is preserved — this scales the line, those sculpt it. */}
+          <span className="pw-slider">
+            Width
+            <input
+              type="range"
+              min={0.5}
+              max={24}
+              step={0.5}
+              value={params.thickness.max}
+              onChange={(e) =>
+                setParams((p) => {
+                  const nextMax = +e.target.value
+                  const ratio = p.thickness.max > 0 ? p.thickness.min / p.thickness.max : 0.3
+                  return { ...p, thickness: { ...p.thickness, max: nextMax, min: Math.max(0.1, nextMax * ratio) } }
+                })
+              }
+            />
+          </span>
+        </div>
         <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
         <div className="pw-controls">
           <span className="pw-slider">
@@ -535,6 +580,19 @@ export default function BrandAssetTool() {
           >
             {drawMode ? 'Cancel draw (Esc)' : 'Draw path'}
           </button>
+          {drawMode && (
+            <span className="pw-slider" style={{ flex: 'none', minWidth: 0, width: '13rem' }}>
+              Stabiliser
+              <input
+                type="range"
+                min={0}
+                max={150}
+                step={5}
+                value={stabiliser}
+                onChange={(e) => setStabiliser(+e.target.value)}
+              />
+            </span>
+          )}
         </div>
         <div className="pw-toolbar-group">
           <span className="pw-toolbar-label">Zoom</span>
@@ -662,6 +720,7 @@ export default function BrandAssetTool() {
           {drawMode && !previewMode && (
             <DrawPathOverlay
               onCommit={handleDrawCommit}
+              stabiliser={stabiliser}
               svgRef={svgRef}
               viewBoxX={viewBoxX}
               viewBoxY={viewBoxY}

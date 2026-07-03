@@ -636,6 +636,20 @@ body:has(.pw-pitch) {
   stroke-linejoin: round;
   pointer-events: none;
 }
+/* Rope-stabiliser affordance: the slack circle around the nib and the rope
+   out to the cursor, so the stabiliser's lag reads as tool behaviour. */
+.pw-draw-rope {
+  stroke: var(--pw-ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  pointer-events: none;
+}
+.pw-draw-rope-radius {
+  fill: none;
+  stroke: var(--pw-hair);
+  stroke-width: 1;
+  pointer-events: none;
+}
 
 /* Controls */
 .pw-controls {
