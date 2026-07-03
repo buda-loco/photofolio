@@ -11,6 +11,7 @@ import PathEditor from './PathEditor'
 import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
+import MaskPanel from './MaskPanel'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -195,6 +196,36 @@ export default function BrandAssetTool() {
       <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
 
       <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
+
+      {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
+          LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
+          so the mask can never be shrunk smaller than the logo actually
+          renders at. Before the ink bbox is measured (logoInkBBox === null),
+          scaledWidth/scaledHeight are 0, so the sliders simply have no
+          enforced minimum yet (harmless — they're re-clamped the instant the
+          measurement lands and this component re-renders with real values). */}
+      <MaskPanel
+        value={params.mask}
+        onChange={(mask) => setParams((p) => ({ ...p, mask }))}
+        canvasW={W}
+        canvasH={H}
+        minWidth={scaledWidth}
+        minHeight={scaledHeight}
+      />
+
+      <div className="pw-controls">
+        <span className="pw-slider">
+          Logo&nbsp;scale
+          <input
+            type="range"
+            min={1}
+            max={4}
+            step={0.1}
+            value={params.logo.scale}
+            onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
+          />
+        </span>
+      </div>
     </div>
   )
 }
