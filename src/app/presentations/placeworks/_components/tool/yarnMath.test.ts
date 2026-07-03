@@ -16,6 +16,7 @@ import {
   type ThicknessParams,
   avoidRect,
   relaxPolyline,
+  fitCubicBezier,
   type AvoidRect,
   buildStrokes,
   type BuildParams,
@@ -372,6 +373,23 @@ describe('buildStrokes', () => {
     expect(withZeroStrength).toEqual(withoutAvoid)
   })
 
+  it('avoidance guarantees NO sample point ends up inside the rect, even at partial strength', () => {
+    // The user-visible contract: "avoid the container" means no line sample
+    // sits inside it. mess: 100 + a rect straddling the spine's midpoint is
+    // the worst case (deep crossings + relaxation pulling points back), and
+    // partial strength (30) is where the old strength-scaled ejection
+    // failed. The final post-relax ejection pass is what makes this hold.
+    const rect = { x: 250, y: 250, width: 150, height: 150 }
+    const strokes = buildStrokes(harmonics, { ...params, mess: 100, avoid: { rect, strength: 30 } })
+    for (const stroke of strokes) {
+      for (const pt of stroke.points) {
+        const strictlyInside =
+          pt.x > rect.x && pt.x < rect.x + rect.width && pt.y > rect.y && pt.y < rect.y + rect.height
+        expect(strictlyInside).toBe(false)
+      }
+    }
+  })
+
   it('a strong avoidance field pushes points near the obstacle further from its center than with no field', () => {
     // Flat preset + mess=0 collapses every strand onto the spine itself, so
     // the midpoint sample is guaranteed to land inside the obstacle rect
@@ -413,6 +431,57 @@ describe('buildStrokes', () => {
         expect(Number.isFinite(pt.x)).toBe(true)
         expect(Number.isFinite(pt.y)).toBe(true)
       }
+    }
+  })
+})
+
+describe('fitCubicBezier', () => {
+  it('returns null for fewer than 3 distinct points', () => {
+    expect(fitCubicBezier([])).toBeNull()
+    expect(fitCubicBezier([{ x: 0, y: 0 }])).toBeNull()
+    expect(fitCubicBezier([{ x: 0, y: 0 }, { x: 10, y: 10 }])).toBeNull()
+    // duplicates collapse — still only 2 distinct
+    expect(fitCubicBezier([{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 10, y: 10 }])).toBeNull()
+  })
+
+  it('pins the endpoints to the first and last input points exactly', () => {
+    const pts: Pt[] = Array.from({ length: 20 }, (_, i) => ({ x: i * 10, y: Math.sin(i / 3) * 50 }))
+    const fit = fitCubicBezier(pts)
+    expect(fit).not.toBeNull()
+    expect(fit!.p0).toEqual(pts[0])
+    expect(fit!.p3).toEqual(pts[pts.length - 1])
+  })
+
+  it('recovers a curve close to points sampled from a known bezier', () => {
+    const source: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 0 }, p2: { x: 400, y: 600 }, p3: { x: 600, y: 300 } }
+    const samples: Pt[] = Array.from({ length: 50 }, (_, i) => bezierPoint(source, i / 49))
+    const fit = fitCubicBezier(samples)
+    expect(fit).not.toBeNull()
+    // The fitted curve must pass close to every input sample. The scan step
+    // must be fine enough that measurement resolution (~curve-length × step)
+    // stays well under the tolerance being asserted — at 0.002 on this
+    // ~900px-long curve, adjacent scan points are ~2px apart.
+    for (let i = 0; i < samples.length; i++) {
+      const q = samples[i]
+      let best = Infinity
+      for (let t = 0; t <= 1; t += 0.002) {
+        const p = bezierPoint(fit!, t)
+        best = Math.min(best, Math.hypot(p.x - q.x, p.y - q.y))
+      }
+      expect(best).toBeLessThan(4)
+    }
+  })
+
+  it('collinear input falls back to control points at the chord thirds (finite, exact for a line)', () => {
+    const pts: Pt[] = Array.from({ length: 10 }, (_, i) => ({ x: i * 30, y: i * 15 }))
+    const fit = fitCubicBezier(pts)
+    expect(fit).not.toBeNull()
+    for (const p of [fit!.p1, fit!.p2]) {
+      expect(Number.isFinite(p.x)).toBe(true)
+      expect(Number.isFinite(p.y)).toBe(true)
+      // control points must sit ON the line y = x/2 for the fit to
+      // reproduce the straight stroke
+      expect(p.y).toBeCloseTo(p.x / 2, 4)
     }
   })
 })

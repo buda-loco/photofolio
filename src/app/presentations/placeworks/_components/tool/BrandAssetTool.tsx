@@ -2,13 +2,14 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { buildHarmonics, buildStrokes, buildRibbonPath, OCT_MAX } from './yarnMath'
-import type { Pt, ThicknessParams } from './yarnMath'
+import type { Bezier, Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
 import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
 import PathEditor from './PathEditor'
 import ResolveHandle from './ResolveHandle'
+import DrawPathOverlay from './DrawPathOverlay'
 import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
@@ -65,6 +66,11 @@ export const DEFAULT_PARAMS: ToolParams = {
   logo: { scale: 1 },
   seed: 7,
 }
+
+// Smallest the container can be shrunk to, in canvas px — a usability floor
+// (a zero-size rect would be undraggable and invisible), NOT the logo's size:
+// the logo now scales down to fit inside whatever size the container is.
+const MASK_MIN_SIZE = 24
 
 // Module-level constant, not recreated per render: when avoidance is OFF,
 // the strokes useMemo receives this same reference every time, so container
@@ -338,7 +344,7 @@ export default function BrandAssetTool() {
     const p = toCanvasPoint(clientX, clientY)
     const nextMask = clampMask(
       { ...params.mask, width: p.x - params.mask.x, height: p.y - params.mask.y },
-      W, H, scaledWidth, scaledHeight
+      W, H, MASK_MIN_SIZE, MASK_MIN_SIZE
     )
     setParams((p2) => ({ ...p2, mask: nextMask }))
   })
@@ -366,22 +372,38 @@ export default function BrandAssetTool() {
   const { layout, activate, movePanel } = useWorkspaceLayout()
   const [dragPanel, setDragPanel] = useState<PanelId | null>(null)
 
+  // Pencil mode: freehand-draw the tangle's spine instead of positioning
+  // four handles individually. While active the normal gizmos are hidden
+  // (the draw surface owns the canvas); committing a stroke fits a cubic
+  // bezier through it (fitCubicBezier) and swaps it in as the new path.
+  const [drawMode, setDrawMode] = useState(false)
+
+  useEffect(() => {
+    if (!drawMode) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDrawMode(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [drawMode])
+
+  const handleDrawCommit = (b: Bezier) => {
+    setParams((p) => ({ ...p, path: { ...p.path, start: b.p0, startHandle: b.p1, endHandle: b.p2, end: b.p3 } }))
+    setDrawMode(false)
+  }
+
   const logoAspect = logoInkBBox ? logoInkBBox.width / logoInkBBox.height : 1
   const baseWidthPx = W * LOGO_BASE_WIDTH_FRACTION
-  const baseHeightPx = baseWidthPx / logoAspect
-  // Rounded to hundredths of a px before it becomes MaskPanel's minWidth/
-  // minHeight. logoAspect's division can produce a value with 15+
-  // significant digits (e.g. 106.5927706376724); when the mask width/height
-  // slider is clamped to exactly that number, the browser's <input
-  // type="range"> value serialization doesn't perfectly round-trip such
-  // long floats, occasionally landing one ULP below the `min` attribute's
-  // (unrounded, exactly-reflected) string and tripping native rangeUnderflow
-  // — surfacing as aria-invalid on a slider sitting at a perfectly valid
-  // value. Rounding keeps min/value short enough to serialize identically.
-  const scaledWidth = logoInkBBox ? Math.round(baseWidthPx * params.logo.scale * 100) / 100 : 0
-  const scaledHeight = logoInkBBox ? Math.round(baseHeightPx * params.logo.scale * 100) / 100 : 0
-  const logoX = params.mask.x + (params.mask.width - scaledWidth) / 2
-  const logoY = params.mask.y + (params.mask.height - scaledHeight) / 2
+  // Natural size (the Logo-scale slider's target), then shrunk to FIT the
+  // container: the container is free to be made smaller than the logo's
+  // natural size, and the logo scales down with it, aspect preserved —
+  // instead of the old inverse arrangement where the logo's size was a hard
+  // floor on how small the container could go.
+  const naturalWidth = logoInkBBox ? baseWidthPx * params.logo.scale : 0
+  const fitWidth = logoInkBBox ? Math.min(naturalWidth, params.mask.width, params.mask.height * logoAspect) : 0
+  const fitHeight = logoInkBBox ? fitWidth / logoAspect : 0
+  const logoX = params.mask.x + (params.mask.width - fitWidth) / 2
+  const logoY = params.mask.y + (params.mask.height - fitHeight) / 2
 
   const panelLabels: Record<PanelId, string> = {
     randomiser: 'Randomiser',
@@ -434,20 +456,17 @@ export default function BrandAssetTool() {
     canvas: <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />,
     container: (
       <>
-        {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
-            LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
-            so the mask can never be shrunk smaller than the logo actually
-            renders at. Before the ink bbox is measured (logoInkBBox === null),
-            scaledWidth/scaledHeight are 0, so the sliders simply have no
-            enforced minimum yet (harmless — they're re-clamped the instant the
-            measurement lands and this component re-renders with real values). */}
+        {/* MASK_MIN_SIZE is a small usability floor only — the logo scales
+            down to fit whatever container size the sliders (or the corner
+            gizmo) choose, so the container's minimum is no longer tied to
+            the logo's rendered size. */}
         <MaskPanel
           value={params.mask}
           onChange={(mask) => setParams((p) => ({ ...p, mask }))}
           canvasW={W}
           canvasH={H}
-          minWidth={scaledWidth}
-          minHeight={scaledHeight}
+          minWidth={MASK_MIN_SIZE}
+          minHeight={MASK_MIN_SIZE}
         />
         <div className="pw-controls">
           <span className="pw-slider">
@@ -455,12 +474,10 @@ export default function BrandAssetTool() {
             <input
               type="range"
               min={1}
-              // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
-              // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
-              // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
-              // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
-              // overflow that MaskPanel's clampMask currently only sees via the height axis
-              // (e.g. a very short canvas) or an even larger scale.
+              // max=4 keeps the natural size (0.22 x 4 = 0.88 of canvas
+              // width) inside the canvas; the fit-to-container clamp caps
+              // the rendered size regardless, so this is a comfort range,
+              // not a safety bound.
               max={4}
               step={0.1}
               value={params.logo.scale}
@@ -505,6 +522,19 @@ export default function BrandAssetTool() {
           >
             {previewMode ? 'Exit preview' : 'Preview'}
           </button>
+          <button
+            type="button"
+            className={`pw-btn${drawMode ? ' pw-btn--solid' : ''}`}
+            // Preview hides every canvas overlay including the draw
+            // surface, so entering draw mode force-exits preview — the two
+            // modes can't meaningfully coexist.
+            onClick={() => {
+              setPreviewMode(false)
+              setDrawMode((v) => !v)
+            }}
+          >
+            {drawMode ? 'Cancel draw (Esc)' : 'Draw path'}
+          </button>
         </div>
         <div className="pw-toolbar-group">
           <span className="pw-toolbar-label">Zoom</span>
@@ -546,7 +576,7 @@ export default function BrandAssetTool() {
               canvas is taller than the screen. Ratio-based (not a fixed
               width) so any canvas proportion gets the largest fit. Zoom
               scales W and H equally, so the ratio is zoom-invariant. */}
-          <div className="pw-tool-stage" style={{ maxWidth: `min(100%, calc((100vh - 14rem) * ${(W / H).toFixed(4)}))` }}>
+          <div className="pw-tool-stage" style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 2.5rem) * ${(W / H).toFixed(4)}))` }}>
             <svg ref={svgRef} viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxW} ${viewBoxH}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
             <clipPath id={`${maskId}-hard`}>
@@ -623,10 +653,24 @@ export default function BrandAssetTool() {
               be sized to its natural dimensions (not stretched) and centered
               inside the mask rect. */}
           {logoInkBBox && (
-            <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={scaledWidth} height={scaledHeight} />
+            <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={fitWidth} height={fitHeight} />
           )}
 
-          {!previewMode && (
+          {/* While drawing, the normal gizmos step aside entirely — the draw
+              surface owns the whole canvas so a stroke can start anywhere,
+              including on top of where a handle used to be. */}
+          {drawMode && !previewMode && (
+            <DrawPathOverlay
+              onCommit={handleDrawCommit}
+              svgRef={svgRef}
+              viewBoxX={viewBoxX}
+              viewBoxY={viewBoxY}
+              viewBoxW={viewBoxW}
+              viewBoxH={viewBoxH}
+            />
+          )}
+
+          {!previewMode && !drawMode && (
             <>
               {/* Position gizmo for the container (and, since the logo is
                   always centered inside it, the logo along with it): drag

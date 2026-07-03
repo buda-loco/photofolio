@@ -21,4 +21,9 @@
   min-height: 100vh;
   padding: 0.75rem;
   box-sizing: border-box;
+  /* The workspace height budget (see presentations.css .pw-workspace): in
+     the app the only chrome is the toolbar + this shell's gutter — no page
+     header, no page paddings — so the canvas gets the extra ~4rem the
+     website spends on those. */
+  --pw-workspace-chrome: 5.5rem;
 }

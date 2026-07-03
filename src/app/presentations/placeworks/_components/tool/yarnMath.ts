@@ -97,6 +97,111 @@ export function bezierNormal(bez: Bezier, t: number): Pt {
   return { x: -tan.y, y: tan.x }
 }
 
+/** One least-squares solve for a cubic's two control points given fixed
+ *  endpoints and per-point parameters. Returns null when the normal-equation
+ *  system is singular (all parameters clustered, or effectively collinear
+ *  weighting) — callers decide the fallback. */
+function solveControlPoints(q: Pt[], t: number[], p0: Pt, p3: Pt): { p1: Pt; p2: Pt } | null {
+  let a11 = 0, a12 = 0, a22 = 0
+  let bx1 = 0, by1 = 0, bx2 = 0, by2 = 0
+  for (let i = 0; i < q.length; i++) {
+    const ti = t[i], mt = 1 - ti
+    const b0 = mt * mt * mt
+    const b1 = 3 * mt * mt * ti
+    const b2 = 3 * mt * ti * ti
+    const b3 = ti * ti * ti
+    const rx = q[i].x - b0 * p0.x - b3 * p3.x
+    const ry = q[i].y - b0 * p0.y - b3 * p3.y
+    a11 += b1 * b1
+    a12 += b1 * b2
+    a22 += b2 * b2
+    bx1 += b1 * rx
+    by1 += b1 * ry
+    bx2 += b2 * rx
+    by2 += b2 * ry
+  }
+  const det = a11 * a22 - a12 * a12
+  if (Math.abs(det) < 1e-9) return null
+  const p1 = { x: (bx1 * a22 - bx2 * a12) / det, y: (by1 * a22 - by2 * a12) / det }
+  const p2 = { x: (bx2 * a11 - bx1 * a12) / det, y: (by2 * a11 - by1 * a12) / det }
+  if (![p1.x, p1.y, p2.x, p2.y].every(Number.isFinite)) return null
+  return { p1, p2 }
+}
+
+/** Nearest parameter on `bez` to `target`, searched locally around `t0` —
+ *  a small ternary search window is enough because reprojection only ever
+ *  nudges a chord-length estimate, it doesn't relocate points wholesale. */
+function reprojectT(bez: Bezier, target: Pt, t0: number): number {
+  const d = (t: number) => {
+    const p = bezierPoint(bez, t)
+    const dx = p.x - target.x, dy = p.y - target.y
+    return dx * dx + dy * dy
+  }
+  let lo = Math.max(0, t0 - 0.1)
+  let hi = Math.min(1, t0 + 0.1)
+  for (let i = 0; i < 12; i++) {
+    const m1 = lo + (hi - lo) / 3
+    const m2 = hi - (hi - lo) / 3
+    if (d(m1) < d(m2)) hi = m2
+    else lo = m1
+  }
+  return (lo + hi) / 2
+}
+
+/**
+ * Least-squares cubic bezier fit through a freehand polyline, with the
+ * endpoints fixed at the first/last input points (so the drawn stroke's
+ * start and end are honoured exactly and only the two control points are
+ * solved for).
+ *
+ * Two-stage: an initial solve under chord-length parameterization, then two
+ * rounds of parameter reprojection (each point's t re-estimated against the
+ * current fit) + re-solve — the standard Schneider-style refinement. Chord
+ * length alone systematically mis-parameterizes strongly curved strokes,
+ * which shows up as the fitted spine cutting corners the hand clearly drew.
+ *
+ * Returns null for unfittable input (fewer than 3 distinct points, or zero
+ * total length). A numerically singular system (e.g. perfectly straight
+ * input) falls back to control points at the chord's thirds — which IS the
+ * correct fit for a straight line, not an approximation of one.
+ */
+export function fitCubicBezier(pts: Pt[]): Bezier | null {
+  const q = pts.filter((p, i) => i === 0 || Math.hypot(p.x - pts[i - 1].x, p.y - pts[i - 1].y) > 1e-6)
+  if (q.length < 3) return null
+  const n = q.length
+
+  let t: number[] = [0]
+  let total = 0
+  for (let i = 1; i < n; i++) {
+    total += Math.hypot(q[i].x - q[i - 1].x, q[i].y - q[i - 1].y)
+    t.push(total)
+  }
+  if (total === 0) return null
+  for (let i = 0; i < n; i++) t[i] /= total
+
+  const p0 = q[0]
+  const p3 = q[n - 1]
+  const chordFallback: Bezier = {
+    p0,
+    p1: { x: p0.x + (p3.x - p0.x) / 3, y: p0.y + (p3.y - p0.y) / 3 },
+    p2: { x: p0.x + (2 * (p3.x - p0.x)) / 3, y: p0.y + (2 * (p3.y - p0.y)) / 3 },
+    p3,
+  }
+
+  let solved = solveControlPoints(q, t, p0, p3)
+  if (!solved) return chordFallback
+  let fit: Bezier = { p0, p1: solved.p1, p2: solved.p2, p3 }
+
+  for (let round = 0; round < 2; round++) {
+    // Endpoints stay pinned at t=0/1; only interior parameters reproject.
+    t = t.map((ti, i) => (i === 0 || i === n - 1 ? ti : reprojectT(fit, q[i], ti)))
+    solved = solveControlPoints(q, t, p0, p3)
+    if (!solved) break
+    fit = { p0, p1: solved.p1, p2: solved.p2, p3 }
+  }
+  return fit
+}
+
 export type ThicknessPreset = 'flat' | 'thick-thin' | 'thin-thick' | 'thick-thin-thick' | 'thin-thick-thin'
 export type ThicknessParams = {
   preset: ThicknessPreset
@@ -161,9 +266,10 @@ export type AvoidRect = { x: number; y: number; width: number; height: number }
  *   rect, magnitude strength·radius·(1 - dist/radius)² — approaches
  *   strength·radius as dist → 0.
  * - inside/on the rect: pushed out through the NEAREST EDGE (the direction
- *   the outside branch converges to), magnitude strength·(radius + depth) —
- *   equals strength·radius at depth 0, and grows with depth so deeper points
- *   still clear the rect at full strength.
+ *   the outside branch converges to), magnitude strength·radius + depth —
+ *   equals strength·radius at depth 0 (continuous with outside), and the
+ *   unscaled depth term means interior points ALWAYS fully exit the rect at
+ *   any strength > 0; strength only sets the clearance beyond the edge.
  * `strength` is 0..1, scaling the push at the edge as a fraction of
  * `radius`; `strength <= 0` or `radius <= 0` is a no-op.
  */
@@ -193,7 +299,14 @@ export function avoidRect(p: Pt, rect: AvoidRect, strength: number, radius: numb
     else if (depth === dr) nx = 1
     else if (depth === dt) ny = -1
     else ny = 1
-    const push = strength * (radius + depth)
+    // depth is UNSCALED by strength: an interior point always travels at
+    // least its full depth, i.e. it always actually exits the rect — any
+    // strength > 0 guarantees avoidance, and strength only controls the
+    // extra clearance beyond the edge (strength·radius, matching the
+    // outside branch at depth 0 for continuity). The previous
+    // strength·(radius+depth) form left deep points INSIDE the obstacle at
+    // partial strength, which is exactly "avoidance that doesn't avoid".
+    const push = strength * radius + depth
     return { x: p.x + nx * push, y: p.y + ny * push }
   }
 
@@ -323,6 +436,14 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
     // direction flips the field has along the rect's diagonals — see
     // relaxPolyline's doc comment for why skipping this shows up as filled
     // blobs rather than clean lines.
+    //
+    // The pass ENDS with a second avoidRect ejection: relaxation averages
+    // each point toward its neighbours, and where a strand crossed the
+    // obstacle that average can land back INSIDE the rect — visibly
+    // defeating the avoidance. Re-applying the field after smoothing
+    // guarantees no sample point ends up interior (avoidRect always ejects
+    // interior points by at least their full depth), while the points it
+    // doesn't touch keep their relaxed smoothness.
     let finalPoints = points
     if (avoidStrength > 0) {
       const displaced = points.map((pt) => avoidRect(pt, avoid.rect, avoidStrength, avoidRadius))
@@ -330,7 +451,8 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
         const moved = Math.hypot(q.x - points[k].x, q.y - points[k].y)
         return Math.min(1, moved / (avoidRadius * 0.25))
       })
-      finalPoints = relaxPolyline(displaced, dilateInfluence(influence, 4), 3)
+      const relaxed = relaxPolyline(displaced, dilateInfluence(influence, 4), 3)
+      finalPoints = relaxed.map((pt) => avoidRect(pt, avoid.rect, avoidStrength, avoidRadius))
     }
     out.push({ points: finalPoints, widths, opacity: 0.5 + (i % 4) * 0.12 })
   }

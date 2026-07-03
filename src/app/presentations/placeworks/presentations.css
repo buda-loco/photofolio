@@ -474,7 +474,7 @@ body:has(.pw-pitch) {
    the header shrinks to a breadcrumb-height strip instead of the deck
    pages' display-scale heading. */
 .pw-tool-page {
-  padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem) 2.5rem;
+  padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem) 1.25rem;
 }
 .pw-tool-page-head {
   display: flex;
@@ -493,6 +493,14 @@ body:has(.pw-pitch) {
 .pw-workspace {
   display: flex;
   align-items: stretch;
+  /* Deterministic height: everything above/around the workspace (page
+     header, toolbar, page paddings, borders) is budgeted in
+     --pw-workspace-chrome, so the workspace exactly fills the rest of the
+     viewport — no dead band under the canvas, docks scroll internally.
+     The Electron shell overrides the variable (its chrome is just the
+     toolbar), which is also what the stage's inline max-width calc reads. */
+  height: calc(100vh - var(--pw-workspace-chrome, 9.5rem));
+  min-height: 24rem;
 }
 
 .pw-stage {
@@ -529,7 +537,8 @@ body:has(.pw-pitch) {
   flex-direction: column;
   background: var(--pw-paper-pure);
   min-height: 0;
-  max-height: calc(100vh - 12rem);
+  /* The workspace row is already viewport-sized — docks just fill it. */
+  max-height: 100%;
 }
 .pw-dock:first-child { border-right: 1px solid var(--pw-hair); }
 .pw-dock:last-child { border-left: 1px solid var(--pw-hair); }
@@ -608,12 +617,24 @@ body:has(.pw-pitch) {
 /* Narrow screens: no room for side docks — stack toolbar, stage, then both
    docks full-width. Tabs (and dragging between docks) still work. */
 @media (max-width: 899px) {
-  .pw-workspace { flex-direction: column; }
+  .pw-workspace { flex-direction: column; height: auto; min-height: 0; }
   .pw-dock,
   .pw-dock--empty { width: 100%; max-height: none; }
   .pw-dock:first-child { border-right: none; border-top: 1px solid var(--pw-hair); }
   .pw-dock:last-child { border-left: none; border-top: 1px solid var(--pw-hair); }
   .pw-stage { padding: 0.75rem; }
+}
+
+/* ── Brand tool — freehand path drawing ──────────────────── */
+.pw-draw-surface { cursor: crosshair; }
+.pw-draw-preview {
+  fill: none;
+  stroke: var(--pw-accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
 
 /* Controls */

@@ -12,7 +12,7 @@ type Props = {
   onChange: (v: MaskParams) => void
   canvasW: number
   canvasH: number
-  minWidth: number // logo's natural (scale-adjusted) width in canvas px — see BrandAssetTool's LOGO_BASE_WIDTH_FRACTION formula
+  minWidth: number // smallest width the rect may be sized to, in canvas px (a usability floor — the logo scales down to fit the container, not vice versa)
   minHeight: number // same, height
 }
 
