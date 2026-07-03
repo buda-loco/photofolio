@@ -6,12 +6,24 @@ import { PALETTE, shadesOf, type PaletteKey } from './palette'
 import type { ToolParams } from './BrandAssetTool'
 
 type Range = { min: number; max: number }
-type Bounds = { mess: Range; lines: Range; detail: Range; thicknessMin: Range; thicknessMax: Range }
+type Bounds = {
+  mess: Range
+  lines: Range
+  detail: Range
+  resolve: Range
+  sharp: Range
+  spread: Range
+  thicknessMin: Range
+  thicknessMax: Range
+}
 
 const DEFAULT_BOUNDS: Bounds = {
   mess: { min: 40, max: 100 },
   lines: { min: 6, max: 24 },
   detail: { min: 3, max: 9 },
+  resolve: { min: 20, max: 90 },
+  sharp: { min: 10, max: 95 },
+  spread: { min: 20, max: 100 },
   thicknessMin: { min: 0.5, max: 3 },
   thicknessMax: { min: 3, max: 12 },
 }
@@ -56,6 +68,9 @@ export default function RandomiserPanel({ params, onRandomise }: Props) {
       mess: between(bounds.mess),
       lines: Math.round(between(bounds.lines)), // strand count — distinct from colours.lines (which line colours cycle through) below
       detail: Math.round(between(bounds.detail)),
+      resolve: between(bounds.resolve),
+      sharp: between(bounds.sharp),
+      spread: between(bounds.spread),
       thickness: {
         ...params.thickness,
         preset: PRESET_SHAPES[Math.floor(rng() * PRESET_SHAPES.length)],
@@ -92,6 +107,9 @@ export default function RandomiserPanel({ params, onRandomise }: Props) {
       {rangeInput('Mess', 'mess')}
       {rangeInput('Lines', 'lines')}
       {rangeInput('Detail', 'detail')}
+      {rangeInput('Resolve', 'resolve')}
+      {rangeInput('Sharp', 'sharp')}
+      {rangeInput('Spread', 'spread')}
       {rangeInput('Thickness min', 'thicknessMin', 0.5)}
       {rangeInput('Thickness max', 'thicknessMax', 0.5)}
       <button type="button" className="pw-btn pw-btn--solid" onClick={randomise}>Randomise</button>

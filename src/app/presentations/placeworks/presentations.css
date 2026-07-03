@@ -575,6 +575,20 @@ body:has(.pw-pitch) {
   stroke-dasharray: 5 4;
   cursor: move;
 }
+.pw-scale-handle {
+  fill: var(--pw-paper-pure);
+  stroke: var(--pw-accent);
+  stroke-width: 2;
+  cursor: grab;
+}
+.pw-scale-handle:active { cursor: grabbing; }
+.pw-scale-handle-line {
+  stroke: var(--pw-accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  opacity: 0.6;
+  pointer-events: none;
+}
 
 /* ── Brand tool — min/max range pair (randomiser) ────────── */
 .pw-range-pair {

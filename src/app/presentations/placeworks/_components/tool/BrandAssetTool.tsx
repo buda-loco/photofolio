@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { buildHarmonics, buildStrokes, buildRibbonPath } from './yarnMath'
 import type { Pt, ThicknessParams } from './yarnMath'
-import { resolveSwatch, shadesOf, contrastRatio } from './palette'
+import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
 import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
@@ -18,7 +18,7 @@ import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToo
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
-  path: { start: Pt; startHandle: Pt; end: Pt; endHandle: Pt }
+  path: { start: Pt; startHandle: Pt; end: Pt; endHandle: Pt; startScale: number; endScale: number }
   lines: number
   mess: number
   detail: number
@@ -26,7 +26,7 @@ export type ToolParams = {
   sharp: number
   spread: number
   thickness: ThicknessParams
-  colours: { background: SwatchRef; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white' }
+  colours: { background: SwatchRef; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white'; container: SwatchRef }
   mask: { x: number; y: number; width: number; height: number; style: 'hard' | 'soft' }
   logo: { scale: number }
   seed: number
@@ -34,7 +34,10 @@ export type ToolParams = {
 
 export const DEFAULT_PARAMS: ToolParams = {
   canvas: { widthPx: 1600, heightPx: 900, unit: 'px', widthCm: 13.55, heightCm: 7.62, dpi: 300 }, // widthCm/heightCm are the exact cm-equivalent of 1600x900px @ 300dpi (Math.round((cm/2.54)*300) round-trips to 1600/900) — keep in sync if widthPx/heightPx/dpi defaults change
-  path: { start: { x: 160, y: 700 }, startHandle: { x: 500, y: 200 }, end: { x: 1440, y: 300 }, endHandle: { x: 1100, y: 750 } },
+  path: {
+    start: { x: 160, y: 700 }, startHandle: { x: 500, y: 200 }, end: { x: 1440, y: 300 }, endHandle: { x: 1100, y: 750 },
+    startScale: 1, endScale: 1,
+  },
   lines: 12,
   mess: 68,
   detail: 4,
@@ -46,13 +49,19 @@ export const DEFAULT_PARAMS: ToolParams = {
     background: { base: 'nearBlack', shadeStep: 2 },
     lines: [{ base: 'terracotta', shadeStep: 2 }, { base: 'lavender', shadeStep: 2 }],
     logo: 'black',
+    container: { base: 'cream', shadeStep: 0 }, // lightest cream tint — matches the old fixed CREAM_BACKING default
   },
   mask: { x: 620, y: 340, width: 360, height: 220, style: 'hard' },
   logo: { scale: 1 },
   seed: 7,
 }
 
-const CREAM_BACKING = shadesOf('cream')[0] // lightest cream tint — fixed, non-configurable mask backing
+// Fixed zoom steps for the canvas stage — not part of ToolParams: it's a view
+// preference (how much off-canvas margin is visible while dragging handles),
+// not artwork data, so it shouldn't be persisted/randomised/exported.
+// getCleanExportSVGString always re-forces the true canvas viewBox from
+// params.canvas regardless of this, so export is unaffected by zoom.
+const ZOOM_STEPS = [1, 1.5, 2, 3]
 
 // Off-screen "measuring" instance of the logo: it needs a real, non-zero
 // width/height and must stay out of `display:none` (getBBox() returns all-
@@ -147,7 +156,7 @@ export default function BrandAssetTool() {
 
   const handleExportSVG = () => {
     if (!svgRef.current) return
-    downloadSVG(getCleanExportSVGString(svgRef.current), 'placeworks-brand-asset.svg')
+    downloadSVG(getCleanExportSVGString(svgRef.current, params.canvas.widthPx, params.canvas.heightPx), 'placeworks-brand-asset.svg')
   }
 
   const handleExportPNG = () => {
@@ -157,7 +166,12 @@ export default function BrandAssetTool() {
       return
     }
     setPngExportState('exporting')
-    downloadPNG(getCleanExportSVGString(svgRef.current), params.canvas.widthPx, params.canvas.heightPx, 'placeworks-brand-asset.png')
+    downloadPNG(
+      getCleanExportSVGString(svgRef.current, params.canvas.widthPx, params.canvas.heightPx),
+      params.canvas.widthPx,
+      params.canvas.heightPx,
+      'placeworks-brand-asset.png'
+    )
       .then(() => setPngExportState('idle'))
       .catch((err) => {
         console.error('PNG export failed:', err)
@@ -176,6 +190,8 @@ export default function BrandAssetTool() {
         resolve: params.resolve,
         sharp: params.sharp,
         spread: params.spread,
+        startScale: params.path.startScale,
+        endScale: params.path.endScale,
         thickness: params.thickness,
         seed: params.seed,
       }),
@@ -186,23 +202,85 @@ export default function BrandAssetTool() {
   const lineColors = params.colours.lines.map(resolveSwatch)
   const logoColor =
     params.colours.logo === 'black' ? '#000000' : params.colours.logo === 'white' ? '#ffffff' : resolveSwatch(params.colours.logo)
-  const lowContrast = contrastRatio(logoColor, CREAM_BACKING) < 3
+  const containerColor = resolveSwatch(params.colours.container)
+  const lowContrast = contrastRatio(logoColor, containerColor) < 3
 
   const { widthPx: W, heightPx: H } = params.canvas
   const maskId = 'pw-tool-mask'
 
+  // Zoom expands the SVG's own viewBox symmetrically around the true canvas
+  // rect so off-canvas path/scale handles become visible and draggable —
+  // see the ZOOM_STEPS comment above for why this stays out of ToolParams.
+  const [zoomStep, setZoomStep] = useState(1)
+  const zoomPadX = (W * (zoomStep - 1)) / 2
+  const zoomPadY = (H * (zoomStep - 1)) / 2
+  const viewBoxX = -zoomPadX
+  const viewBoxY = -zoomPadY
+  const viewBoxW = W * zoomStep
+  const viewBoxH = H * zoomStep
+
+  // Drag-to-move for the mask/container rect — moves x/y only (size is still
+  // set via MaskPanel's sliders), clamped so the rect can't be dragged past
+  // the canvas edge. Zoom-aware: converts client coords through the SVG's
+  // *current* viewBox (which may be padded out by zoomStep), not a fixed 0,0
+  // origin, so dragging still tracks the cursor correctly while zoomed out.
+  const maskDrag = useRef<{ pointerStart: Pt; maskStart: Pt } | null>(null)
+
+  const toCanvasPoint = (clientX: number, clientY: number): Pt => {
+    const svg = svgRef.current
+    if (!svg) return { x: 0, y: 0 }
+    const rect = svg.getBoundingClientRect()
+    return {
+      x: viewBoxX + ((clientX - rect.left) / rect.width) * viewBoxW,
+      y: viewBoxY + ((clientY - rect.top) / rect.height) * viewBoxH,
+    }
+  }
+
+  const onMaskPointerDown = (e: React.PointerEvent<SVGRectElement>) => {
+    e.stopPropagation()
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // no-op — see PathEditor's identical guard for why this can throw
+    }
+    maskDrag.current = { pointerStart: toCanvasPoint(e.clientX, e.clientY), maskStart: { x: params.mask.x, y: params.mask.y } }
+  }
+
+  const onMaskPointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+    if (!maskDrag.current) return
+    const p = toCanvasPoint(e.clientX, e.clientY)
+    const dx = p.x - maskDrag.current.pointerStart.x
+    const dy = p.y - maskDrag.current.pointerStart.y
+    const nextX = Math.min(Math.max(maskDrag.current.maskStart.x + dx, 0), W - params.mask.width)
+    const nextY = Math.min(Math.max(maskDrag.current.maskStart.y + dy, 0), H - params.mask.height)
+    setParams((p2) => ({ ...p2, mask: { ...p2.mask, x: nextX, y: nextY } }))
+  }
+
+  const onMaskPointerUp = () => {
+    maskDrag.current = null
+  }
+
   const logoAspect = logoInkBBox ? logoInkBBox.width / logoInkBBox.height : 1
   const baseWidthPx = W * LOGO_BASE_WIDTH_FRACTION
   const baseHeightPx = baseWidthPx / logoAspect
-  const scaledWidth = logoInkBBox ? baseWidthPx * params.logo.scale : 0
-  const scaledHeight = logoInkBBox ? baseHeightPx * params.logo.scale : 0
+  // Rounded to hundredths of a px before it becomes MaskPanel's minWidth/
+  // minHeight. logoAspect's division can produce a value with 15+
+  // significant digits (e.g. 106.5927706376724); when the mask width/height
+  // slider is clamped to exactly that number, the browser's <input
+  // type="range"> value serialization doesn't perfectly round-trip such
+  // long floats, occasionally landing one ULP below the `min` attribute's
+  // (unrounded, exactly-reflected) string and tripping native rangeUnderflow
+  // — surfacing as aria-invalid on a slider sitting at a perfectly valid
+  // value. Rounding keeps min/value short enough to serialize identically.
+  const scaledWidth = logoInkBBox ? Math.round(baseWidthPx * params.logo.scale * 100) / 100 : 0
+  const scaledHeight = logoInkBBox ? Math.round(baseHeightPx * params.logo.scale * 100) / 100 : 0
   const logoX = params.mask.x + (params.mask.width - scaledWidth) / 2
   const logoY = params.mask.y + (params.mask.height - scaledHeight) / 2
 
   return (
     <div className="pw-tool">
       <div className="pw-tool-stage">
-        <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
+        <svg ref={svgRef} viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxW} ${viewBoxH}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
             <clipPath id={`${maskId}-hard`}>
               {/* everything EXCEPT the mask rect — approximated with 4 surrounding rects since SVG clipPath has no native "subtract" */}
@@ -229,6 +307,19 @@ export default function BrandAssetTool() {
 
           <rect width={W} height={H} fill={bgColor} />
 
+          {/* True-canvas boundary marker — only shown while zoomed out, so the
+              user can tell what's actually inside the exported frame vs. the
+              extra off-canvas margin the zoom control reveals. Non-interactive
+              and export-excluded: purely a UI aid. */}
+          {zoomStep > 1 && (
+            <rect
+              className={EXPORT_EXCLUDE_CLASS}
+              x={0} y={0} width={W} height={H}
+              fill="none" stroke="var(--pw-ink-soft)" strokeDasharray="6 4" strokeWidth={1}
+              pointerEvents="none"
+            />
+          )}
+
           <g
             clipPath={params.mask.style === 'hard' ? `url(#${maskId}-hard)` : undefined}
             mask={params.mask.style === 'soft' ? `url(#${maskId}-soft)` : undefined}
@@ -238,7 +329,7 @@ export default function BrandAssetTool() {
             ))}
           </g>
 
-          <rect x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height} fill={CREAM_BACKING} />
+          <rect x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height} fill={containerColor} />
 
           {/* Always-mounted, off-screen measuring copy — never visible, exists
               solely so useLogoBBox can read its natural ink bbox once on mount.
@@ -261,18 +352,54 @@ export default function BrandAssetTool() {
             <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={scaledWidth} height={scaledHeight} />
           )}
 
+          {/* Position gizmo for the container (and, since the logo is always
+              centered inside it, the logo along with it): drag anywhere
+              inside the mask/backing rect to move it. Resizing still happens
+              via MaskPanel's Width/Height sliders below — this only moves
+              x/y, clamped to stay on-canvas. */}
+          <rect
+            className={`pw-mask-rect ${EXPORT_EXCLUDE_CLASS}`}
+            x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height}
+            // fill:none means the default `pointer-events: visiblePainted`
+            // would only hit-test the thin dashed stroke — `all` makes the
+            // whole rect area (including its transparent interior) draggable.
+            pointerEvents="all"
+            onPointerDown={onMaskPointerDown}
+            onPointerMove={onMaskPointerMove}
+            onPointerUp={onMaskPointerUp}
+            onPointerCancel={onMaskPointerUp}
+          />
+
           <PathEditor
             start={params.path.start}
             startHandle={params.path.startHandle}
             end={params.path.end}
             endHandle={params.path.endHandle}
+            startScale={params.path.startScale}
+            endScale={params.path.endScale}
             onChange={(path) => setParams((p) => ({ ...p, path }))}
             svgRef={svgRef}
-            viewBoxW={W}
-            viewBoxH={H}
+            viewBoxX={viewBoxX}
+            viewBoxY={viewBoxY}
+            viewBoxW={viewBoxW}
+            viewBoxH={viewBoxH}
           />
         </svg>
-        {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its cream backing panel.</p>}
+        {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its container background.</p>}
+      </div>
+
+      <div className="pw-controls">
+        <span className="pw-slider" style={{ flex: 'none' }}>Zoom</span>
+        {ZOOM_STEPS.map((z) => (
+          <button
+            key={z}
+            type="button"
+            className={`pw-btn${zoomStep === z ? ' pw-btn--solid' : ''}`}
+            onClick={() => setZoomStep(z)}
+          >
+            {Math.round(z * 100)}%
+          </button>
+        ))}
       </div>
 
       <div className="pw-controls">
@@ -311,10 +438,11 @@ export default function BrandAssetTool() {
       )}
 
       <ColourPanel
-        background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo}
+        background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
         onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
         onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
         onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
+        onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
       />
 
       <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />

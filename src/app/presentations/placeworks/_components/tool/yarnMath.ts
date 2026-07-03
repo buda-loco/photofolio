@@ -11,6 +11,8 @@ export type Strand = { perp: Octave[]; along: Octave[]; tmJit: number }
 const TWO_PI = Math.PI * 2
 export const STRAND_MAX = 60
 export const OCT_MAX = 9 // raised from 6 — more chaos headroom at max mess
+export const SCALE_MIN = 0.2 // startScale/endScale floor — near-flat against the spine
+export const SCALE_MAX = 3 // startScale/endScale ceiling — matches the logo-scale slider's headroom
 
 export function mulberry32(a: number) {
   return function () {
@@ -150,6 +152,8 @@ export type BuildParams = {
   resolve: number // 0..100 — where along the run the mess resolves
   sharp: number   // 0..100 — how abrupt the resolve transition is
   spread: number  // 0..100 — how much lines gather toward the centerline when resolved
+  startScale: number // SCALE_MIN..SCALE_MAX — tangle-amplitude multiplier at t=0, blended linearly to endScale across the run
+  endScale: number   // SCALE_MIN..SCALE_MAX — same, at t=1
   thickness: ThicknessParams
   seed: number
 }
@@ -157,7 +161,7 @@ export type BuildParams = {
 export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
 
 export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
-  const { bezier, lines, mess, detail, resolve, sharp, spread, thickness } = params
+  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, thickness } = params
   // defensive clamp — buildStrokes is a standalone exported function future
   // tasks may call directly (not just from a bounded UI slider); a stray
   // large `lines` would allocate lines*(SAMPLES+1) points/widths and blow
@@ -193,7 +197,13 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
       // strand at mess=0 would still sit `spread`-widths away from the
       // spine instead of hugging it — mess=0 must mean zero tangle, i.e.
       // every strand collapses onto the spine itself.
-      const perpOffset = amp * ((lane - 0.5) * 2 + win * fractal(s.perp, oct, p))
+      // `endBlend` is a second, independent multiplier on top of `amp`: it
+      // interpolates linearly from startScale (at p=0) to endScale (at p=1)
+      // using the same unwarped run-position `p` that resolve/sharp/spread
+      // already key off, so "scale near the start" and "scale near the end"
+      // stay meaningful even while the tangle itself is busy warping tAlong.
+      const endBlend = startScale + (endScale - startScale) * p
+      const perpOffset = amp * endBlend * ((lane - 0.5) * 2 + win * fractal(s.perp, oct, p))
 
       const base = bezierPoint(bezier, tAlong)
       const normal = bezierNormal(bezier, tAlong)

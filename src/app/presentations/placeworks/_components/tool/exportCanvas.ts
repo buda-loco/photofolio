@@ -7,12 +7,21 @@ export const EXPORT_EXCLUDE_CLASS = 'pw-export-exclude'
 
 /**
  * Serializes the live, rendered canvas SVG into a clean, standalone SVG
- * string — WYSIWYG with what's on screen, minus UI chrome (drag handles).
+ * string — the artwork only, minus UI chrome (drag handles) and independent
+ * of whatever on-screen zoom level the stage is currently at.
+ *
+ * `width`/`height` are always the *true* canvas dimensions (params.canvas),
+ * not read off the live element — the on-canvas zoom control (BrandAssetTool)
+ * changes the live `<svg>`'s `viewBox` to reveal off-canvas handles, so the
+ * live viewBox is only trustworthy at 100% zoom. Forcing the clone's viewBox
+ * from the caller-supplied true dimensions keeps export correct at any zoom
+ * level without the export path needing to know zoom exists at all.
+ *
  * DOM-dependent (clones/serializes a real SVGSVGElement); not unit-testable
  * without jsdom, consistent with this tool's other DOM-dependent modules
  * (PathEditor, useLogoBBox) — verified manually instead.
  */
-export function getCleanExportSVGString(svg: SVGSVGElement): string {
+export function getCleanExportSVGString(svg: SVGSVGElement, width: number, height: number): string {
   const clone = svg.cloneNode(true) as SVGSVGElement
   clone.querySelectorAll(`.${EXPORT_EXCLUDE_CLASS}`).forEach((el) => el.remove())
 
@@ -30,14 +39,15 @@ export function getCleanExportSVGString(svg: SVGSVGElement): string {
   // paint outside the width/height box, which looks like clipping but isn't
   // one. Explicit removal sidesteps relying on that distinction entirely.
 
-  // Explicit width/height so the file opens at its correct physical size in
-  // image viewers/design tools (a viewBox-only SVG has no intrinsic size and
-  // typically renders at a UA default like 300x150 when opened flat, even
-  // though it fills any container fine when embedded in HTML).
-  const width = svg.viewBox.baseVal?.width || svg.getAttribute('width')
-  const height = svg.viewBox.baseVal?.height || svg.getAttribute('height')
-  if (width) clone.setAttribute('width', String(width))
-  if (height) clone.setAttribute('height', String(height))
+  // Force both the viewBox and the explicit width/height from the true
+  // canvas size — see doc comment above. Explicit width/height also means
+  // the file opens at its correct physical size in image viewers/design
+  // tools (a viewBox-only SVG has no intrinsic size and typically renders at
+  // a UA default like 300x150 when opened flat, even though it fills any
+  // container fine when embedded in HTML).
+  clone.setAttribute('viewBox', `0 0 ${width} ${height}`)
+  clone.setAttribute('width', String(width))
+  clone.setAttribute('height', String(height))
 
   // Ensure the exported file is a fully standalone SVG document, not just a
   // fragment (the live <svg> inherits its xmlns from the HTML document and

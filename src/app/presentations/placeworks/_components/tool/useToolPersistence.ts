@@ -3,7 +3,9 @@ import { useEffect, useRef } from 'react'
 // Versioned so a future change to ToolParams's shape is just a key bump
 // (old, now-mismatched data is orphaned under the old key and simply never
 // read) rather than requiring a runtime migration/validation layer.
-export const STORAGE_KEY = 'pw-tool-params-v1'
+// Bumped to v2: added colours.container, path.startScale/endScale — old v1
+// data lacks these and would crash resolveSwatch()/buildStrokes() on load.
+export const STORAGE_KEY = 'pw-tool-params-v2'
 const DEBOUNCE_MS = 400
 
 export function loadPersistedParams<T>(): T | null {

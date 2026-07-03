@@ -6,6 +6,7 @@ import {
   buildHarmonics,
   STRAND_MAX,
   OCT_MAX,
+  SCALE_MAX,
   type Octave,
   bezierPoint,
   bezierTangent,
@@ -213,7 +214,7 @@ describe('buildStrokes', () => {
   const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
   const harmonics = buildHarmonics(7)
   const params: BuildParams = {
-    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, seed: 7,
+    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, startScale: 1, endScale: 1, seed: 7,
     thickness: { preset: 'flat', min: 2, max: 6, transitionPos: 0.5, transitionWidth: 0.15 },
   }
 
@@ -248,6 +249,36 @@ describe('buildStrokes', () => {
 
   it('mess: 100 (raised ceiling) keeps every point finite', () => {
     const strokes = buildStrokes(harmonics, { ...params, mess: 100 })
+    for (const stroke of strokes) {
+      for (const pt of stroke.points) {
+        expect(Number.isFinite(pt.x)).toBe(true)
+        expect(Number.isFinite(pt.y)).toBe(true)
+      }
+    }
+  })
+
+  it('startScale: 0 collapses the start of the run onto the spine, independent of endScale', () => {
+    const collapsed = buildStrokes(harmonics, { ...params, mess: 100, startScale: 0, endScale: 1 })
+    const full = buildStrokes(harmonics, { ...params, mess: 100, startScale: 1, endScale: 1 })
+    const spineStart = bezierPoint(bez, 0)
+    const collapsedStartDist = Math.hypot(collapsed[0].points[0].x - spineStart.x, collapsed[0].points[0].y - spineStart.y)
+    const fullStartDist = Math.hypot(full[0].points[0].x - spineStart.x, full[0].points[0].y - spineStart.y)
+    expect(collapsedStartDist).toBeLessThan(fullStartDist)
+  })
+
+  it('endScale: 0 collapses the end of the run onto the spine, independent of startScale', () => {
+    const collapsed = buildStrokes(harmonics, { ...params, mess: 100, startScale: 1, endScale: 0 })
+    const full = buildStrokes(harmonics, { ...params, mess: 100, startScale: 1, endScale: 1 })
+    const spineEnd = bezierPoint(bez, 1)
+    const collapsedLast = collapsed[0].points[collapsed[0].points.length - 1]
+    const fullLast = full[0].points[full[0].points.length - 1]
+    const collapsedEndDist = Math.hypot(collapsedLast.x - spineEnd.x, collapsedLast.y - spineEnd.y)
+    const fullEndDist = Math.hypot(fullLast.x - spineEnd.x, fullLast.y - spineEnd.y)
+    expect(collapsedEndDist).toBeLessThan(fullEndDist)
+  })
+
+  it('startScale/endScale beyond 1 (up to SCALE_MAX) keeps every point finite', () => {
+    const strokes = buildStrokes(harmonics, { ...params, mess: 100, startScale: SCALE_MAX, endScale: SCALE_MAX })
     for (const stroke of strokes) {
       for (const pt of stroke.points) {
         expect(Number.isFinite(pt.x)).toBe(true)
@@ -291,7 +322,7 @@ describe('buildRibbonPath', () => {
     const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
     const harmonics = buildHarmonics(3)
     const params: BuildParams = {
-      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, seed: 3,
+      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, startScale: 1, endScale: 1, seed: 3,
       thickness: { preset: 'thin-thick-thin', min: 2, max: 10, transitionPos: 0.5, transitionWidth: 0.2 },
     }
     const [stroke] = buildStrokes(harmonics, params)

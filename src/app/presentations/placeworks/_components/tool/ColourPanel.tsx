@@ -1,14 +1,17 @@
 'use client'
 
+import { useState } from 'react'
 import { PALETTE, shadesOf, type PaletteKey, type SwatchRef } from './palette'
 
 type Props = {
   background: SwatchRef
   lines: SwatchRef[]
   logo: SwatchRef | 'black' | 'white'
+  container: SwatchRef
   onBackgroundChange: (ref: SwatchRef) => void
   onLinesChange: (refs: SwatchRef[]) => void
   onLogoChange: (v: SwatchRef | 'black' | 'white') => void
+  onContainerChange: (ref: SwatchRef) => void
 }
 
 const KEYS = Object.keys(PALETTE) as PaletteKey[]
@@ -37,8 +40,18 @@ function SwatchPicker({ value, onChange }: { value: SwatchRef | null; onChange: 
   )
 }
 
-export default function ColourPanel({ background, lines, logo, onBackgroundChange, onLinesChange, onLogoChange }: Props) {
+export default function ColourPanel({ background, lines, logo, container, onBackgroundChange, onLinesChange, onLogoChange, onContainerChange }: Props) {
+  // UI-mode only, deliberately not part of ToolParams: it changes how a
+  // swatch click behaves (replace vs. multi-select toggle), not anything
+  // that's rendered or exported, so it doesn't belong in persisted/
+  // randomised artwork state.
+  const [mono, setMono] = useState(false)
+
   const toggleLine = (key: PaletteKey, step: number) => {
+    if (mono) {
+      onLinesChange([{ base: key, shadeStep: step }])
+      return
+    }
     const exists = lines.some((l) => l.base === key && l.shadeStep === step)
     if (exists) {
       if (lines.length > 1) onLinesChange(lines.filter((l) => !(l.base === key && l.shadeStep === step)))
@@ -59,7 +72,14 @@ export default function ColourPanel({ background, lines, logo, onBackgroundChang
       <span className="pw-slider" style={{ flex: 'none' }}>Background</span>
       <SwatchPicker value={background} onChange={onBackgroundChange} />
 
-      <span className="pw-slider" style={{ flex: 'none' }}>Lines&nbsp;(1&ndash;4 active)</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flexWrap: 'wrap' }}>
+        <span className="pw-slider" style={{ flex: 'none' }}>{mono ? 'Lines (mono)' : 'Lines (1–4 active)'}</span>
+        <label className="pw-toggle">
+          <input type="checkbox" checked={mono} onChange={(e) => setMono(e.target.checked)} />
+          <span className="pw-toggle-track" />
+          Mono
+        </label>
+      </div>
       <div className="pw-swatch-grid">
         {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => {
           const isActive = lines.some((l) => l.base === key && l.shadeStep === step)
@@ -83,6 +103,9 @@ export default function ColourPanel({ background, lines, logo, onBackgroundChang
         <button className={`pw-swatch${logo === 'white' ? ' pw-swatch--active' : ''}`} style={{ background: '#fff' }} title="White" aria-label="White" onClick={() => onLogoChange('white')} />
       </div>
       <SwatchPicker value={typeof logo === 'string' ? null : logo} onChange={onLogoChange} />
+
+      <span className="pw-slider" style={{ flex: 'none' }}>Container background</span>
+      <SwatchPicker value={container} onChange={onContainerChange} />
     </div>
   )
 }
