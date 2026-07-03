@@ -31,7 +31,7 @@ export function clearPersistedParams() {
 
 /** Debounce-saves `params` to localStorage on every change. */
 export function useAutosave<T>(params: T) {
-  const timer = useRef<ReturnType<typeof setTimeout>>()
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => {
     clearTimeout(timer.current)
     timer.current = setTimeout(() => savePersistedParams(params), DEBOUNCE_MS)
