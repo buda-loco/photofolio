@@ -144,6 +144,54 @@ export function thicknessAt(t: number, p: ThicknessParams): number {
 
 export const SAMPLES = 220
 
+export type AvoidRect = { x: number; y: number; width: number; height: number }
+
+/**
+ * Repels `p` away from an axis-aligned rect, falling off smoothly to zero at
+ * `radius` px from the rect's nearest edge (measured from the edge, not the
+ * center, so a bigger rect doesn't need a bigger radius to still "reach"
+ * points just outside it). Points already inside/on the rect get pushed
+ * away from its center at full strength instead, since the edge-relative
+ * direction used for outside points is undefined (zero-length) there.
+ * `strength` is 0..1, scaling the push at the edge as a fraction of
+ * `radius`; `strength <= 0` or `radius <= 0` is a no-op.
+ */
+export function avoidRect(p: Pt, rect: AvoidRect, strength: number, radius: number): Pt {
+  if (strength <= 0 || radius <= 0) return p
+  const cx = Math.min(Math.max(p.x, rect.x), rect.x + rect.width)
+  const cy = Math.min(Math.max(p.y, rect.y), rect.y + rect.height)
+  const dx = p.x - cx
+  const dy = p.y - cy
+  const dist = Math.hypot(dx, dy)
+
+  if (dist === 0) {
+    const rcx = rect.x + rect.width / 2
+    const rcy = rect.y + rect.height / 2
+    const ex = p.x - rcx
+    const ey = p.y - rcy
+    const elen = Math.hypot(ex, ey)
+    // `p` sitting exactly on the rect's center (elen === 0) has no offset to
+    // normalize into a direction — `ex / elen` would be 0/0. Fall back to a
+    // fixed direction (straight up) rather than an `|| 1` denominator guard,
+    // which would silently leave the point unmoved (0 numerator / 1 is still
+    // 0): the point must actually move off the obstacle, and which way
+    // doesn't matter for the single-point coincidence of landing dead-center.
+    const nx = elen > 0 ? ex / elen : 0
+    const ny = elen > 0 ? ey / elen : -1
+    const push = strength * radius
+    return { x: p.x + nx * push, y: p.y + ny * push }
+  }
+
+  if (dist >= radius) return p
+  // Squared falloff (not linear): keeps the push near-full close to the
+  // edge, then tapers out smoothly by `radius`, instead of an abrupt "field
+  // boundary" that would otherwise be visible as a kink where lines re-enter
+  // their undeflected path.
+  const falloff = 1 - dist / radius
+  const push = falloff * falloff * strength * radius
+  return { x: p.x + (dx / dist) * push, y: p.y + (dy / dist) * push }
+}
+
 export type BuildParams = {
   bezier: Bezier
   lines: number
@@ -154,6 +202,7 @@ export type BuildParams = {
   spread: number  // 0..100 — how much lines gather toward the centerline when resolved
   startScale: number // SCALE_MIN..SCALE_MAX — tangle-amplitude multiplier at t=0, blended linearly to endScale across the run
   endScale: number   // SCALE_MIN..SCALE_MAX — same, at t=1
+  avoid: { rect: AvoidRect; strength: number } // strength 0..100; <=0 disables the field entirely (avoidRect no-ops)
   thickness: ThicknessParams
   seed: number
 }
@@ -161,7 +210,7 @@ export type BuildParams = {
 export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
 
 export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
-  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, thickness } = params
+  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, avoid, thickness } = params
   // defensive clamp — buildStrokes is a standalone exported function future
   // tasks may call directly (not just from a bounded UI slider); a stray
   // large `lines` would allocate lines*(SAMPLES+1) points/widths and blow
@@ -173,6 +222,11 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   const tm = 0.1 + (resolve / 100) * 0.85
   const width = 0.5 - (sharp / 100) * 0.46
   const laneSpread = (spread / 100) * 0.96
+  // Radius is derived from the obstacle's own size (not a fixed px value) so
+  // the field's reach scales naturally with the container instead of
+  // looking cramped on a big container or absurdly oversized on a small one.
+  const avoidRadius = Math.max(avoid.rect.width, avoid.rect.height) * 0.5 + 60
+  const avoidStrength = Math.min(100, Math.max(0, avoid.strength)) / 100
 
   const spineLen = Math.hypot(bezier.p3.x - bezier.p0.x, bezier.p3.y - bezier.p0.y) || 1
   const crossScale = spineLen * 0.35 // ties noise amplitude to how far apart the endpoints are
@@ -207,7 +261,8 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
 
       const base = bezierPoint(bezier, tAlong)
       const normal = bezierNormal(bezier, tAlong)
-      points.push({ x: base.x + normal.x * perpOffset * crossScale, y: base.y + normal.y * perpOffset * crossScale })
+      const rawPoint = { x: base.x + normal.x * perpOffset * crossScale, y: base.y + normal.y * perpOffset * crossScale }
+      points.push(avoidRect(rawPoint, avoid.rect, avoidStrength, avoidRadius))
       widths.push(thicknessAt(p, thickness))
     }
     out.push({ points, widths, opacity: 0.5 + (i % 4) * 0.12 })

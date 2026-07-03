@@ -28,7 +28,7 @@ export type ToolParams = {
   spread: number
   thickness: ThicknessParams
   colours: { background: SwatchRef; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white'; container: SwatchRef }
-  mask: { x: number; y: number; width: number; height: number; style: 'hard' | 'soft' }
+  mask: { x: number; y: number; width: number; height: number; style: 'hard' | 'soft'; avoid: boolean; avoidStrength: number }
   logo: { scale: number }
   seed: number
 }
@@ -52,7 +52,9 @@ export const DEFAULT_PARAMS: ToolParams = {
     logo: 'black',
     container: { base: 'cream', shadeStep: 0 }, // lightest cream tint — matches the old fixed CREAM_BACKING default
   },
-  mask: { x: 620, y: 340, width: 360, height: 220, style: 'hard' },
+  // avoidStrength pre-set to a visible default so toggling `avoid` on shows
+  // an immediate effect rather than a silent no-op at strength 0.
+  mask: { x: 620, y: 340, width: 360, height: 220, style: 'hard', avoid: false, avoidStrength: 50 },
   logo: { scale: 1 },
   seed: 7,
 }
@@ -193,10 +195,17 @@ export default function BrandAssetTool() {
         spread: params.spread,
         startScale: params.path.startScale,
         endScale: params.path.endScale,
+        // strength: 0 when the toggle is off, rather than threading a
+        // separate boolean into yarnMath — avoidRect() already treats
+        // strength <= 0 as a no-op, so "off" and "on at 0" are the same thing.
+        avoid: {
+          rect: { x: params.mask.x, y: params.mask.y, width: params.mask.width, height: params.mask.height },
+          strength: params.mask.avoid ? params.mask.avoidStrength : 0,
+        },
         thickness: params.thickness,
         seed: params.seed,
       }),
-    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed]
+    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed, params.mask]
   )
 
   const bgColor = resolveSwatch(params.colours.background)

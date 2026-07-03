@@ -14,6 +14,8 @@ import {
   type Bezier,
   thicknessAt,
   type ThicknessParams,
+  avoidRect,
+  type AvoidRect,
   buildStrokes,
   type BuildParams,
   SAMPLES,
@@ -21,6 +23,8 @@ import {
   catmullRom,
   type Pt,
 } from './yarnMath'
+
+const NO_AVOID = { rect: { x: 0, y: 0, width: 0, height: 0 }, strength: 0 }
 
 describe('mulberry32', () => {
   it('is deterministic for a given seed', () => {
@@ -210,11 +214,61 @@ describe('thicknessAt', () => {
   })
 })
 
+describe('avoidRect', () => {
+  const rect: AvoidRect = { x: 100, y: 100, width: 50, height: 50 } // spans 100..150 on both axes
+
+  it('strength <= 0 is a no-op', () => {
+    const p = { x: 120, y: 120 }
+    expect(avoidRect(p, rect, 0, 40)).toEqual(p)
+    expect(avoidRect(p, rect, -1, 40)).toEqual(p)
+  })
+
+  it('radius <= 0 is a no-op', () => {
+    const p = { x: 120, y: 120 }
+    expect(avoidRect(p, rect, 1, 0)).toEqual(p)
+  })
+
+  it('a point beyond the radius is unaffected', () => {
+    const p = { x: 300, y: 300 }
+    expect(avoidRect(p, rect, 1, 40)).toEqual(p)
+  })
+
+  it('a point just outside the rect edge is pushed further away, not toward it', () => {
+    const p = { x: 160, y: 125 } // 10px right of the rect's right edge, within the vertical span
+    const moved = avoidRect(p, rect, 1, 40)
+    expect(moved.x).toBeGreaterThan(p.x) // pushed further right, away from the rect
+    expect(moved.y).toBeCloseTo(p.y, 5) // straight-line case: no vertical component
+  })
+
+  it('a point inside the rect is pushed outward from its center', () => {
+    const center = { x: 125, y: 125 } // exact center of the rect
+    const offCenter = { x: 130, y: 125 } // inside, but off-center toward +x
+    const movedOffCenter = avoidRect(offCenter, rect, 1, 40)
+    // pushed further in the +x direction it was already offset toward
+    expect(movedOffCenter.x).toBeGreaterThan(offCenter.x)
+    // exact center has no defined direction, but must still move somewhere
+    // (never left sitting exactly on top of the obstacle) and stay finite
+    const movedCenter = avoidRect(center, rect, 1, 40)
+    expect(Number.isFinite(movedCenter.x)).toBe(true)
+    expect(Number.isFinite(movedCenter.y)).toBe(true)
+    expect(movedCenter.x === center.x && movedCenter.y === center.y).toBe(false)
+  })
+
+  it('push strength scales with the strength parameter', () => {
+    const p = { x: 160, y: 125 }
+    const weak = avoidRect(p, rect, 0.25, 40)
+    const strong = avoidRect(p, rect, 1, 40)
+    const weakPush = weak.x - p.x
+    const strongPush = strong.x - p.x
+    expect(strongPush).toBeGreaterThan(weakPush)
+  })
+})
+
 describe('buildStrokes', () => {
   const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
   const harmonics = buildHarmonics(7)
   const params: BuildParams = {
-    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, startScale: 1, endScale: 1, seed: 7,
+    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, startScale: 1, endScale: 1, avoid: NO_AVOID, seed: 7,
     thickness: { preset: 'flat', min: 2, max: 6, transitionPos: 0.5, transitionWidth: 0.15 },
   }
 
@@ -255,6 +309,29 @@ describe('buildStrokes', () => {
         expect(Number.isFinite(pt.y)).toBe(true)
       }
     }
+  })
+
+  it('avoid.strength: 0 matches the no-avoidance case exactly (backward compatible)', () => {
+    const withZeroStrength = buildStrokes(harmonics, {
+      ...params,
+      avoid: { rect: { x: 250, y: 250, width: 100, height: 100 }, strength: 0 },
+    })
+    const withoutAvoid = buildStrokes(harmonics, params)
+    expect(withZeroStrength).toEqual(withoutAvoid)
+  })
+
+  it('a strong avoidance field pushes points near the obstacle further from its center than with no field', () => {
+    // Flat preset + mess=0 collapses every strand onto the spine itself, so
+    // the midpoint sample is guaranteed to land inside the obstacle rect
+    // without avoidance — a deterministic setup to prove the field moves it.
+    const rect = { x: 250, y: 250, width: 150, height: 150 } // straddles the spine's midpoint (300,300)
+    const withAvoid = buildStrokes(harmonics, { ...params, mess: 0, avoid: { rect, strength: 100 } })
+    const withoutAvoid = buildStrokes(harmonics, { ...params, mess: 0, avoid: NO_AVOID })
+    const rectCenter = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }
+    const mid = Math.floor(SAMPLES / 2)
+    const distWith = Math.hypot(withAvoid[0].points[mid].x - rectCenter.x, withAvoid[0].points[mid].y - rectCenter.y)
+    const distWithout = Math.hypot(withoutAvoid[0].points[mid].x - rectCenter.x, withoutAvoid[0].points[mid].y - rectCenter.y)
+    expect(distWith).toBeGreaterThan(distWithout)
   })
 
   it('startScale: 0 collapses the start of the run onto the spine, independent of endScale', () => {
@@ -322,7 +399,7 @@ describe('buildRibbonPath', () => {
     const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
     const harmonics = buildHarmonics(3)
     const params: BuildParams = {
-      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, startScale: 1, endScale: 1, seed: 3,
+      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, startScale: 1, endScale: 1, avoid: NO_AVOID, seed: 3,
       thickness: { preset: 'thin-thick-thin', min: 2, max: 10, transitionPos: 0.5, transitionWidth: 0.2 },
     }
     const [stroke] = buildStrokes(harmonics, params)

@@ -2,7 +2,11 @@
 
 import { useEffect } from 'react'
 
-export type MaskParams = { x: number; y: number; width: number; height: number; style: 'hard' | 'soft' }
+export type MaskParams = {
+  x: number; y: number; width: number; height: number; style: 'hard' | 'soft'
+  avoid: boolean // when true, yarn strands are repelled away from this rect as they're generated (see yarnMath.ts's avoidRect)
+  avoidStrength: number // 0..100, only meaningful while avoid is true
+}
 type Props = {
   value: MaskParams
   onChange: (v: MaskParams) => void
@@ -52,6 +56,13 @@ export default function MaskPanel({ value, onChange, canvasW, canvasH, minWidth,
     <div className="pw-controls">
       <button type="button" className={`pw-btn${value.style === 'hard' ? ' pw-btn--solid' : ''}`} onClick={() => set({ style: 'hard' })}>Hard clip</button>
       <button type="button" className={`pw-btn${value.style === 'soft' ? ' pw-btn--solid' : ''}`} onClick={() => set({ style: 'soft' })}>Soft fade</button>
+      <button type="button" className={`pw-btn${value.avoid ? ' pw-btn--solid' : ''}`} onClick={() => set({ avoid: !value.avoid })}>Avoid</button>
+      {value.avoid && (
+        <span className="pw-slider">
+          Avoidance
+          <input type="range" min={0} max={100} step={1} value={value.avoidStrength} onChange={(e) => set({ avoidStrength: +e.target.value })} />
+        </span>
+      )}
 
       {/* step="any": min/max here are computed floats (minWidth/minHeight come
           from the logo's aspect-ratio-derived size, not round numbers). The

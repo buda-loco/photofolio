@@ -60,6 +60,27 @@ export default function ColourPanel({ background, lines, logo, container, onBack
     }
   }
 
+  // Distinct from RandomiserPanel's Randomise button: this only reshuffles
+  // colour roles (background/lines/logo/container) across the fixed swatch
+  // grid — it never touches shape/generation params, so it can't undo a
+  // tangle the user has otherwise dialed in.
+  const randomSwatch = (): SwatchRef => ({
+    base: KEYS[Math.floor(Math.random() * KEYS.length)],
+    shadeStep: Math.floor(Math.random() * SHADE_TABLE[KEYS[0]].length),
+  })
+
+  const mixColours = () => {
+    onBackgroundChange(randomSwatch())
+    const lineCount = mono ? 1 : 1 + Math.floor(Math.random() * 4) // 1..4 — respects the mono toggle above
+    onLinesChange(Array.from({ length: lineCount }, randomSwatch))
+    onContainerChange(randomSwatch())
+    // Biased toward black/white: they stay legible against any background/
+    // container combo the roll above just picked, whereas a fully random
+    // swatch risks landing on the low-contrast warning most of the time.
+    const roll = Math.random()
+    onLogoChange(roll < 0.4 ? 'black' : roll < 0.8 ? 'white' : randomSwatch())
+  }
+
   return (
     <div className="pw-controls" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
       {/* flex: 'none' overrides .pw-slider's `flex: 1 1 22rem` (which sizes
@@ -106,6 +127,10 @@ export default function ColourPanel({ background, lines, logo, container, onBack
 
       <span className="pw-slider" style={{ flex: 'none' }}>Container background</span>
       <SwatchPicker value={container} onChange={onContainerChange} />
+
+      <div style={{ marginTop: '0.25rem' }}>
+        <button type="button" className="pw-btn pw-btn--solid" onClick={mixColours}>Mix colours</button>
+      </div>
     </div>
   )
 }
