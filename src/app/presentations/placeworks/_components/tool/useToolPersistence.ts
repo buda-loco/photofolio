@@ -1,9 +1,17 @@
 import { useEffect, useRef } from 'react'
 
-export const STORAGE_KEY = 'pw-tool-params'
+// Versioned so a future change to ToolParams's shape is just a key bump
+// (old, now-mismatched data is orphaned under the old key and simply never
+// read) rather than requiring a runtime migration/validation layer.
+export const STORAGE_KEY = 'pw-tool-params-v1'
 const DEBOUNCE_MS = 400
 
 export function loadPersistedParams<T>(): T | null {
+  // Deliberate, not incidental: Next.js renders this module's code path in
+  // Server Components (and during the SSR pass of this client component)
+  // where `window`/`localStorage` don't exist. Guard explicitly rather than
+  // relying on the try/catch below to happen to swallow the ReferenceError.
+  if (typeof window === 'undefined') return null
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
@@ -14,6 +22,8 @@ export function loadPersistedParams<T>(): T | null {
 }
 
 export function savePersistedParams<T>(params: T) {
+  // See loadPersistedParams — same deliberate SSR guard.
+  if (typeof window === 'undefined') return
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(params))
   } catch {

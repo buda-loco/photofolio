@@ -13,6 +13,7 @@ import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
 import MaskPanel from './MaskPanel'
 import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
+import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToolPersistence'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -80,7 +81,33 @@ const MEASURE_HEIGHT = 136
 const LOGO_BASE_WIDTH_FRACTION = 0.22 // logo's natural (scale=1.0) width, as a fraction of canvas width
 
 export default function BrandAssetTool() {
+  // Initial state is always DEFAULT_PARAMS, never `loadPersistedParams()`
+  // inline here. This is a 'use client' component, but Next.js still does an
+  // initial SSR/static render of it for the HTML shell before hydration —
+  // during that pass `loadPersistedParams()` returns null (no `window`), so
+  // if the `useState` initializer called it directly, the server-rendered
+  // markup would show defaults while the client's *first* render (which also
+  // runs the initializer, now with localStorage available) could show
+  // different persisted values. React's hydration diffs the client's first
+  // render against the already-painted server HTML, so that mismatch would
+  // surface as a hydration warning (and, worse, a flash/inconsistency in
+  // exactly the props this SVG-heavy canvas renders from). Loading persisted
+  // params in the effect below instead means both the server render and the
+  // client's pre-hydration render agree on DEFAULT_PARAMS; the persisted
+  // values are applied in a post-hydration update, trading a brief flash of
+  // defaults for a guaranteed-matching hydration pass.
   const [params, setParams] = useState<ToolParams>(DEFAULT_PARAMS)
+  useEffect(() => {
+    const persisted = loadPersistedParams<ToolParams>()
+    if (persisted) setParams(persisted)
+  }, [])
+  useAutosave(params)
+
+  const handleReset = () => {
+    clearPersistedParams()
+    setParams(DEFAULT_PARAMS)
+  }
+
   const logoRef = useRef<SVGSVGElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const logoInkBBox = useLogoBBox(logoRef)
@@ -246,6 +273,7 @@ export default function BrandAssetTool() {
         >
           {pngExportState === 'exporting' ? 'Exporting…' : 'Export PNG'}
         </button>
+        <button type="button" className="pw-btn" onClick={handleReset}>Reset to defaults</button>
       </div>
 
       {sizeCapBlocked && (
