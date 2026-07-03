@@ -469,6 +469,21 @@ body:has(.pw-pitch) {
     max-height: min(85vh, 62rem);
     overflow-y: auto;
     overscroll-behavior: contain;
+    /* The sidebar genuinely needs scrolling — there are a lot of panels —
+       but a default OS-auto-hide scrollbar on this dark background is
+       nearly invisible until actively dragged, which reads as "some tools
+       are just missing" rather than "scroll for more". Force a persistent,
+       on-brand accent-coloured scrollbar so the overflow is obvious at a
+       glance instead of discovered by accident. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--pw-accent) transparent;
+  }
+  .pw-tool-sidebar::-webkit-scrollbar { width: 8px; }
+  .pw-tool-sidebar::-webkit-scrollbar-track { background: transparent; }
+  .pw-tool-sidebar::-webkit-scrollbar-thumb {
+    background: var(--pw-accent);
+    border-radius: 4px;
+    border: 2px solid var(--pw-paper-pure);
   }
 }
 
@@ -633,6 +648,13 @@ body:has(.pw-pitch) {
   cursor: move;
 }
 .pw-move-handle:active { cursor: grabbing; }
+.pw-couple-handle {
+  fill: var(--pw-paper-pure);
+  stroke: var(--pw-accent);
+  stroke-width: 2;
+  cursor: move;
+}
+.pw-couple-handle:active { cursor: grabbing; }
 
 /* ── Brand tool — min/max range pair (randomiser) ────────── */
 .pw-range-pair {

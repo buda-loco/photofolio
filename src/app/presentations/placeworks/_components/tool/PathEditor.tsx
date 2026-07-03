@@ -22,8 +22,18 @@ type Props = PathValue & {
 
 type PositionKey = 'start' | 'startHandle' | 'end' | 'endHandle'
 type ScaleKey = 'startScale' | 'endScale'
-type MoveKey = 'move'
-type DragKey = PositionKey | ScaleKey | MoveKey
+// Multi-point translate gizmos, three tiers of granularity: 'move' shifts all
+// four points (the whole curve); 'startCouple'/'endCouple' shift just one
+// anchor+its own control point together (one "bezier couple"), leaving the
+// other end untouched.
+type GroupKey = 'move' | 'startCouple' | 'endCouple'
+type DragKey = PositionKey | ScaleKey | GroupKey
+
+const GROUP_POINTS: Record<GroupKey, PositionKey[]> = {
+  move: ['start', 'startHandle', 'end', 'endHandle'],
+  startCouple: ['start', 'startHandle'],
+  endCouple: ['end', 'endHandle'],
+}
 
 // Rest position (not dragging) of a scale handle: offset perpendicular to the
 // anchor->handle segment, from that segment's midpoint — "on the center of
@@ -57,11 +67,13 @@ export default function PathEditor({
   onChange, svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH,
 }: Props) {
   const dragging = useRef<DragKey | null>(null)
-  // Only used while dragging the 'move' handle: a delta-drag needs a fixed
-  // reference (pointer position + all 4 points at drag start), unlike the
-  // position dots which just set the dragged point straight to the live
-  // pointer SVG coordinate each move event.
-  const moveOrigin = useRef<{ pointerStart: Pt; start: Pt; startHandle: Pt; end: Pt; endHandle: Pt } | null>(null)
+  // Only used while dragging a group gizmo ('move'/'startCouple'/'endCouple'):
+  // a delta-drag needs a fixed reference (pointer position + all 4 points at
+  // drag start), unlike the position dots which just set the dragged point
+  // straight to the live pointer SVG coordinate each move event. Always
+  // snapshots all 4 points regardless of which group is being dragged —
+  // simpler than branching, and the unused ones are just ignored below.
+  const groupOrigin = useRef<{ pointerStart: Pt; start: Pt; startHandle: Pt; end: Pt; endHandle: Pt } | null>(null)
 
   const toSvgPoint = useCallback(
     (clientX: number, clientY: number): Pt => {
@@ -76,6 +88,8 @@ export default function PathEditor({
     [svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH]
   )
 
+  const isGroupKey = (key: DragKey): key is GroupKey => key === 'move' || key === 'startCouple' || key === 'endCouple'
+
   const onPointerDown = (key: DragKey) => (e: React.PointerEvent) => {
     e.stopPropagation()
     // setPointerCapture can throw (e.g. NotFoundError) in edge cases where the
@@ -89,8 +103,8 @@ export default function PathEditor({
       // no-op — see comment above
     }
     dragging.current = key
-    if (key === 'move') {
-      moveOrigin.current = { pointerStart: toSvgPoint(e.clientX, e.clientY), start, startHandle, end, endHandle }
+    if (isGroupKey(key)) {
+      groupOrigin.current = { pointerStart: toSvgPoint(e.clientX, e.clientY), start, startHandle, end, endHandle }
     }
   }
 
@@ -105,17 +119,18 @@ export default function PathEditor({
     if (!key) return
     const p = toSvgPoint(e.clientX, e.clientY)
 
-    if (key === 'move') {
-      const origin = moveOrigin.current
+    if (isGroupKey(key)) {
+      const origin = groupOrigin.current
       if (!origin) return
       const dx = p.x - origin.pointerStart.x
       const dy = p.y - origin.pointerStart.y
-      const shift = (pt: Pt): Pt => ({ x: pt.x + dx, y: pt.y + dy })
+      const moved = GROUP_POINTS[key]
+      const shift = (k: PositionKey, current: Pt): Pt => (moved.includes(k) ? { x: origin[k].x + dx, y: origin[k].y + dy } : current)
       onChange({
-        start: shift(origin.start),
-        startHandle: shift(origin.startHandle),
-        end: shift(origin.end),
-        endHandle: shift(origin.endHandle),
+        start: shift('start', start),
+        startHandle: shift('startHandle', startHandle),
+        end: shift('end', end),
+        endHandle: shift('endHandle', endHandle),
         startScale,
         endScale,
       })
@@ -139,7 +154,7 @@ export default function PathEditor({
 
   const onPointerUp = () => {
     dragging.current = null
-    moveOrigin.current = null
+    groupOrigin.current = null
   }
 
   const dot = (key: PositionKey, pt: Pt) => (
@@ -148,6 +163,20 @@ export default function PathEditor({
 
   const scaleDot = (key: ScaleKey, pt: Pt) => (
     <circle key={key} className="pw-scale-handle" cx={pt.x} cy={pt.y} r={6} onPointerDown={onPointerDown(key)} />
+  )
+
+  // Diamond (a rotated square), not a circle: keeps this visually distinct
+  // from the filled position dots, the hollow scale rings, and the dashed
+  // whole-move ring, so a "couple" gizmo reads as its own kind of control at
+  // a glance.
+  const coupleDot = (key: 'startCouple' | 'endCouple', pt: Pt) => (
+    <rect
+      key={key}
+      className="pw-couple-handle"
+      x={pt.x - 5} y={pt.y - 5} width={10} height={10}
+      transform={`rotate(45 ${pt.x} ${pt.y})`}
+      onPointerDown={onPointerDown(key)}
+    />
   )
 
   const startMid = segmentMid(start, startHandle)
@@ -172,6 +201,8 @@ export default function PathEditor({
       {dot('endHandle', endHandle)}
       {scaleDot('startScale', startScalePos)}
       {scaleDot('endScale', endScalePos)}
+      {coupleDot('startCouple', startMid)}
+      {coupleDot('endCouple', endMid)}
       <circle className="pw-move-handle" cx={movePos.x} cy={movePos.y} r={10} onPointerDown={onPointerDown('move')} />
     </g>
   )
