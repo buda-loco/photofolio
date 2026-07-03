@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { buildHarmonics, buildStrokes, buildRibbonPath } from './yarnMath'
 import type { Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, shadesOf, contrastRatio } from './palette'
@@ -94,10 +94,21 @@ export default function BrandAssetTool() {
   // exactly the props this SVG-heavy canvas renders from). Loading persisted
   // params in the effect below instead means both the server render and the
   // client's pre-hydration render agree on DEFAULT_PARAMS; the persisted
-  // values are applied in a post-hydration update, trading a brief flash of
-  // defaults for a guaranteed-matching hydration pass.
+  // values are applied in a post-hydration update.
   const [params, setParams] = useState<ToolParams>(DEFAULT_PARAMS)
-  useEffect(() => {
+  // useLayoutEffect, not useEffect: this tool is meant to be driven live in
+  // front of a client (see the export-state comments below), so a visible
+  // "flash of defaults then snap to persisted state" on reload is a real
+  // concern, not a cosmetic one. useLayoutEffect fires synchronously after
+  // DOM mutations but before the browser paints, so — unlike useEffect,
+  // which fires after paint — the persisted values are applied before
+  // anything is shown on screen, eliminating the flash. This doesn't affect
+  // the hydration-match reasoning above: the effect body still never runs
+  // during SSR (no window there), and it still only runs client-side after
+  // the initial DEFAULT_PARAMS render has been committed/hydrated — it's
+  // just scheduled to run (and, critically, to have its DOM effects applied)
+  // before that first client paint rather than after it.
+  useLayoutEffect(() => {
     const persisted = loadPersistedParams<ToolParams>()
     if (persisted) setParams(persisted)
   }, [])
