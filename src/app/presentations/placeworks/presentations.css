@@ -808,17 +808,42 @@ body:has(.pw-pitch) {
   fill: var(--pw-paper-pure);
   stroke: var(--pw-accent);
   stroke-width: 2;
-  stroke-dasharray: 3 2;
   cursor: move;
 }
 .pw-move-handle:active { cursor: grabbing; }
-.pw-couple-handle {
+/* The bezier spine itself, so the line's shape is readable at a glance
+   instead of inferred from four floating dots. */
+.pw-spine-guide {
+  fill: none;
+  stroke: var(--pw-ink-soft);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 6;
+  opacity: 0.55;
+  pointer-events: none;
+}
+/* Combined transform gizmo (Blender-style): ring = rotate, centre = move,
+   outboard square = uniform scale. The visible ring is display-only; the
+   fat transparent twin on top is the actual rotate hit target. */
+.pw-gizmo-ring {
+  fill: none;
+  stroke: var(--pw-accent);
+  stroke-width: 1.5;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.pw-gizmo-ring-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  cursor: grab;
+}
+.pw-gizmo-ring-hit:active { cursor: grabbing; }
+.pw-gizmo-scale {
   fill: var(--pw-paper-pure);
   stroke: var(--pw-accent);
   stroke-width: 2;
-  cursor: move;
+  cursor: nwse-resize;
 }
-.pw-couple-handle:active { cursor: grabbing; }
 .pw-resolve-handle {
   stroke: var(--pw-accent);
   stroke-width: 6;

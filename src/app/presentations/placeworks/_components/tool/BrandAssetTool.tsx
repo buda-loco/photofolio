@@ -45,17 +45,20 @@ export const DEFAULT_PARAMS: ToolParams = {
   canvas: { widthPx: 1600, heightPx: 900, unit: 'px', widthCm: 13.55, heightCm: 7.62, dpi: 300 }, // widthCm/heightCm are the exact cm-equivalent of 1600x900px @ 300dpi (Math.round((cm/2.54)*300) round-trips to 1600/900) — keep in sync if widthPx/heightPx/dpi defaults change
   path: {
     start: { x: 160, y: 700 }, startHandle: { x: 500, y: 200 }, end: { x: 1440, y: 300 }, endHandle: { x: 1100, y: 750 },
-    startScale: 1, endScale: 1,
+    // Amplitude biased to the start end: paired with the low resolve below,
+    // the default reads as a tight 10-line array that frays into moderate
+    // mess on ONE side and runs clean on the other.
+    startScale: 1.5, endScale: 0.6,
   },
-  // Start minimal — ONE thin line — and build up from there with the Lines/
-  // Width sliders, rather than opening on a dense 12-strand tangle the user
-  // has to deconstruct before making it theirs.
-  lines: 1,
-  mess: 68,
+  // A close-together 10-line array (low spread keeps lanes tight) with
+  // moderate one-sided mess — a composition to refine, not a wall of
+  // tangle to deconstruct.
+  lines: 10,
+  mess: 55,
   detail: 4,
-  resolve: 58,
-  sharp: 45,
-  spread: 72,
+  resolve: 35,
+  sharp: 55,
+  spread: 20,
   thickness: { preset: 'thick-thin', min: 1, max: 3, transitionPos: 0.6, transitionWidth: 0.3 },
   colours: {
     background: { base: 'nearBlack', shadeStep: 2 },
