@@ -460,6 +460,26 @@ First deck: **PlaceWorks** (`/presentations/placeworks`).
 3. Keep it `noindex` — these are private client links, not public pages.
 4. Push to `main` — Vercel deploys automatically.
 
+### Brand Asset Tool — Electron app (`placeworks-tool-electron/`)
+
+Standalone desktop version of `/presentations/placeworks/tool`. Own
+`package.json` (Vite + React + Electron), fully separate from the site's
+build — root `tsconfig.json` excludes the folder, and Vercel ignores it.
+
+- **Single source of truth:** the app does NOT copy the tool — it imports the
+  React components straight from `src/app/presentations/placeworks/_components/tool/`
+  via Vite aliases (`@tool`, `@deck` in its `vite.config.ts`). Improving the
+  web tool improves the app. This works because the tool folder has zero
+  Next.js imports — keep it that way (no `next/*`, no `/public` asset URLs).
+- **Commands** (run inside `placeworks-tool-electron/`):
+  `npm run dev` — Vite + Electron with HMR · `npm run build` — typecheck +
+  bundle renderer · `npm start` — build + run packaged-style from `dist/` ·
+  `npm run dist` — electron-builder .dmg/.zip into `release/`.
+- Renderer is sandboxed (no Node, no preload, no IPC); exports go through the
+  browser anchor-download path, which Electron routes to the OS save dialog.
+- `src/app.css` supplies the site-level tokens `presentations.css` expects
+  (`--font-sans`, `--ease-out`, `--nav-height: 0`).
+
 ---
 
 ## Adding a new client quote

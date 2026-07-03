@@ -1,0 +1,24 @@
+/* Electron shell for the PlaceWorks Brand Asset Tool.
+
+   presentations.css was written to live inside the photofolio site, so it
+   leans on a handful of site-level tokens (tokens.css :root values) that
+   don't exist here. This file supplies exactly those, plus the shell
+   adjustments that replace the website's page chrome. */
+
+:root {
+  /* Site tokens the deck stylesheet references. Adrianna is only used by
+     deck headings the app doesn't render, so the stack simply falls through
+     to system-ui — no font files needed until branded chrome is added. */
+  --font-sans: 'Adrianna', system-ui, -apple-system, sans-serif;
+  --font-display: 'Adrianna Extended', system-ui, -apple-system, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The site offsets .pw-pitch below its fixed nav; there is no nav here. */
+  --nav-height: 0px;
+}
+
+/* The workspace is the window: slim gutter, full-viewport shell. */
+.pwe-shell {
+  min-height: 100vh;
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
