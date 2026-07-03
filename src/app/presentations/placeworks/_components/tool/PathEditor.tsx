@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react'
 import type { Pt } from './yarnMath'
+import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
 
 type Props = {
   start: Pt
@@ -70,7 +71,7 @@ export default function PathEditor({ start, startHandle, end, endHandle, onChang
   )
 
   return (
-    <g onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+    <g className={EXPORT_EXCLUDE_CLASS} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
       <line className="pw-handle-line" x1={start.x} y1={start.y} x2={startHandle.x} y2={startHandle.y} />
       <line className="pw-handle-line" x1={end.x} y1={end.y} x2={endHandle.x} y2={endHandle.y} />
       {dot('start', start)}
