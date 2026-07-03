@@ -367,6 +367,7 @@ export type BuildParams = {
   spread: number  // 0..100 — how much lines gather toward the centerline when resolved
   startScale: number // SCALE_MIN..SCALE_MAX — tangle-amplitude multiplier at t=0, blended linearly to endScale across the run
   endScale: number   // SCALE_MIN..SCALE_MAX — same, at t=1
+  breadth: number // 0..100 — perpendicular width of the whole array as a fraction of spine length (35 reproduces the old hardcoded 0.35)
   avoid: { rect: AvoidRect; strength: number } // strength 0..100; <=0 disables the field entirely (avoidRect no-ops)
   thickness: ThicknessParams
   seed: number
@@ -375,7 +376,7 @@ export type BuildParams = {
 export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
 
 export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
-  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, avoid, thickness } = params
+  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, breadth, avoid, thickness } = params
   // defensive clamp — buildStrokes is a standalone exported function future
   // tasks may call directly (not just from a bounded UI slider); a stray
   // large `lines` would allocate lines*(SAMPLES+1) points/widths and blow
@@ -394,7 +395,12 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   const avoidStrength = Math.min(100, Math.max(0, avoid.strength)) / 100
 
   const spineLen = Math.hypot(bezier.p3.x - bezier.p0.x, bezier.p3.y - bezier.p0.y) || 1
-  const crossScale = spineLen * 0.35 // ties noise amplitude to how far apart the endpoints are
+  // Ties noise amplitude to how far apart the endpoints are; `breadth` is
+  // the user's direct control over the array's perpendicular width (the old
+  // hardcoded factor was 0.35). NaN-guarded because params persisted before
+  // this field existed won't have it.
+  const breadthSafe = Number.isFinite(breadth) ? Math.min(100, Math.max(0, breadth)) : 35
+  const crossScale = spineLen * (breadthSafe / 100)
 
   const out: Stroke[] = []
   for (let i = 0; i < lineCount; i++) {

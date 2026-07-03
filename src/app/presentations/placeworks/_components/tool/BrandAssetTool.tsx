@@ -30,6 +30,7 @@ export type ToolParams = {
   resolve: number
   sharp: number
   spread: number
+  breadth: number // 0..100 — perpendicular width of the whole array (see yarnMath BuildParams)
   thickness: ThicknessParams
   // background/container accept 'transparent' alongside a palette swatch:
   // a transparent background exports a PNG with real alpha; a transparent
@@ -59,6 +60,7 @@ export const DEFAULT_PARAMS: ToolParams = {
   resolve: 35,
   sharp: 55,
   spread: 20,
+  breadth: 18, // narrower than yarnMath's legacy 35 — the full-width default read as too big
   thickness: { preset: 'thick-thin', min: 1, max: 3, transitionPos: 0.6, transitionWidth: 0.3 },
   colours: {
     background: { base: 'nearBlack', shadeStep: 2 },
@@ -148,7 +150,12 @@ export default function BrandAssetTool() {
   // before that first client paint rather than after it.
   useLayoutEffect(() => {
     const persisted = loadPersistedParams<ToolParams>()
-    if (persisted) setParams(persisted)
+    // Shallow-merged over DEFAULT_PARAMS so top-level fields added to
+    // ToolParams after a user's state was saved (e.g. breadth) pick up
+    // their defaults instead of arriving as undefined — avoids a storage
+    // key bump (which would discard the whole saved artwork) for purely
+    // additive top-level changes.
+    if (persisted) setParams({ ...DEFAULT_PARAMS, ...persisted })
   }, [])
   useAutosave(params)
 
@@ -238,11 +245,12 @@ export default function BrandAssetTool() {
         spread: params.spread,
         startScale: params.path.startScale,
         endScale: params.path.endScale,
+        breadth: params.breadth,
         avoid,
         thickness: params.thickness,
         seed: params.seed,
       }),
-    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed, avoid]
+    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.breadth, params.thickness, params.seed, avoid]
   )
 
   // Ribbon outline strings are the most expensive per-stroke artefact
@@ -471,6 +479,20 @@ export default function BrandAssetTool() {
                   return { ...p, thickness: { ...p.thickness, max: nextMax, min: Math.max(0.1, nextMax * ratio) } }
                 })
               }
+            />
+          </span>
+          {/* Perpendicular width of the WHOLE array (how far strands can
+              stray from the spine) — distinct from Width above, which is
+              the stroke thickness of each individual line. */}
+          <span className="pw-slider">
+            Array&nbsp;width
+            <input
+              type="range"
+              min={2}
+              max={100}
+              step={1}
+              value={params.breadth}
+              onChange={(e) => setParams((p) => ({ ...p, breadth: +e.target.value }))}
             />
           </span>
         </div>

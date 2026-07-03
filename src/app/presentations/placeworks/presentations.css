@@ -844,6 +844,18 @@ body:has(.pw-pitch) {
   stroke-width: 2;
   cursor: nwse-resize;
 }
+/* End circle gizmos: the visible circle rides a fat invisible hit circle so
+   grabbing a curve end never demands pixel aim. */
+.pw-end-gizmo {
+  fill: var(--pw-paper-pure);
+  stroke: var(--pw-accent);
+  stroke-width: 2;
+}
+.pw-end-hit {
+  fill: transparent;
+  cursor: move;
+}
+.pw-end-hit:active { cursor: grabbing; }
 .pw-resolve-handle {
   stroke: var(--pw-accent);
   stroke-width: 6;

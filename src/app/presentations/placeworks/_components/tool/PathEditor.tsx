@@ -23,20 +23,23 @@ type Props = PathValue & {
 
 type PositionKey = 'start' | 'startHandle' | 'end' | 'endHandle'
 type ScaleKey = 'startScale' | 'endScale'
-// The combined transform gizmo's three modes — one widget at the spine's
-// midpoint, Blender-style: centre = translate, ring = rotate, outboard
-// square = uniform scale. All three transform the WHOLE curve (all four
-// points) around the gizmo centre.
-type TransformKey = 'move' | 'rotate' | 'scaleUniform'
+// The combined transform gizmo's modes — the midpoint widget is
+// Blender-style (centre = translate, ring = rotate, outboard square =
+// uniform scale) and transforms the WHOLE curve; moveStart/moveEnd are the
+// grab-friendly circle gizmos at the curve's two ends, translating that
+// end's anchor + control handle together (tangent preserved).
+type TransformKey = 'move' | 'rotate' | 'scaleUniform' | 'moveStart' | 'moveEnd'
 type DragKey = PositionKey | ScaleKey | TransformKey
-
-const POSITION_KEYS: PositionKey[] = ['start', 'startHandle', 'end', 'endHandle']
 
 // Combined-gizmo geometry, in canvas units.
 const GIZMO_RING_R = 46
 const GIZMO_CENTER_R = 9
 const GIZMO_SCALE_OFFSET = 16 // square's distance beyond the ring, along +x
 const GIZMO_SCALE_SIZE = 11
+// End circle gizmos: visible circle + the invisible fat hit circle that
+// makes them easy to grab without pixel aim.
+const END_GIZMO_R = 11
+const END_GIZMO_HIT_R = 24
 
 // Whole-curve scale-drag bounds — wide enough for dramatic resizes, tight
 // enough that a twitch through the centre can't collapse or explode the
@@ -105,7 +108,7 @@ export default function PathEditor({
   )
 
   const isTransformKey = (key: DragKey): key is TransformKey =>
-    key === 'move' || key === 'rotate' || key === 'scaleUniform'
+    key === 'move' || key === 'rotate' || key === 'scaleUniform' || key === 'moveStart' || key === 'moveEnd'
 
   const onPointerDown = (key: DragKey) => (e: React.PointerEvent) => {
     e.stopPropagation()
@@ -141,6 +144,21 @@ export default function PathEditor({
     if (isTransformKey(key)) {
       const origin = transformOrigin.current
       if (!origin) return
+
+      // End gizmos: translate just that end's anchor + control handle, so
+      // the end moves as a unit and the curve's tangent there is preserved.
+      if (key === 'moveStart' || key === 'moveEnd') {
+        const dx = p.x - origin.pointerStart.x
+        const dy = p.y - origin.pointerStart.y
+        const shift = (pt: Pt): Pt => ({ x: pt.x + dx, y: pt.y + dy })
+        onChange(
+          key === 'moveStart'
+            ? { start: shift(origin.start), startHandle: shift(origin.startHandle), end: origin.end, endHandle: origin.endHandle, startScale, endScale }
+            : { start: origin.start, startHandle: origin.startHandle, end: shift(origin.end), endHandle: shift(origin.endHandle), startScale, endScale }
+        )
+        return
+      }
+
       let mapPt: (pt: Pt) => Pt
 
       if (key === 'move') {
@@ -217,6 +235,18 @@ export default function PathEditor({
     <circle key={key} className="pw-scale-handle" cx={pt.x} cy={pt.y} r={6} onPointerDown={onPointerDown(key)} />
   )
 
+  // Grab-friendly circle gizmo at a curve end: fat invisible hit circle
+  // underneath, visible circle on top. Replaces the old anchor-only dot —
+  // dragging it carries the control handle along (see moveStart/moveEnd),
+  // which is nearly always what "move this end" means; the handle dot
+  // remains for reshaping the tangent itself.
+  const endGizmo = (key: 'moveStart' | 'moveEnd', pt: Pt) => (
+    <g key={key}>
+      <circle className="pw-end-hit" cx={pt.x} cy={pt.y} r={END_GIZMO_HIT_R} onPointerDown={onPointerDown(key)} />
+      <circle className="pw-end-gizmo" cx={pt.x} cy={pt.y} r={END_GIZMO_R} pointerEvents="none" />
+    </g>
+  )
+
   const startMid = segmentMid(start, startHandle)
   const endMid = segmentMid(end, endHandle)
   const startScalePos = scaleHandlePos(start, startHandle, startScale)
@@ -269,9 +299,9 @@ export default function PathEditor({
       />
       <circle className="pw-move-handle" cx={center.x} cy={center.y} r={GIZMO_CENTER_R} onPointerDown={onPointerDown('move')} />
 
-      {dot('start', start)}
+      {endGizmo('moveStart', start)}
+      {endGizmo('moveEnd', end)}
       {dot('startHandle', startHandle)}
-      {dot('end', end)}
       {dot('endHandle', endHandle)}
       {scaleDot('startScale', startScalePos)}
       {scaleDot('endScale', endScalePos)}

@@ -321,7 +321,7 @@ describe('buildStrokes', () => {
   const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
   const harmonics = buildHarmonics(7)
   const params: BuildParams = {
-    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, startScale: 1, endScale: 1, avoid: NO_AVOID, seed: 7,
+    bezier: bez, lines: 5, mess: 68, detail: 4, resolve: 58, sharp: 45, spread: 72, startScale: 1, endScale: 1, breadth: 35, avoid: NO_AVOID, seed: 7,
     thickness: { preset: 'flat', min: 2, max: 6, transitionPos: 0.5, transitionWidth: 0.15 },
   }
 
@@ -362,6 +362,28 @@ describe('buildStrokes', () => {
         expect(Number.isFinite(pt.y)).toBe(true)
       }
     }
+  })
+
+  it('breadth: 0 collapses every strand onto the spine; larger breadth widens the array', () => {
+    const flat = buildStrokes(harmonics, { ...params, breadth: 0 })
+    const spineSamples = Array.from({ length: 400 }, (_, i) => bezierPoint(bez, i / 399))
+    for (const pt of flat[0].points) {
+      let best = Infinity
+      for (const s of spineSamples) best = Math.min(best, Math.hypot(pt.x - s.x, pt.y - s.y))
+      expect(best).toBeLessThan(2)
+    }
+    // and the max perpendicular excursion grows with breadth
+    const excursion = (breadth: number) => {
+      const strokes = buildStrokes(harmonics, { ...params, breadth })
+      let worst = 0
+      for (const pt of strokes[0].points) {
+        let best = Infinity
+        for (const s of spineSamples) best = Math.min(best, Math.hypot(pt.x - s.x, pt.y - s.y))
+        worst = Math.max(worst, best)
+      }
+      return worst
+    }
+    expect(excursion(60)).toBeGreaterThan(excursion(15))
   })
 
   it('avoid.strength: 0 matches the no-avoidance case exactly (backward compatible)', () => {
@@ -520,7 +542,7 @@ describe('buildRibbonPath', () => {
     const bez: Bezier = { p0: { x: 0, y: 300 }, p1: { x: 200, y: 100 }, p2: { x: 400, y: 500 }, p3: { x: 600, y: 300 } }
     const harmonics = buildHarmonics(3)
     const params: BuildParams = {
-      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, startScale: 1, endScale: 1, avoid: NO_AVOID, seed: 3,
+      bezier: bez, lines: 1, mess: 72, detail: 5, resolve: 50, sharp: 40, spread: 60, startScale: 1, endScale: 1, breadth: 35, avoid: NO_AVOID, seed: 3,
       thickness: { preset: 'thin-thick-thin', min: 2, max: 10, transitionPos: 0.5, transitionWidth: 0.2 },
     }
     const [stroke] = buildStrokes(harmonics, params)
