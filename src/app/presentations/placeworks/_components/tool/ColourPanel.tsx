@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { PALETTE, shadesOf, type PaletteKey, type SwatchRef } from './palette'
 
 type Props = {
-  background: SwatchRef
+  background: SwatchRef | 'transparent'
   lines: SwatchRef[]
   logo: SwatchRef | 'black' | 'white'
-  container: SwatchRef
-  onBackgroundChange: (ref: SwatchRef) => void
+  container: SwatchRef | 'transparent'
+  onBackgroundChange: (ref: SwatchRef | 'transparent') => void
   onLinesChange: (refs: SwatchRef[]) => void
   onLogoChange: (v: SwatchRef | 'black' | 'white') => void
-  onContainerChange: (ref: SwatchRef) => void
+  onContainerChange: (ref: SwatchRef | 'transparent') => void
 }
 
 const KEYS = Object.keys(PALETTE) as PaletteKey[]
@@ -23,9 +23,28 @@ const KEYS = Object.keys(PALETTE) as PaletteKey[]
 // same hoisting already done for CREAM_BACKING in BrandAssetTool.tsx.
 const SHADE_TABLE: Record<PaletteKey, string[]> = Object.fromEntries(KEYS.map((k) => [k, shadesOf(k)])) as Record<PaletteKey, string[]>
 
-function SwatchPicker({ value, onChange }: { value: SwatchRef | null; onChange: (r: SwatchRef) => void }) {
+function SwatchPicker({
+  value,
+  onChange,
+  transparent,
+}: {
+  value: SwatchRef | null
+  onChange: (r: SwatchRef) => void
+  // When provided, renders a leading "no colour" swatch (checkerboard +
+  // diagonal). Only the pickers whose target can actually render as
+  // transparent (background, container) pass this — lines/logo don't.
+  transparent?: { active: boolean; select: () => void }
+}) {
   return (
     <div className="pw-swatch-grid">
+      {transparent && (
+        <button
+          className={`pw-swatch pw-swatch--transparent${transparent.active ? ' pw-swatch--active' : ''}`}
+          title="Transparent"
+          aria-label="Transparent"
+          onClick={transparent.select}
+        />
+      )}
       {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => (
         <button
           key={`${key}-${step}`}
@@ -91,7 +110,11 @@ export default function ColourPanel({ background, lines, logo, container, onBack
           every other .pw-slider usage) would otherwise claim a 22rem-tall
           empty box. */}
       <span className="pw-slider" style={{ flex: 'none' }}>Background</span>
-      <SwatchPicker value={background} onChange={onBackgroundChange} />
+      <SwatchPicker
+        value={background === 'transparent' ? null : background}
+        onChange={onBackgroundChange}
+        transparent={{ active: background === 'transparent', select: () => onBackgroundChange('transparent') }}
+      />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flexWrap: 'wrap' }}>
         <span className="pw-slider" style={{ flex: 'none' }}>{mono ? 'Lines (mono)' : 'Lines (1–4 active)'}</span>
@@ -126,7 +149,11 @@ export default function ColourPanel({ background, lines, logo, container, onBack
       <SwatchPicker value={typeof logo === 'string' ? null : logo} onChange={onLogoChange} />
 
       <span className="pw-slider" style={{ flex: 'none' }}>Container background</span>
-      <SwatchPicker value={container} onChange={onContainerChange} />
+      <SwatchPicker
+        value={container === 'transparent' ? null : container}
+        onChange={onContainerChange}
+        transparent={{ active: container === 'transparent', select: () => onContainerChange('transparent') }}
+      />
 
       <div style={{ marginTop: '0.25rem' }}>
         <button type="button" className="pw-btn pw-btn--solid" onClick={mixColours}>Mix colours</button>

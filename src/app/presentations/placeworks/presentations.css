@@ -441,6 +441,15 @@ body:has(.pw-pitch) {
   }
 }
 
+/* On genuinely wide screens the canvas has width to spare — give some of it
+   to the sidebar so sliders get longer travel (finer control) and swatch
+   grids wrap less. */
+@media (min-width: 1440px) {
+  .pw-tool {
+    grid-template-columns: minmax(0, 1fr) 27rem;
+  }
+}
+
 .pw-tool-stage {
   position: relative;
   width: 100%;
@@ -486,6 +495,45 @@ body:has(.pw-pitch) {
     border: 2px solid var(--pw-paper-pure);
   }
 }
+
+/* Sidebar internals run denser than the old full-width control strips —
+   the panel headers now do the visual separation, so the per-row padding
+   can shrink without rows bleeding together. */
+.pw-tool-sidebar .pw-controls {
+  gap: 0.6rem 1rem;
+  padding: 0.7rem 1.25rem;
+}
+
+/* ── Brand tool — collapsible sidebar sections ───────────── */
+.pw-panel {
+  border-top: 1px solid var(--pw-hair);
+}
+.pw-panel > summary {
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pw-ink-soft);
+  padding: 0.8rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pw-panel > summary::-webkit-details-marker { display: none; }
+.pw-panel > summary::after {
+  content: "+";
+  color: var(--pw-stone);
+  font-size: 0.9rem;
+}
+.pw-panel[open] > summary::after { content: "\2212"; } /* minus sign */
+.pw-panel > summary:hover { color: var(--pw-ink); }
+/* The section header already separates panels — the first control strip
+   inside doesn't need its own border doubling it up. */
+.pw-panel .pw-controls { border-top: none; padding-top: 0.2rem; }
+.pw-panel .pw-controls + .pw-controls { padding-top: 0.7rem; }
 
 /* Controls */
 .pw-controls {
@@ -713,6 +761,24 @@ body:has(.pw-pitch) {
   padding: 0;
 }
 .pw-swatch--active { border: 2px solid var(--pw-accent); box-shadow: 0 0 0 1px var(--pw-accent); }
+/* "No colour" swatch: alpha checkerboard with a red diagonal — the standard
+   design-tool convention for transparent, so it doesn't read as just
+   another (grey) colour in the grid. */
+.pw-swatch--transparent {
+  position: relative;
+  background:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.22) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.22) 75%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.22) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.22) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  overflow: hidden;
+}
+.pw-swatch--transparent::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right, transparent 44%, #e5484d 44%, #e5484d 56%, transparent 56%);
+}
 .pw-contrast-warning {
   font-family: var(--pw-mono);
   font-size: 0.68rem;

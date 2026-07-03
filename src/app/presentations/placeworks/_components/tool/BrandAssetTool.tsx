@@ -27,7 +27,11 @@ export type ToolParams = {
   sharp: number
   spread: number
   thickness: ThicknessParams
-  colours: { background: SwatchRef; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white'; container: SwatchRef }
+  // background/container accept 'transparent' alongside a palette swatch:
+  // a transparent background exports a PNG with real alpha; a transparent
+  // container turns the backing panel into pure negative space (or lets the
+  // yarn run behind the logo when avoidance has the clip disabled).
+  colours: { background: SwatchRef | 'transparent'; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white'; container: SwatchRef | 'transparent' }
   mask: { x: number; y: number; width: number; height: number; style: 'hard' | 'soft'; avoid: boolean; avoidStrength: number }
   logo: { scale: number }
   seed: number
@@ -208,12 +212,16 @@ export default function BrandAssetTool() {
     [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed, params.mask]
   )
 
-  const bgColor = resolveSwatch(params.colours.background)
+  const bgColor = params.colours.background === 'transparent' ? 'none' : resolveSwatch(params.colours.background)
   const lineColors = params.colours.lines.map(resolveSwatch)
   const logoColor =
     params.colours.logo === 'black' ? '#000000' : params.colours.logo === 'white' ? '#ffffff' : resolveSwatch(params.colours.logo)
-  const containerColor = resolveSwatch(params.colours.container)
-  const lowContrast = contrastRatio(logoColor, containerColor) < 3
+  const containerColor = params.colours.container === 'transparent' ? 'none' : resolveSwatch(params.colours.container)
+  // Contrast is checked against whatever actually sits behind the logo: the
+  // container if it has a colour, else the page background; if both are
+  // transparent there's nothing meaningful to compare against, so no warning.
+  const contrastBacking = containerColor !== 'none' ? containerColor : bgColor !== 'none' ? bgColor : null
+  const lowContrast = contrastBacking !== null && contrastRatio(logoColor, contrastBacking) < 3
 
   const { widthPx: W, heightPx: H } = params.canvas
   const maskId = 'pw-tool-mask'
@@ -369,9 +377,15 @@ export default function BrandAssetTool() {
             />
           )}
 
+          {/* While the avoidance field is on, the clip is off: the field
+              already bends strands around the container, and clipping the
+              few that still graze it would chop them mid-air at the rect
+              edge — exactly the "cut" look avoidance exists to replace. Any
+              residual overlap is covered by the container fill drawn on top
+              (or deliberately visible when the container is transparent). */}
           <g
-            clipPath={params.mask.style === 'hard' ? `url(#${maskId}-hard)` : undefined}
-            mask={params.mask.style === 'soft' ? `url(#${maskId}-soft)` : undefined}
+            clipPath={params.mask.style === 'hard' && !params.mask.avoid ? `url(#${maskId}-hard)` : undefined}
+            mask={params.mask.style === 'soft' && !params.mask.avoid ? `url(#${maskId}-soft)` : undefined}
           >
             {strokes.map((s, i) => (
               <path key={i} d={buildRibbonPath(s.points, s.widths)} fill={lineColors[i % lineColors.length]} fillOpacity={s.opacity} />
@@ -472,22 +486,16 @@ export default function BrandAssetTool() {
       {/* Side panel on wide viewports (below the canvas stacked on narrow
           ones — see the min-width: 900px breakpoint in presentations.css).
           Scrolls independently of the canvas so it stays reachable mid-drag
-          instead of pushing the canvas out of view above the fold. */}
-      <div className="pw-tool-sidebar">
-        <div className="pw-controls">
-          <span className="pw-slider" style={{ flex: 'none' }}>Zoom</span>
-          {ZOOM_STEPS.map((z) => (
-            <button
-              key={z}
-              type="button"
-              className={`pw-btn${zoomStep === z ? ' pw-btn--solid' : ''}`}
-              onClick={() => setZoomStep(z)}
-            >
-              {Math.round(z * 100)}%
-            </button>
-          ))}
-        </div>
+          instead of pushing the canvas out of view above the fold.
 
+          Layout: the action rows (export/preview/zoom) stay always-visible
+          at the top; every property group below them is a native
+          <details open> section — collapsible without any state wiring, so
+          whichever panels aren't in use can be folded away and the ones
+          that are stay within reach without scrolling. `open` is set as the
+          initial attribute only; React never writes it again, so the
+          browser owns the toggle state across re-renders. */}
+      <div className="pw-tool-sidebar">
         <div className="pw-controls">
           <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportSVG}>Export SVG</button>
           <button
@@ -508,12 +516,19 @@ export default function BrandAssetTool() {
           </button>
         </div>
 
-        {/* Whole-tool action, like Export/Reset above it, rather than a
-            per-property panel — placed right after them so it reads as part of
-            the same "act on the whole composition" group before the
-            property-by-property panels (colours, thickness, canvas, mask)
-            below. */}
-        <RandomiserPanel params={params} onRandomise={setParams} />
+        <div className="pw-controls">
+          <span className="pw-slider" style={{ flex: 'none' }}>Zoom</span>
+          {ZOOM_STEPS.map((z) => (
+            <button
+              key={z}
+              type="button"
+              className={`pw-btn${zoomStep === z ? ' pw-btn--solid' : ''}`}
+              onClick={() => setZoomStep(z)}
+            >
+              {Math.round(z * 100)}%
+            </button>
+          ))}
+        </div>
 
         {sizeCapBlocked && (
           <div className="pw-tool-hint" role="alert">
@@ -530,78 +545,93 @@ export default function BrandAssetTool() {
           </div>
         )}
 
-        <ColourPanel
-          background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
-          onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
-          onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
-          onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
-          onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
-        />
+        <details open className="pw-panel">
+          <summary>Randomiser</summary>
+          <RandomiserPanel params={params} onRandomise={setParams} />
+        </details>
 
-        <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+        <details open className="pw-panel">
+          <summary>Colours</summary>
+          <ColourPanel
+            background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
+            onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
+            onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
+            onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
+            onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
+          />
+        </details>
 
-        <div className="pw-controls">
-          <span className="pw-slider">
-            Mess&nbsp;end
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={params.resolve}
-              onChange={(e) => setParams((p) => ({ ...p, resolve: +e.target.value }))}
-            />
-          </span>
-          <span className="pw-slider">
-            Mess&nbsp;detail
-            <input
-              type="range"
-              min={1}
-              max={OCT_MAX}
-              step={1}
-              value={params.detail}
-              onChange={(e) => setParams((p) => ({ ...p, detail: +e.target.value }))}
-            />
-          </span>
-        </div>
+        <details open className="pw-panel">
+          <summary>Line shape</summary>
+          <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+          <div className="pw-controls">
+            <span className="pw-slider">
+              Mess&nbsp;end
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={params.resolve}
+                onChange={(e) => setParams((p) => ({ ...p, resolve: +e.target.value }))}
+              />
+            </span>
+            <span className="pw-slider">
+              Mess&nbsp;detail
+              <input
+                type="range"
+                min={1}
+                max={OCT_MAX}
+                step={1}
+                value={params.detail}
+                onChange={(e) => setParams((p) => ({ ...p, detail: +e.target.value }))}
+              />
+            </span>
+          </div>
+        </details>
 
-        <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
+        <details open className="pw-panel">
+          <summary>Canvas</summary>
+          <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
+        </details>
 
-        {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
-            LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
-            so the mask can never be shrunk smaller than the logo actually
-            renders at. Before the ink bbox is measured (logoInkBBox === null),
-            scaledWidth/scaledHeight are 0, so the sliders simply have no
-            enforced minimum yet (harmless — they're re-clamped the instant the
-            measurement lands and this component re-renders with real values). */}
-        <MaskPanel
-          value={params.mask}
-          onChange={(mask) => setParams((p) => ({ ...p, mask }))}
-          canvasW={W}
-          canvasH={H}
-          minWidth={scaledWidth}
-          minHeight={scaledHeight}
-        />
-
-        <div className="pw-controls">
-          <span className="pw-slider">
-            Logo&nbsp;scale
-            <input
-              type="range"
-              min={1}
-              // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
-              // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
-              // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
-              // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
-              // overflow that MaskPanel's clampMask currently only sees via the height axis
-              // (e.g. a very short canvas) or an even larger scale.
-              max={4}
-              step={0.1}
-              value={params.logo.scale}
-              onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
-            />
-          </span>
-        </div>
+        <details open className="pw-panel">
+          <summary>Logo container</summary>
+          {/* minWidth/minHeight reuse scaledWidth/scaledHeight verbatim — the same
+              LOGO_BASE_WIDTH_FRACTION formula that sizes the visible logo above —
+              so the mask can never be shrunk smaller than the logo actually
+              renders at. Before the ink bbox is measured (logoInkBBox === null),
+              scaledWidth/scaledHeight are 0, so the sliders simply have no
+              enforced minimum yet (harmless — they're re-clamped the instant the
+              measurement lands and this component re-renders with real values). */}
+          <MaskPanel
+            value={params.mask}
+            onChange={(mask) => setParams((p) => ({ ...p, mask }))}
+            canvasW={W}
+            canvasH={H}
+            minWidth={scaledWidth}
+            minHeight={scaledHeight}
+          />
+          <div className="pw-controls">
+            <span className="pw-slider">
+              Logo&nbsp;scale
+              <input
+                type="range"
+                min={1}
+                // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
+                // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
+                // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
+                // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
+                // overflow that MaskPanel's clampMask currently only sees via the height axis
+                // (e.g. a very short canvas) or an even larger scale.
+                max={4}
+                step={0.1}
+                value={params.logo.scale}
+                onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
+              />
+            </span>
+          </div>
+        </details>
       </div>
     </div>
   )
