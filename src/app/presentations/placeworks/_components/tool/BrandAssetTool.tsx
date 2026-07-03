@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildHarmonics, buildStrokes, buildRibbonPath } from './yarnMath'
 import type { Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, shadesOf, contrastRatio } from './palette'
@@ -12,7 +12,7 @@ import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
 import MaskPanel from './MaskPanel'
-import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
+import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -84,6 +84,35 @@ export default function BrandAssetTool() {
   const logoRef = useRef<SVGSVGElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const logoInkBBox = useLogoBBox(logoRef)
+
+  const [sizeCapBlocked, setSizeCapBlocked] = useState(false)
+
+  // The warning is a statement about the CURRENT canvas size, not a one-off
+  // event — if the user shrinks the canvas (or lowers DPI) via CanvasPanel
+  // while it's showing, it should disappear on its own rather than sit there
+  // making a claim that's no longer true. Manual dismissal still exists for
+  // "I've read this, go away" without touching the canvas size.
+  useEffect(() => {
+    if (sizeCapBlocked && !exceedsSizeCap(params.canvas.widthPx, params.canvas.heightPx)) {
+      setSizeCapBlocked(false)
+    }
+  }, [sizeCapBlocked, params.canvas.widthPx, params.canvas.heightPx])
+
+  const handleExportSVG = () => {
+    if (!svgRef.current) return
+    downloadSVG(getCleanExportSVGString(svgRef.current), 'placeworks-brand-asset.svg')
+  }
+
+  const handleExportPNG = () => {
+    if (!svgRef.current) return
+    if (exceedsSizeCap(params.canvas.widthPx, params.canvas.heightPx)) {
+      setSizeCapBlocked(true)
+      return
+    }
+    downloadPNG(getCleanExportSVGString(svgRef.current), params.canvas.widthPx, params.canvas.heightPx, 'placeworks-brand-asset.png').catch((err) => {
+      console.error('PNG export failed:', err)
+    })
+  }
 
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
   const strokes = useMemo(
@@ -194,6 +223,19 @@ export default function BrandAssetTool() {
         </svg>
         {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its cream backing panel.</p>}
       </div>
+
+      <div className="pw-controls">
+        <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportSVG}>Export SVG</button>
+        <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportPNG}>Export PNG</button>
+      </div>
+
+      {sizeCapBlocked && (
+        <div className="pw-tool-hint" role="alert">
+          This export is {params.canvas.widthPx}&times;{params.canvas.heightPx}px &mdash; larger than the {PNG_SIZE_CAP}px safety cap and may hang your browser.
+          Reduce canvas size or DPI to continue.
+          <button type="button" className="pw-btn" onClick={() => setSizeCapBlocked(false)}>Dismiss</button>
+        </div>
+      )}
 
       <ColourPanel
         background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo}

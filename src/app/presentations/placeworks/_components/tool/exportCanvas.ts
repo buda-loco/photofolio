@@ -46,3 +46,62 @@ export function getCleanExportSVGString(svg: SVGSVGElement): string {
 
   return new XMLSerializer().serializeToString(clone)
 }
+
+export const PNG_SIZE_CAP = 6000 // px, longest side — see downloadPNG's doc comment for why this exists
+
+export function downloadSVG(svg: string, filename: string) {
+  const blob = new Blob([svg], { type: 'image/svg+xml' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+export function exceedsSizeCap(widthPx: number, heightPx: number): boolean {
+  return Math.max(widthPx, heightPx) > PNG_SIZE_CAP
+}
+
+/**
+ * Rasterizes an SVG string to PNG and triggers a download. Uses
+ * `canvas.toBlob` rather than the synchronous `canvas.toDataURL` (which is
+ * what ShapePlayground.tsx's exportPNG() uses for its small, fixed-size
+ * canvases) because this tool's canvas can be up to PNG_SIZE_CAP² pixels —
+ * e.g. 6000x6000 is 144MB of raw RGBA. `toDataURL` blocks the main thread
+ * synchronously while it base64-encodes that entire buffer (base64 adds
+ * ~33% overhead, so a ~192MB string momentarily), which can freeze the tab
+ * for a very visible stretch at the top of the size range. `toBlob` hands
+ * the encode off the main thread (implementation-dependent, but spec-
+ * encouraged to be async) and returns a binary Blob with no base64 bloat,
+ * so it stays responsive and lighter on memory exactly where it matters
+ * most — right up against the size cap.
+ */
+export function downloadPNG(svg: string, widthPx: number, heightPx: number, filename: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const blob = new Blob([svg], { type: 'image/svg+xml' })
+    const url = URL.createObjectURL(blob)
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = widthPx
+      canvas.height = heightPx
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { URL.revokeObjectURL(url); reject(new Error('2D canvas context unavailable')); return }
+      ctx.drawImage(img, 0, 0, widthPx, heightPx)
+      URL.revokeObjectURL(url)
+      canvas.toBlob((pngBlob) => {
+        if (!pngBlob) { reject(new Error('PNG encoding failed')); return }
+        const pngUrl = URL.createObjectURL(pngBlob)
+        const a = document.createElement('a')
+        a.href = pngUrl
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(pngUrl)
+        resolve()
+      }, 'image/png')
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('SVG failed to rasterize')) }
+    img.src = url
+  })
+}
