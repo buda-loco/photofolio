@@ -422,118 +422,199 @@ body:has(.pw-pitch) {
   max-width: 42ch;
 }
 
+/* ── Brand tool — design-app workspace ─────────────────────
+   Structure: toolbar (global actions) on top, then a flex row of
+   [left dock | stage | right dock]. Docks are tabbed panel columns whose
+   tabs can be dragged to reorder or moved to the other dock (Dock.tsx);
+   the stage centers the canvas and caps it so the full artwork always
+   fits the viewport while values are tweaked. */
 .pw-tool {
-  background: var(--pw-paper-pure);
+  background: var(--pw-paper);
   border: 1px solid var(--pw-hair);
 }
 
-/* Below ~900px there's no room for a side-by-side layout — .pw-tool stays a
-   plain block and .pw-tool-stage / .pw-tool-sidebar simply stack (stage on
-   top, controls below), matching how this tool worked before the sidebar
-   existed. At ≥900px the tools move beside the canvas instead of below it —
-   easier to reach mid-drag, and the canvas doesn't get pushed offscreen by a
-   long stack of panels above the fold. */
-@media (min-width: 900px) {
-  .pw-tool {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 23rem;
-    align-items: stretch;
-  }
+.pw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
+  padding: 0.65rem 1rem;
+  background: var(--pw-paper-pure);
+  border-bottom: 1px solid var(--pw-hair);
+}
+.pw-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pw-toolbar-label {
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pw-stone);
 }
 
-/* On genuinely wide screens the canvas has width to spare — give some of it
-   to the sidebar so sliders get longer travel (finer control) and swatch
-   grids wrap less. */
-@media (min-width: 1440px) {
-  .pw-tool {
-    grid-template-columns: minmax(0, 1fr) 27rem;
-  }
+/* Export warnings render as a full-width strip between toolbar and
+   workspace instead of the sidebar's old inline hint block. */
+.pw-workspace-root .pw-tool-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  max-width: none;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--pw-hair);
+  background: var(--pw-paper-pure);
+}
+
+/* Compact page header for the tool route — the workspace is the page, so
+   the header shrinks to a breadcrumb-height strip instead of the deck
+   pages' display-scale heading. */
+.pw-tool-page {
+  padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem) 2.5rem;
+}
+.pw-tool-page-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.pw-tool-page-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.pw-workspace {
+  display: flex;
+  align-items: stretch;
+}
+
+.pw-stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
 }
 
 .pw-tool-stage {
   position: relative;
   width: 100%;
-  background: var(--pw-paper-pure);
   touch-action: none;
 }
 
 .pw-tool-stage svg { display: block; width: 100%; height: auto; }
 
-.pw-tool-sidebar {
+.pw-contrast-warning {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  margin: 0;
+  padding: 0.3em 0.6em;
+  background: color-mix(in srgb, var(--pw-paper) 80%, transparent);
+}
+
+/* Docks */
+.pw-dock {
+  flex: none;
+  width: 19.5rem;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--pw-hair);
+  background: var(--pw-paper-pure);
+  min-height: 0;
+  max-height: calc(100vh - 12rem);
 }
+.pw-dock:first-child { border-right: 1px solid var(--pw-hair); }
+.pw-dock:last-child { border-left: 1px solid var(--pw-hair); }
 
-@media (min-width: 900px) {
-  .pw-tool-sidebar {
-    border-top: none;
-    border-left: 1px solid var(--pw-hair);
-    /* min-height: 0 overrides the grid item's default min-height:auto (which
-       would otherwise force the row — and the canvas beside it — to grow to
-       fit the sidebar's full content). With it stretched to the canvas's
-       rendered height and capped from growing further, overflow-y:auto
-       scrolls the panel stack internally instead. */
-    min-height: 0;
-    max-height: min(85vh, 62rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    /* The sidebar genuinely needs scrolling — there are a lot of panels —
-       but a default OS-auto-hide scrollbar on this dark background is
-       nearly invisible until actively dragged, which reads as "some tools
-       are just missing" rather than "scroll for more". Force a persistent,
-       on-brand accent-coloured scrollbar so the overflow is obvious at a
-       glance instead of discovered by accident. */
-    scrollbar-width: thin;
-    scrollbar-color: var(--pw-accent) transparent;
-  }
-  .pw-tool-sidebar::-webkit-scrollbar { width: 8px; }
-  .pw-tool-sidebar::-webkit-scrollbar-track { background: transparent; }
-  .pw-tool-sidebar::-webkit-scrollbar-thumb {
-    background: var(--pw-accent);
-    border-radius: 4px;
-    border: 2px solid var(--pw-paper-pure);
-  }
-}
-
-/* Sidebar internals run denser than the old full-width control strips —
-   the panel headers now do the visual separation, so the per-row padding
-   can shrink without rows bleeding together. */
-.pw-tool-sidebar .pw-controls {
-  gap: 0.6rem 1rem;
-  padding: 0.7rem 1.25rem;
-}
-
-/* ── Brand tool — collapsible sidebar sections ───────────── */
-.pw-panel {
-  border-top: 1px solid var(--pw-hair);
-}
-.pw-panel > summary {
-  font-family: var(--pw-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pw-ink-soft);
-  padding: 0.8rem 1.25rem;
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
+.pw-dock-tabs {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--pw-hair);
 }
-.pw-panel > summary::-webkit-details-marker { display: none; }
-.pw-panel > summary::after {
-  content: "+";
+.pw-dock-tab {
+  font-family: var(--pw-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.65rem 0.85rem;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--pw-hair);
   color: var(--pw-stone);
-  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out);
 }
-.pw-panel[open] > summary::after { content: "\2212"; } /* minus sign */
-.pw-panel > summary:hover { color: var(--pw-ink); }
-/* The section header already separates panels — the first control strip
-   inside doesn't need its own border doubling it up. */
-.pw-panel .pw-controls { border-top: none; padding-top: 0.2rem; }
-.pw-panel .pw-controls + .pw-controls { padding-top: 0.7rem; }
+.pw-dock-tab:hover { color: var(--pw-ink); }
+.pw-dock-tab--active {
+  color: var(--pw-ink);
+  box-shadow: inset 0 -2px 0 var(--pw-accent);
+}
+/* Insertion caret while a dragged tab hovers: "the drop lands before me". */
+.pw-dock-tab--dropbefore { box-shadow: inset 3px 0 0 var(--pw-accent); }
+.pw-dock-tab--dragging { opacity: 0.35; }
+
+.pw-dock-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Persistent, on-brand scrollbar — the OS auto-hide default is nearly
+     invisible on this dark surface and reads as missing controls. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--pw-accent) transparent;
+}
+.pw-dock-body::-webkit-scrollbar { width: 8px; }
+.pw-dock-body::-webkit-scrollbar-track { background: transparent; }
+.pw-dock-body::-webkit-scrollbar-thumb {
+  background: var(--pw-accent);
+  border-radius: 4px;
+  border: 2px solid var(--pw-paper-pure);
+}
+
+/* An emptied dock only exists while a tab drag is live — as a target to
+   drop panels back into. */
+.pw-dock--empty {
+  width: 8rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--pw-hair);
+}
+.pw-dock-drop-hint {
+  font-family: var(--pw-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pw-stone);
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Dock panel internals: the tab bar already separates panel from chrome,
+   so the first control strip inside doesn't need its own top border. */
+.pw-dock .pw-controls {
+  border-top: none;
+  gap: 0.6rem 1rem;
+  padding: 0.8rem 1.1rem;
+}
+.pw-dock .pw-controls + .pw-controls { border-top: 1px solid var(--pw-hair); }
+
+/* Narrow screens: no room for side docks — stack toolbar, stage, then both
+   docks full-width. Tabs (and dragging between docks) still work. */
+@media (max-width: 899px) {
+  .pw-workspace { flex-direction: column; }
+  .pw-dock,
+  .pw-dock--empty { width: 100%; max-height: none; }
+  .pw-dock:first-child { border-right: none; border-top: 1px solid var(--pw-hair); }
+  .pw-dock:last-child { border-left: none; border-top: 1px solid var(--pw-hair); }
+  .pw-stage { padding: 0.75rem; }
+}
 
 /* Controls */
 .pw-controls {

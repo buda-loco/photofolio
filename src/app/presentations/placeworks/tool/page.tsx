@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 
 export default function PlaceWorksTool() {
   return (
-    <div style={{ padding: '4rem var(--pw-margin)' }}>
-      <Link href="/presentations/placeworks/02" className="pw-credit">&larr; Concept 02</Link>
-      <h1 className="pw-concept-name" style={{ marginTop: '1.5rem' }}>Brand Asset Tool</h1>
-      <div style={{ marginTop: '2rem' }}>
-        <BrandAssetTool />
-      </div>
+    <div className="pw-tool-page">
+      <header className="pw-tool-page-head">
+        <Link href="/presentations/placeworks/02" className="pw-credit">&larr; Concept 02</Link>
+        <h1 className="pw-tool-page-title">Brand Asset Tool</h1>
+      </header>
+      <BrandAssetTool />
     </div>
   )
 }
