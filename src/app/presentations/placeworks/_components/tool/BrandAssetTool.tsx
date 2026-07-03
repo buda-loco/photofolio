@@ -10,6 +10,7 @@ import { useLogoBBox } from './useLogoBBox'
 import PathEditor from './PathEditor'
 import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
+import CanvasPanel from './CanvasPanel'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -28,7 +29,7 @@ export type ToolParams = {
 }
 
 export const DEFAULT_PARAMS: ToolParams = {
-  canvas: { widthPx: 1600, heightPx: 900, unit: 'px', widthCm: 33.87, heightCm: 19.05, dpi: 300 },
+  canvas: { widthPx: 1600, heightPx: 900, unit: 'px', widthCm: 13.55, heightCm: 7.62, dpi: 300 }, // widthCm/heightCm are the exact cm-equivalent of 1600x900px @ 300dpi (Math.round((cm/2.54)*300) round-trips to 1600/900) — keep in sync if widthPx/heightPx/dpi defaults change
   path: { start: { x: 160, y: 700 }, startHandle: { x: 500, y: 200 }, end: { x: 1440, y: 300 }, endHandle: { x: 1100, y: 750 } },
   lines: 12,
   mess: 68,
@@ -192,6 +193,8 @@ export default function BrandAssetTool() {
       />
 
       <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+
+      <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />
     </div>
   )
 }
