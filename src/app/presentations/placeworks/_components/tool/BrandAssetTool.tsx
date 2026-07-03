@@ -16,6 +16,7 @@ import MaskPanel, { clampMask } from './MaskPanel'
 import RandomiserPanel from './RandomiserPanel'
 import Dock from './Dock'
 import { useWorkspaceLayout, type PanelId } from './useWorkspaceLayout'
+import { useRafPointer } from './useRafPointer'
 import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
 import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToolPersistence'
 
@@ -64,6 +65,12 @@ export const DEFAULT_PARAMS: ToolParams = {
   logo: { scale: 1 },
   seed: 7,
 }
+
+// Module-level constant, not recreated per render: when avoidance is OFF,
+// the strokes useMemo receives this same reference every time, so container
+// drags/resizes (which change params.mask on every pointer frame) no longer
+// invalidate the memo and regenerate every strand for nothing.
+const NO_AVOID = { rect: { x: 0, y: 0, width: 0, height: 0 }, strength: 0 }
 
 // Fixed zoom steps for the canvas stage — not part of ToolParams: it's a view
 // preference (how much off-canvas margin is visible while dragging handles),
@@ -189,6 +196,24 @@ export default function BrandAssetTool() {
   }
 
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
+
+  // Resolved separately from the strokes memo so its identity only changes
+  // when the field can actually affect the artwork: with avoidance OFF this
+  // is always the same NO_AVOID reference, so moving/resizing the container
+  // (every pointer frame of a drag) no longer regenerates the strokes at
+  // all. With avoidance ON the rect genuinely feeds the generator, so those
+  // same drags must recompute — that cost buys the lines bending live.
+  const avoid = useMemo(
+    () =>
+      params.mask.avoid
+        ? {
+            rect: { x: params.mask.x, y: params.mask.y, width: params.mask.width, height: params.mask.height },
+            strength: params.mask.avoidStrength,
+          }
+        : NO_AVOID,
+    [params.mask.avoid, params.mask.avoidStrength, params.mask.x, params.mask.y, params.mask.width, params.mask.height]
+  )
+
   const strokes = useMemo(
     () =>
       buildStrokes(harmonics, {
@@ -201,18 +226,19 @@ export default function BrandAssetTool() {
         spread: params.spread,
         startScale: params.path.startScale,
         endScale: params.path.endScale,
-        // strength: 0 when the toggle is off, rather than threading a
-        // separate boolean into yarnMath — avoidRect() already treats
-        // strength <= 0 as a no-op, so "off" and "on at 0" are the same thing.
-        avoid: {
-          rect: { x: params.mask.x, y: params.mask.y, width: params.mask.width, height: params.mask.height },
-          strength: params.mask.avoid ? params.mask.avoidStrength : 0,
-        },
+        avoid,
         thickness: params.thickness,
         seed: params.seed,
       }),
-    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed, params.mask]
+    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.thickness, params.seed, avoid]
   )
+
+  // Ribbon outline strings are the most expensive per-stroke artefact
+  // (per-vertex normals + two Catmull-Rom path builds each). Cached against
+  // the strokes they're derived from — without this they were rebuilt inside
+  // the JSX on EVERY render, including ones that can't change them (tab
+  // clicks, colour changes, zoom, mask drags with avoidance off).
+  const ribbonPaths = useMemo(() => strokes.map((s) => buildRibbonPath(s.points, s.widths)), [strokes])
 
   const bgColor = params.colours.background === 'transparent' ? 'none' : resolveSwatch(params.colours.background)
   const lineColors = params.colours.lines.map(resolveSwatch)
@@ -266,14 +292,23 @@ export default function BrandAssetTool() {
     maskDrag.current = { pointerStart: toCanvasPoint(e.clientX, e.clientY), maskStart: { x: params.mask.x, y: params.mask.y } }
   }
 
-  const onMaskPointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+  // rAF-coalesced (see useRafPointer): drag updates land at most once per
+  // frame regardless of the pointing device's report rate. The drag-state
+  // guard is INSIDE the coalesced handler too — a queued frame can fire
+  // just after pointerup, and must be a no-op then.
+  const applyMaskMove = useRafPointer((clientX, clientY) => {
     if (!maskDrag.current) return
-    const p = toCanvasPoint(e.clientX, e.clientY)
+    const p = toCanvasPoint(clientX, clientY)
     const dx = p.x - maskDrag.current.pointerStart.x
     const dy = p.y - maskDrag.current.pointerStart.y
     const nextX = Math.min(Math.max(maskDrag.current.maskStart.x + dx, 0), W - params.mask.width)
     const nextY = Math.min(Math.max(maskDrag.current.maskStart.y + dy, 0), H - params.mask.height)
     setParams((p2) => ({ ...p2, mask: { ...p2.mask, x: nextX, y: nextY } }))
+  })
+
+  const onMaskPointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+    if (!maskDrag.current) return
+    applyMaskMove(e.clientX, e.clientY)
   }
 
   const onMaskPointerUp = () => {
@@ -297,14 +332,20 @@ export default function BrandAssetTool() {
     resizing.current = true
   }
 
-  const onResizePointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+  // Same rAF coalescing (and same post-pointerup guard) as applyMaskMove.
+  const applyResize = useRafPointer((clientX, clientY) => {
     if (!resizing.current) return
-    const p = toCanvasPoint(e.clientX, e.clientY)
+    const p = toCanvasPoint(clientX, clientY)
     const nextMask = clampMask(
       { ...params.mask, width: p.x - params.mask.x, height: p.y - params.mask.y },
       W, H, scaledWidth, scaledHeight
     )
     setParams((p2) => ({ ...p2, mask: nextMask }))
+  })
+
+  const onResizePointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+    if (!resizing.current) return
+    applyResize(e.clientX, e.clientY)
   }
 
   const onResizePointerUp = () => {
@@ -558,7 +599,7 @@ export default function BrandAssetTool() {
             mask={params.mask.style === 'soft' && !params.mask.avoid ? `url(#${maskId}-soft)` : undefined}
           >
             {strokes.map((s, i) => (
-              <path key={i} d={buildRibbonPath(s.points, s.widths)} fill={lineColors[i % lineColors.length]} fillOpacity={s.opacity} />
+              <path key={i} d={ribbonPaths[i]} fill={lineColors[i % lineColors.length]} fillOpacity={s.opacity} />
             ))}
           </g>
 

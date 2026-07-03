@@ -3,6 +3,7 @@
 import { useCallback, useRef } from 'react'
 import { SCALE_MIN, SCALE_MAX, bezierPoint, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
+import { useRafPointer } from './useRafPointer'
 
 export type PathValue = { start: Pt; startHandle: Pt; end: Pt; endHandle: Pt; startScale: number; endScale: number }
 
@@ -108,16 +109,14 @@ export default function PathEditor({
     }
   }
 
-  // Handlers live on the wrapping <g> (not the individual circles) so that
-  // pointer capture — set on the circle in onPointerDown — continues to
-  // deliver move/up events to this listener even once the cursor leaves the
-  // 16px-diameter circle or the canvas bounds entirely. Capture routes the
-  // events to the captured element (the circle), and since the circle is a
-  // descendant of this <g>, the event still bubbles up here.
-  const onPointerMove = (e: React.PointerEvent) => {
+  // rAF-coalesced (useRafPointer): every drag here ends in onChange →
+  // setParams → full stroke regeneration, and pointermove outruns the
+  // display's frame rate — the guard re-checks dragging.current because a
+  // queued frame can land just after pointerup.
+  const applyMove = useRafPointer((clientX: number, clientY: number) => {
     const key = dragging.current
     if (!key) return
-    const p = toSvgPoint(e.clientX, e.clientY)
+    const p = toSvgPoint(clientX, clientY)
 
     if (isGroupKey(key)) {
       const origin = groupOrigin.current
@@ -150,6 +149,17 @@ export default function PathEditor({
     }
 
     onChange({ start, startHandle, end, endHandle, startScale, endScale, [key]: p })
+  })
+
+  // Handlers live on the wrapping <g> (not the individual circles) so that
+  // pointer capture — set on the circle in onPointerDown — continues to
+  // deliver move/up events to this listener even once the cursor leaves the
+  // 16px-diameter circle or the canvas bounds entirely. Capture routes the
+  // events to the captured element (the circle), and since the circle is a
+  // descendant of this <g>, the event still bubbles up here.
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return
+    applyMove(e.clientX, e.clientY)
   }
 
   const onPointerUp = () => {

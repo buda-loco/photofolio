@@ -3,6 +3,7 @@
 import { useCallback, useRef } from 'react'
 import { bezierPoint, bezierNormal, type Bezier, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
+import { useRafPointer } from './useRafPointer'
 
 type Props = {
   bezier: Bezier
@@ -100,12 +101,21 @@ export default function ResolveHandle({ bezier, resolve, onResolveChange, svgRef
     dragging.current = true
   }
 
-  const onPointerMove = (e: React.PointerEvent) => {
+  // rAF-coalesced: each update reruns closestT's coarse-sample + ternary
+  // search AND regenerates the strokes via onResolveChange, so capping it at
+  // one per frame matters here as much as anywhere. Guard re-checked inside
+  // — a queued frame can fire just after pointerup.
+  const applyMove = useRafPointer((clientX: number, clientY: number) => {
     if (!dragging.current) return
-    const p = toSvgPoint(e.clientX, e.clientY)
+    const p = toSvgPoint(clientX, clientY)
     const t = closestT(bezier, p)
     const next = Math.min(100, Math.max(0, tToResolve(t)))
     onResolveChange(next)
+  })
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return
+    applyMove(e.clientX, e.clientY)
   }
 
   const onPointerUp = () => {
