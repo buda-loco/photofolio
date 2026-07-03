@@ -12,6 +12,7 @@ import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
 import MaskPanel from './MaskPanel'
+import RandomiserPanel from './RandomiserPanel'
 import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
 import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToolPersistence'
 
@@ -286,6 +287,13 @@ export default function BrandAssetTool() {
         </button>
         <button type="button" className="pw-btn" onClick={handleReset}>Reset to defaults</button>
       </div>
+
+      {/* Whole-tool action, like Export/Reset above it, rather than a
+          per-property panel — placed right after them so it reads as part of
+          the same "act on the whole composition" group before the
+          property-by-property panels (colours, thickness, canvas, mask)
+          below. */}
+      <RandomiserPanel params={params} onRandomise={setParams} />
 
       {sizeCapBlocked && (
         <div className="pw-tool-hint" role="alert">
