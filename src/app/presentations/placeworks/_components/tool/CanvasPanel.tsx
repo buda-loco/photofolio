@@ -52,8 +52,15 @@ export default function CanvasPanel({ value, onChange }: Props) {
         </>
       ) : (
         <>
-          <span className="pw-slider">Width&nbsp;(cm)<input type="number" min={1} step={0.1} value={value.widthCm} onChange={(e) => setCm('widthCm', +e.target.value)} /></span>
-          <span className="pw-slider">Height&nbsp;(cm)<input type="number" min={1} step={0.1} value={value.heightCm} onChange={(e) => setCm('heightCm', +e.target.value)} /></span>
+          {/* step="any" (not a fixed decimal step) — widthCm/heightCm are
+              PX_TO_CM()-derived floats that essentially never land on a
+              clean 0.1 boundary (e.g. the default 13.55/7.62, or any
+              px/dpi round-trip), so a fixed step caused a spurious
+              stepMismatch/aria-invalid on load and after most edits. Same
+              fix already used by MaskPanel's range inputs for the same
+              class of float-precision problem. */}
+          <span className="pw-slider">Width&nbsp;(cm)<input type="number" min={1} step="any" value={value.widthCm} onChange={(e) => setCm('widthCm', +e.target.value)} /></span>
+          <span className="pw-slider">Height&nbsp;(cm)<input type="number" min={1} step="any" value={value.heightCm} onChange={(e) => setCm('heightCm', +e.target.value)} /></span>
           <span className="pw-slider">DPI<input type="number" min={1} value={value.dpi} onChange={(e) => setDpi(+e.target.value)} /></span>
           <span className="pw-mono">{value.widthPx} &times; {value.heightPx} px</span>
         </>
