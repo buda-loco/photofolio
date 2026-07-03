@@ -12,6 +12,7 @@ import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
 import MaskPanel from './MaskPanel'
+import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
 
 export type ToolParams = {
   canvas: { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
@@ -160,8 +161,16 @@ export default function BrandAssetTool() {
           <rect x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height} fill={CREAM_BACKING} />
 
           {/* Always-mounted, off-screen measuring copy — never visible, exists
-              solely so useLogoBBox can read its natural ink bbox once on mount. */}
-          <g aria-hidden="true">
+              solely so useLogoBBox can read its natural ink bbox once on mount.
+              Marked with EXPORT_EXCLUDE_CLASS so getCleanExportSVGString strips
+              it explicitly — it stays off-canvas in a browser tab/on-screen
+              purely because the viewport doesn't paint outside its width/height
+              box, not because of any guaranteed SVG clipping rule (a root <svg>
+              opened standalone has `overflow: visible` per the UA stylesheet,
+              unlike an embedded `svg:not(:root)`, so a tool with an unbounded
+              pasteboard — Illustrator, Figma, Inkscape — could otherwise render
+              it). See exportCanvas.ts. */}
+          <g aria-hidden="true" className={EXPORT_EXCLUDE_CLASS}>
             <PlaceWorksLogo ref={logoRef} color={logoColor} x={MEASURE_X} y={0} width={MEASURE_WIDTH} height={MEASURE_HEIGHT} />
           </g>
 

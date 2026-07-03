@@ -1,6 +1,8 @@
-/** Class name PathEditor puts on its wrapping `<g>` (drag handles + guide
- *  lines). Shared here rather than hardcoded in both files so the exporter
- *  and the thing it strips can't silently drift apart. */
+/** Class name for anything that must never appear in an exported file:
+ *  PathEditor's wrapping `<g>` (drag handles + guide lines), and
+ *  BrandAssetTool's off-screen logo-measurement `<g>`. Shared here rather
+ *  than hardcoded in each file so the exporter and the things it strips
+ *  can't silently drift apart. */
 export const EXPORT_EXCLUDE_CLASS = 'pw-export-exclude'
 
 /**
@@ -14,15 +16,19 @@ export function getCleanExportSVGString(svg: SVGSVGElement): string {
   const clone = svg.cloneNode(true) as SVGSVGElement
   clone.querySelectorAll(`.${EXPORT_EXCLUDE_CLASS}`).forEach((el) => el.remove())
 
-  // The off-screen logo-measurement copy (positioned at x={-9999} inside the
-  // canvas viewBox, purely so useLogoBBox can read its ink bbox) does NOT
-  // need explicit stripping: the outermost <svg> element clips content
-  // outside its viewBox by default (UA stylesheet `overflow: hidden` on the
-  // root <svg>), and that clipping is a property of being the *root* SVG
-  // element in the document — it applies identically whether this element is
-  // embedded live in the page or opened standalone as a flat .svg file.
-  // Verified manually (see Task 8.1 notes): the measuring copy never paints
-  // in either context.
+  // Both the PathEditor drag-handle overlay AND the off-screen logo-
+  // measurement copy (BrandAssetTool.tsx, x={-9999}) are explicitly stripped
+  // above via EXPORT_EXCLUDE_CLASS — this does NOT rely on viewBox/overflow
+  // clipping to hide the off-screen copy. That clipping is incidental, not
+  // guaranteed: `svg:not(:root) { overflow: hidden }` is a UA-stylesheet rule
+  // that only applies to an *embedded* <svg>. Once this markup is opened
+  // standalone as a flat .svg file, that same element becomes
+  // `document.documentElement` (`:root`), which the rule explicitly excludes
+  // — so `overflow` computes to `visible` there, and a viewer with an
+  // unbounded pasteboard (Illustrator, Figma, Inkscape) could render/select
+  // the off-screen copy. A plain browser tab or Quick Look merely doesn't
+  // paint outside the width/height box, which looks like clipping but isn't
+  // one. Explicit removal sidesteps relying on that distinction entirely.
 
   // Explicit width/height so the file opens at its correct physical size in
   // image viewers/design tools (a viewBox-only SVG has no intrinsic size and
