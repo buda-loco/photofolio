@@ -98,6 +98,14 @@ export default function BrandAssetTool() {
     }
   }, [sizeCapBlocked, params.canvas.widthPx, params.canvas.heightPx])
 
+  // PNG rasterization can take a visible moment near the size cap (this tool
+  // may be driven live in front of a client), so the button needs to reflect
+  // "still working" vs "silently failed" rather than leaving the user to
+  // guess. 'error' auto-clears on the next export attempt (same "next state
+  // change wins" logic as sizeCapBlocked above) as well as via manual
+  // dismiss.
+  const [pngExportState, setPngExportState] = useState<'idle' | 'exporting' | 'error'>('idle')
+
   const handleExportSVG = () => {
     if (!svgRef.current) return
     downloadSVG(getCleanExportSVGString(svgRef.current), 'placeworks-brand-asset.svg')
@@ -109,9 +117,13 @@ export default function BrandAssetTool() {
       setSizeCapBlocked(true)
       return
     }
-    downloadPNG(getCleanExportSVGString(svgRef.current), params.canvas.widthPx, params.canvas.heightPx, 'placeworks-brand-asset.png').catch((err) => {
-      console.error('PNG export failed:', err)
-    })
+    setPngExportState('exporting')
+    downloadPNG(getCleanExportSVGString(svgRef.current), params.canvas.widthPx, params.canvas.heightPx, 'placeworks-brand-asset.png')
+      .then(() => setPngExportState('idle'))
+      .catch((err) => {
+        console.error('PNG export failed:', err)
+        setPngExportState('error')
+      })
   }
 
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
@@ -226,7 +238,14 @@ export default function BrandAssetTool() {
 
       <div className="pw-controls">
         <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportSVG}>Export SVG</button>
-        <button type="button" className="pw-btn pw-btn--solid" onClick={handleExportPNG}>Export PNG</button>
+        <button
+          type="button"
+          className="pw-btn pw-btn--solid"
+          onClick={handleExportPNG}
+          disabled={pngExportState === 'exporting'}
+        >
+          {pngExportState === 'exporting' ? 'Exporting…' : 'Export PNG'}
+        </button>
       </div>
 
       {sizeCapBlocked && (
@@ -234,6 +253,13 @@ export default function BrandAssetTool() {
           This export is {params.canvas.widthPx}&times;{params.canvas.heightPx}px &mdash; larger than the {PNG_SIZE_CAP}px safety cap and may hang your browser.
           Reduce canvas size or DPI to continue.
           <button type="button" className="pw-btn" onClick={() => setSizeCapBlocked(false)}>Dismiss</button>
+        </div>
+      )}
+
+      {pngExportState === 'error' && (
+        <div className="pw-tool-hint" role="alert">
+          PNG export failed &mdash; your browser may be low on memory at this canvas size, or the export was interrupted. Try again, or reduce canvas size/DPI.
+          <button type="button" className="pw-btn" onClick={() => setPngExportState('idle')}>Dismiss</button>
         </div>
       )}
 
