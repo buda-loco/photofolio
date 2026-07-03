@@ -219,6 +219,12 @@ export default function BrandAssetTool() {
           <input
             type="range"
             min={1}
+            // max={4} is numerically coupled to LOGO_BASE_WIDTH_FRACTION: 0.22 * 4 = 0.88,
+            // staying under 1 so minWidth (= scaledWidth) stays under canvasW at the default
+            // canvas proportions. Raising this max later isn't free — past ~1/0.22 (~4.5) it
+            // reproduces on the width axis the same "minWidth/minHeight exceeds canvas bounds"
+            // overflow that MaskPanel's clampMask currently only sees via the height axis
+            // (e.g. a very short canvas) or an even larger scale.
             max={4}
             step={0.1}
             value={params.logo.scale}
