@@ -15,6 +15,7 @@ import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
 import MaskPanel, { clampMask } from './MaskPanel'
 import RandomiserPanel from './RandomiserPanel'
+import PresetsPanel from './PresetsPanel'
 import Dock from './Dock'
 import { useWorkspaceLayout, type PanelId } from './useWorkspaceLayout'
 import { useRafPointer } from './useRafPointer'
@@ -440,6 +441,17 @@ export default function BrandAssetTool() {
   const onCanvasChange = useCallback((canvas: ToolParams['canvas']) => setParams((p) => ({ ...p, canvas })), [])
   const onMaskChange = useCallback((mask: ToolParams['mask']) => setParams((p) => ({ ...p, mask })), [])
 
+  // Preset/share-code plumbing: PresetsPanel gets a GETTER (reading a ref
+  // kept current every render) instead of the params object itself, so the
+  // memoised panel doesn't re-render per drag frame but Save/Copy still
+  // snapshot click-time state. Applied params merge over DEFAULT_PARAMS so
+  // codes from older versions of the tool pick up defaults for fields they
+  // predate — same policy as the persistence load above.
+  const paramsRef = useRef(params)
+  paramsRef.current = params
+  const getParams = useCallback(() => paramsRef.current, [])
+  const applyPreset = useCallback((next: ToolParams) => setParams({ ...DEFAULT_PARAMS, ...next }), [])
+
   // Scoped randomiser for the Line shape panel only: rolls the params this
   // panel owns (count, thickness profile, mess character, array width) and
   // deliberately leaves colours, seed, and the drawn path alone — so it
@@ -483,10 +495,12 @@ export default function BrandAssetTool() {
     line: 'Line shape',
     canvas: 'Canvas',
     container: 'Container',
+    presets: 'Presets',
   }
 
   const panelContent: Record<PanelId, ReactNode> = {
     randomiser: <RandomiserPanel onRandomise={setParams} />,
+    presets: <PresetsPanel getParams={getParams} onApply={applyPreset} />,
     colours: (
       <ColourPanel
         background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}

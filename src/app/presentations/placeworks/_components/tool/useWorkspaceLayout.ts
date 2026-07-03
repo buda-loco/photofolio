@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 // deliberately a separate localStorage key from the artwork params
 // (useToolPersistence): resetting the artwork shouldn't blow away how the
 // user arranged their workspace, and vice versa.
-export type PanelId = 'randomiser' | 'colours' | 'line' | 'canvas' | 'container'
+export type PanelId = 'randomiser' | 'colours' | 'line' | 'canvas' | 'container' | 'presets'
 export type DockSide = 'left' | 'right'
 
 export type WorkspaceLayout = {
@@ -13,13 +13,14 @@ export type WorkspaceLayout = {
   active: { left: PanelId | null; right: PanelId | null }
 }
 
-export const ALL_PANELS: PanelId[] = ['randomiser', 'colours', 'line', 'canvas', 'container']
+export const ALL_PANELS: PanelId[] = ['randomiser', 'colours', 'line', 'canvas', 'container', 'presets']
 
 // Colours on the right where the mouse naturally rests next to the canvas;
 // generation controls on the left. Canvas setup last — it's set once per
-// asset, not tweaked live.
+// asset, not tweaked live. Panels added after a user's layout was persisted
+// (e.g. presets) are appended to their DEFAULT_LAYOUT dock by sanitize().
 export const DEFAULT_LAYOUT: WorkspaceLayout = {
-  left: ['line', 'randomiser'],
+  left: ['line', 'randomiser', 'presets'],
   right: ['colours', 'container', 'canvas'],
   active: { left: 'line', right: 'colours' },
 }

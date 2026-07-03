@@ -929,6 +929,67 @@ body:has(.pw-pitch) {
   color: var(--pw-stone);
   margin-top: 0.2rem;
 }
+
+/* ── Brand tool — presets & share codes ──────────────────── */
+.pw-text-input {
+  flex: 1;
+  min-width: 8rem;
+  background: transparent;
+  border: 1px solid var(--pw-hair);
+  border-radius: 2px;
+  color: var(--pw-ink);
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  padding: 0.45em 0.6em;
+}
+.pw-text-input::placeholder { color: var(--pw-stone); }
+.pw-preset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pw-preset-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pw-preset-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--pw-mono);
+  font-size: 0.72rem;
+  color: var(--pw-ink);
+}
+.pw-preset-empty {
+  font-family: var(--pw-mono);
+  font-size: 0.68rem;
+  color: var(--pw-stone);
+}
+.pw-code-area {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  background: transparent;
+  border: 1px solid var(--pw-hair);
+  border-radius: 2px;
+  color: var(--pw-ink);
+  font-family: var(--pw-mono);
+  font-size: 0.66rem;
+  padding: 0.5em 0.6em;
+  word-break: break-all;
+}
+.pw-code-area::placeholder { color: var(--pw-stone); }
+.pw-preset-feedback {
+  font-family: var(--pw-mono);
+  font-size: 0.68rem;
+  color: var(--pw-accent);
+}
 .pw-swatch {
   width: 22px;
   height: 22px;
