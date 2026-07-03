@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { buildHarmonics, buildStrokes, buildRibbonPath, OCT_MAX, STRAND_MAX } from './yarnMath'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { buildHarmonics, buildNoiseTables, buildStrokes, buildRibbonPath, OCT_MAX, STRAND_MAX } from './yarnMath'
 import type { Bezier, Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
@@ -31,6 +31,7 @@ export type ToolParams = {
   sharp: number
   spread: number
   breadth: number // 0..100 — perpendicular width of the whole array (see yarnMath BuildParams)
+  messMultiplier: number // 0..100% — global tame dial on the NOISE terms only (see yarnMath BuildParams)
   thickness: ThicknessParams
   // background/container accept 'transparent' alongside a palette swatch:
   // a transparent background exports a PNG with real alpha; a transparent
@@ -38,7 +39,9 @@ export type ToolParams = {
   // yarn run behind the logo when avoidance has the clip disabled).
   colours: { background: SwatchRef | 'transparent'; lines: SwatchRef[]; logo: SwatchRef | 'black' | 'white'; container: SwatchRef | 'transparent' }
   mask: { x: number; y: number; width: number; height: number; style: 'hard' | 'soft'; avoid: boolean; avoidStrength: number }
-  logo: { scale: number }
+  // visible is checked as `!== false` everywhere so params persisted before
+  // the field existed (undefined) keep showing the logo.
+  logo: { scale: number; visible: boolean }
   seed: number
 }
 
@@ -61,6 +64,7 @@ export const DEFAULT_PARAMS: ToolParams = {
   sharp: 55,
   spread: 20,
   breadth: 18, // narrower than yarnMath's legacy 35 — the full-width default read as too big
+  messMultiplier: 100,
   thickness: { preset: 'thick-thin', min: 1, max: 3, transitionPos: 0.6, transitionWidth: 0.3 },
   colours: {
     background: { base: 'nearBlack', shadeStep: 2 },
@@ -71,7 +75,7 @@ export const DEFAULT_PARAMS: ToolParams = {
   // avoidStrength pre-set to a visible default so toggling `avoid` on shows
   // an immediate effect rather than a silent no-op at strength 0.
   mask: { x: 620, y: 340, width: 360, height: 220, style: 'hard', avoid: false, avoidStrength: 50 },
-  logo: { scale: 1 },
+  logo: { scale: 1, visible: true },
   seed: 7,
 }
 
@@ -215,6 +219,10 @@ export default function BrandAssetTool() {
   }
 
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
+  // All the trig in stroke generation, precomputed: the fractal noise only
+  // depends on (seed, detail) and the fixed sample grid, so it's rebuilt
+  // only when those change — dragging handles/sliders does zero sin calls.
+  const noiseTables = useMemo(() => buildNoiseTables(harmonics, params.detail), [harmonics, params.detail])
 
   // Resolved separately from the strokes memo so its identity only changes
   // when the field can actually affect the artwork: with avoidance OFF this
@@ -246,11 +254,13 @@ export default function BrandAssetTool() {
         startScale: params.path.startScale,
         endScale: params.path.endScale,
         breadth: params.breadth,
+        messMultiplier: params.messMultiplier,
         avoid,
         thickness: params.thickness,
         seed: params.seed,
+        noise: noiseTables,
       }),
-    [harmonics, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.breadth, params.thickness, params.seed, avoid]
+    [harmonics, noiseTables, params.path, params.lines, params.mess, params.detail, params.resolve, params.sharp, params.spread, params.breadth, params.messMultiplier, params.thickness, params.seed, avoid]
   )
 
   // Ribbon outline strings are the most expensive per-stroke artefact
@@ -268,8 +278,9 @@ export default function BrandAssetTool() {
   // Contrast is checked against whatever actually sits behind the logo: the
   // container if it has a colour, else the page background; if both are
   // transparent there's nothing meaningful to compare against, so no warning.
+  const logoVisible = params.logo.visible !== false
   const contrastBacking = containerColor !== 'none' ? containerColor : bgColor !== 'none' ? bgColor : null
-  const lowContrast = contrastBacking !== null && contrastRatio(logoColor, contrastBacking) < 3
+  const lowContrast = logoVisible && contrastBacking !== null && contrastRatio(logoColor, contrastBacking) < 3
 
   const { widthPx: W, heightPx: H } = params.canvas
   const maskId = 'pw-tool-mask'
@@ -411,6 +422,42 @@ export default function BrandAssetTool() {
     setDrawMode(false)
   }
 
+  // Stable per-panel callbacks (setParams itself is stable, so empty deps):
+  // combined with React.memo on the panel components, canvas drags no longer
+  // re-reconcile the dock panels at all — the colour panel alone is ~110
+  // swatch buttons that were being diffed on every pointer frame.
+  const onBackgroundChange = useCallback((background: SwatchRef | 'transparent') => setParams((p) => ({ ...p, colours: { ...p.colours, background } })), [])
+  const onLineColoursChange = useCallback((lines: SwatchRef[]) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } })), [])
+  const onLogoColourChange = useCallback((logo: SwatchRef | 'black' | 'white') => setParams((p) => ({ ...p, colours: { ...p.colours, logo } })), [])
+  const onContainerColourChange = useCallback((container: SwatchRef | 'transparent') => setParams((p) => ({ ...p, colours: { ...p.colours, container } })), [])
+  const onThicknessChange = useCallback((thickness: ThicknessParams) => setParams((p) => ({ ...p, thickness })), [])
+  const onCanvasChange = useCallback((canvas: ToolParams['canvas']) => setParams((p) => ({ ...p, canvas })), [])
+  const onMaskChange = useCallback((mask: ToolParams['mask']) => setParams((p) => ({ ...p, mask })), [])
+
+  // Scoped randomiser for the Line shape panel only: rolls the params this
+  // panel owns (count, thickness profile, mess character, array width) and
+  // deliberately leaves colours, seed, and the drawn path alone — so it
+  // explores line treatments without trashing the composition.
+  const randomiseLineShape = useCallback(() => {
+    const r = (lo: number, hi: number) => lo + Math.random() * (hi - lo)
+    const presets = ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const
+    setParams((p) => ({
+      ...p,
+      lines: Math.round(r(3, 24)),
+      detail: Math.round(r(2, 7)),
+      resolve: r(15, 85),
+      sharp: r(20, 90),
+      breadth: r(8, 45),
+      thickness: {
+        preset: presets[Math.floor(Math.random() * presets.length)],
+        min: r(0.5, 3),
+        max: r(2, 10),
+        transitionPos: r(0.2, 0.8),
+        transitionWidth: r(0.1, 0.5),
+      },
+    }))
+  }, [])
+
   const logoAspect = logoInkBBox ? logoInkBBox.width / logoInkBBox.height : 1
   const baseWidthPx = W * LOGO_BASE_WIDTH_FRACTION
   // Natural size (the Logo-scale slider's target), then shrunk to FIT the
@@ -433,14 +480,14 @@ export default function BrandAssetTool() {
   }
 
   const panelContent: Record<PanelId, ReactNode> = {
-    randomiser: <RandomiserPanel params={params} onRandomise={setParams} />,
+    randomiser: <RandomiserPanel onRandomise={setParams} />,
     colours: (
       <ColourPanel
         background={params.colours.background} lines={params.colours.lines} logo={params.colours.logo} container={params.colours.container}
-        onBackgroundChange={(background) => setParams((p) => ({ ...p, colours: { ...p.colours, background } }))}
-        onLinesChange={(lines) => setParams((p) => ({ ...p, colours: { ...p.colours, lines } }))}
-        onLogoChange={(logo) => setParams((p) => ({ ...p, colours: { ...p.colours, logo } }))}
-        onContainerChange={(container) => setParams((p) => ({ ...p, colours: { ...p.colours, container } }))}
+        onBackgroundChange={onBackgroundChange}
+        onLinesChange={onLineColoursChange}
+        onLogoChange={onLogoColourChange}
+        onContainerChange={onContainerColourChange}
       />
     ),
     line: (
@@ -496,7 +543,7 @@ export default function BrandAssetTool() {
             />
           </span>
         </div>
-        <ThicknessPanel value={params.thickness} onChange={(thickness) => setParams((p) => ({ ...p, thickness }))} />
+        <ThicknessPanel value={params.thickness} onChange={onThicknessChange} />
         <div className="pw-controls">
           <span className="pw-slider">
             Mess&nbsp;end
@@ -520,10 +567,27 @@ export default function BrandAssetTool() {
               onChange={(e) => setParams((p) => ({ ...p, detail: +e.target.value }))}
             />
           </span>
+          {/* Global tame dial: scales only the jitter, keeping lane
+              structure — 0% = perfectly smooth strands at the same
+              spacing. See yarnMath's messMultiplier doc. */}
+          <span className="pw-slider">
+            Mess&nbsp;multiplier
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={params.messMultiplier}
+              onChange={(e) => setParams((p) => ({ ...p, messMultiplier: +e.target.value }))}
+            />
+          </span>
+        </div>
+        <div className="pw-controls">
+          <button type="button" className="pw-btn pw-btn--solid" onClick={randomiseLineShape}>Randomise shape</button>
         </div>
       </>
     ),
-    canvas: <CanvasPanel value={params.canvas} onChange={(canvas) => setParams((p) => ({ ...p, canvas }))} />,
+    canvas: <CanvasPanel value={params.canvas} onChange={onCanvasChange} />,
     container: (
       <>
         {/* MASK_MIN_SIZE is a small usability floor only — the logo scales
@@ -532,13 +596,22 @@ export default function BrandAssetTool() {
             the logo's rendered size. */}
         <MaskPanel
           value={params.mask}
-          onChange={(mask) => setParams((p) => ({ ...p, mask }))}
+          onChange={onMaskChange}
           canvasW={W}
           canvasH={H}
           minWidth={MASK_MIN_SIZE}
           minHeight={MASK_MIN_SIZE}
         />
         <div className="pw-controls">
+          {/* Logo visibility — `!== false` so pre-field persisted state
+              (visible: undefined) keeps showing it. */}
+          <button
+            type="button"
+            className={`pw-btn${params.logo.visible !== false ? ' pw-btn--solid' : ''}`}
+            onClick={() => setParams((p) => ({ ...p, logo: { ...p.logo, visible: p.logo.visible === false } }))}
+          >
+            {params.logo.visible !== false ? 'Logo on' : 'Logo off'}
+          </button>
           <span className="pw-slider">
             Logo&nbsp;scale
             <input
@@ -659,7 +732,7 @@ export default function BrandAssetTool() {
               canvas is taller than the screen. Ratio-based (not a fixed
               width) so any canvas proportion gets the largest fit. Zoom
               scales W and H equally, so the ratio is zoom-invariant. */}
-          <div className="pw-tool-stage" style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 2.5rem) * ${(W / H).toFixed(4)}))` }}>
+          <div className="pw-tool-stage" style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 4rem) * ${(W / H).toFixed(4)}))` }}>
             <svg ref={svgRef} viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxW} ${viewBoxH}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
             <clipPath id={`${maskId}-hard`}>
@@ -734,8 +807,10 @@ export default function BrandAssetTool() {
 
           {/* Visible logo — only rendered once the ink bbox is known, so it can
               be sized to its natural dimensions (not stretched) and centered
-              inside the mask rect. */}
-          {logoInkBBox && (
+              inside the mask rect. The Logo on/off toggle hides just the
+              mark; the container panel stays (turn IT off by making its
+              colour transparent). */}
+          {logoInkBBox && logoVisible && (
             <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={fitWidth} height={fitHeight} />
           )}
 

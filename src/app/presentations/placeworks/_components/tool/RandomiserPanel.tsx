@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { mulberry32 } from './yarnMath'
 import { PALETTE, shadesOf, type PaletteKey } from './palette'
 import type { ToolParams } from './BrandAssetTool'
@@ -28,7 +28,13 @@ const DEFAULT_BOUNDS: Bounds = {
   thicknessMax: { min: 3, max: 12 },
 }
 
-type Props = { params: ToolParams; onRandomise: (next: ToolParams) => void }
+// Updater-style, matching React's setState signature (BrandAssetTool passes
+// setParams straight through). Deliberately NOT `params` + plain next-value:
+// taking the whole params object as a prop would re-render this panel on
+// every canvas drag frame and defeat the React.memo below — the current
+// values are read from `prev` inside the updater instead, which is also
+// immune to staleness.
+type Props = { onRandomise: (update: (prev: ToolParams) => ToolParams) => void }
 
 const PRESET_SHAPES = ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const
 const PALETTE_KEYS = Object.keys(PALETTE) as PaletteKey[]
@@ -40,7 +46,7 @@ const PALETTE_KEYS = Object.keys(PALETTE) as PaletteKey[]
 // belt-and-braces, not load-bearing.)
 const SHADE_STEP_COUNT = shadesOf('nearBlack').length
 
-export default function RandomiserPanel({ params, onRandomise }: Props) {
+function RandomiserPanel({ onRandomise }: Props) {
   const [bounds, setBounds] = useState<Bounds>(DEFAULT_BOUNDS)
 
   const setBound = (key: keyof Bounds, edge: 'min' | 'max', v: number) =>
@@ -62,7 +68,7 @@ export default function RandomiserPanel({ params, onRandomise }: Props) {
       shadeStep: Math.floor(rng() * SHADE_STEP_COUNT),
     }))
 
-    onRandomise({
+    onRandomise((params) => ({
       ...params,
       seed: Math.floor(rng() * 1_000_000),
       mess: between(bounds.mess),
@@ -90,7 +96,7 @@ export default function RandomiserPanel({ params, onRandomise }: Props) {
         startHandle: { x: params.path.startHandle.x + (rng() - 0.5) * 200, y: params.path.startHandle.y + (rng() - 0.5) * 200 },
         endHandle: { x: params.path.endHandle.x + (rng() - 0.5) * 200, y: params.path.endHandle.y + (rng() - 0.5) * 200 },
       },
-    })
+    }))
   }
 
   const rangeInput = (label: string, key: keyof Bounds, step = 1) => (
@@ -116,3 +122,7 @@ export default function RandomiserPanel({ params, onRandomise }: Props) {
     </div>
   )
 }
+
+// memo works here because the only prop is the stable setParams updater —
+// see the Props comment for why `params` deliberately isn't a prop.
+export default memo(RandomiserPanel)

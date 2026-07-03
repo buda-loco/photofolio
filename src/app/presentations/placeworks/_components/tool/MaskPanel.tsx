@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 
 export type MaskParams = {
   x: number; y: number; width: number; height: number; style: 'hard' | 'soft'
@@ -34,7 +34,7 @@ export function clampMask(m: MaskParams, canvasW: number, canvasH: number, minWi
   return { ...m, x, y, width, height }
 }
 
-export default function MaskPanel({ value, onChange, canvasW, canvasH, minWidth, minHeight }: Props) {
+function MaskPanel({ value, onChange, canvasW, canvasH, minWidth, minHeight }: Props) {
   const set = (patch: Partial<MaskParams>) => {
     onChange(clampMask({ ...value, ...patch }, canvasW, canvasH, minWidth, minHeight))
   }
@@ -78,3 +78,7 @@ export default function MaskPanel({ value, onChange, canvasW, canvasH, minWidth,
     </div>
   )
 }
+
+// Memoised: props are values + stable useCallback handlers from
+// BrandAssetTool, so canvas drags skip reconciling this panel entirely.
+export default memo(MaskPanel)

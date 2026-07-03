@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { PALETTE, shadesOf, type PaletteKey, type SwatchRef } from './palette'
 
 type Props = {
@@ -23,6 +23,13 @@ const KEYS = Object.keys(PALETTE) as PaletteKey[]
 // same hoisting already done for CREAM_BACKING in BrandAssetTool.tsx.
 const SHADE_TABLE: Record<PaletteKey, string[]> = Object.fromEntries(KEYS.map((k) => [k, shadesOf(k)])) as Record<PaletteKey, string[]>
 
+// The palette's true hexes sit at the ramp's midpoint (shadesOf step 2);
+// everything else is a derived tint/shade. Pickers present the MAIN colours
+// first, then the derived shades under their own subtitle — tints (0,1)
+// before darks (3,4), grouped per colour.
+const BASE_STEP = 2
+const SHADE_ONLY_STEPS = [0, 1, 3, 4]
+
 function SwatchPicker({
   value,
   onChange,
@@ -35,31 +42,38 @@ function SwatchPicker({
   // transparent (background, container) pass this — lines/logo don't.
   transparent?: { active: boolean; select: () => void }
 }) {
+  const swatch = (key: PaletteKey, step: number) => (
+    <button
+      key={`${key}-${step}`}
+      className={`pw-swatch${value !== null && value.base === key && value.shadeStep === step ? ' pw-swatch--active' : ''}`}
+      style={{ background: SHADE_TABLE[key][step] }}
+      title={`${key} · shade ${step}`}
+      aria-label={`${key} shade ${step}`}
+      onClick={() => onChange({ base: key, shadeStep: step })}
+    />
+  )
   return (
-    <div className="pw-swatch-grid">
-      {transparent && (
-        <button
-          className={`pw-swatch pw-swatch--transparent${transparent.active ? ' pw-swatch--active' : ''}`}
-          title="Transparent"
-          aria-label="Transparent"
-          onClick={transparent.select}
-        />
-      )}
-      {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => (
-        <button
-          key={`${key}-${step}`}
-          className={`pw-swatch${value !== null && value.base === key && value.shadeStep === step ? ' pw-swatch--active' : ''}`}
-          style={{ background: hex }}
-          title={`${key} · shade ${step}`}
-          aria-label={`${key} shade ${step}`}
-          onClick={() => onChange({ base: key, shadeStep: step })}
-        />
-      )))}
-    </div>
+    <>
+      <div className="pw-swatch-grid">
+        {transparent && (
+          <button
+            className={`pw-swatch pw-swatch--transparent${transparent.active ? ' pw-swatch--active' : ''}`}
+            title="Transparent"
+            aria-label="Transparent"
+            onClick={transparent.select}
+          />
+        )}
+        {KEYS.map((key) => swatch(key, BASE_STEP))}
+      </div>
+      <span className="pw-swatch-subtitle">Shades</span>
+      <div className="pw-swatch-grid">
+        {KEYS.flatMap((key) => SHADE_ONLY_STEPS.map((step) => swatch(key, step)))}
+      </div>
+    </>
   )
 }
 
-export default function ColourPanel({ background, lines, logo, container, onBackgroundChange, onLinesChange, onLogoChange, onContainerChange }: Props) {
+function ColourPanel({ background, lines, logo, container, onBackgroundChange, onLinesChange, onLogoChange, onContainerChange }: Props) {
   // UI-mode only, deliberately not part of ToolParams: it changes how a
   // swatch click behaves (replace vs. multi-select toggle), not anything
   // that's rendered or exported, so it doesn't belong in persisted/
@@ -124,22 +138,29 @@ export default function ColourPanel({ background, lines, logo, container, onBack
           Mono
         </label>
       </div>
-      <div className="pw-swatch-grid">
-        {KEYS.flatMap((key) => SHADE_TABLE[key].map((hex, step) => {
+      {(() => {
+        const lineSwatch = (key: PaletteKey, step: number) => {
           const isActive = lines.some((l) => l.base === key && l.shadeStep === step)
           return (
             <button
               key={`${key}-${step}`}
               className={`pw-swatch${isActive ? ' pw-swatch--active' : ''}`}
-              style={{ background: hex }}
+              style={{ background: SHADE_TABLE[key][step] }}
               title={`${key} · shade ${step}`}
               aria-label={`${key} shade ${step}`}
               aria-pressed={isActive}
               onClick={() => toggleLine(key, step)}
             />
           )
-        }))}
-      </div>
+        }
+        return (
+          <>
+            <div className="pw-swatch-grid">{KEYS.map((key) => lineSwatch(key, BASE_STEP))}</div>
+            <span className="pw-swatch-subtitle">Shades</span>
+            <div className="pw-swatch-grid">{KEYS.flatMap((key) => SHADE_ONLY_STEPS.map((step) => lineSwatch(key, step)))}</div>
+          </>
+        )
+      })()}
 
       <span className="pw-slider" style={{ flex: 'none' }}>Logo colour</span>
       <div className="pw-swatch-grid">
@@ -161,3 +182,7 @@ export default function ColourPanel({ background, lines, logo, container, onBack
     </div>
   )
 }
+
+// Memoised: props are values + stable useCallback handlers from
+// BrandAssetTool, so canvas drags skip reconciling this panel entirely.
+export default memo(ColourPanel)

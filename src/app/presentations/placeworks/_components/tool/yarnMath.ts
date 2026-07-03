@@ -249,6 +249,35 @@ export function thicknessAt(t: number, p: ThicknessParams): number {
 
 export const SAMPLES = 220
 
+export type NoiseTables = { perp: number[][]; along: number[][] }
+
+/**
+ * Precomputes fractal() for every strand at every fixed sample position.
+ * The evaluation grid (p = j/SAMPLES) never changes, so for a given
+ * (harmonics, detail) pair ALL the trig buildStrokes needs is constant —
+ * passing these tables removes every Math.sin from the drag hot path
+ * (dozens of sin calls per sample × 221 samples × up to 60 strands, on
+ * every pointer frame). Invariant: must be built from the same harmonics
+ * AND the same detail value that buildStrokes is called with.
+ */
+export function buildNoiseTables(h: Strand[], detail: number): NoiseTables {
+  const oct = Math.max(1, Math.min(OCT_MAX, Math.round(detail)))
+  const perp: number[][] = []
+  const along: number[][] = []
+  for (let s = 0; s < h.length; s++) {
+    const pRow = new Array<number>(SAMPLES + 1)
+    const aRow = new Array<number>(SAMPLES + 1)
+    for (let j = 0; j <= SAMPLES; j++) {
+      const p = j / SAMPLES
+      pRow[j] = fractal(h[s].perp, oct, p)
+      aRow[j] = fractal(h[s].along, oct, p)
+    }
+    perp.push(pRow)
+    along.push(aRow)
+  }
+  return { perp, along }
+}
+
 export type AvoidRect = { x: number; y: number; width: number; height: number }
 
 /**
@@ -368,7 +397,14 @@ export type BuildParams = {
   startScale: number // SCALE_MIN..SCALE_MAX — tangle-amplitude multiplier at t=0, blended linearly to endScale across the run
   endScale: number   // SCALE_MIN..SCALE_MAX — same, at t=1
   breadth: number // 0..100 — perpendicular width of the whole array as a fraction of spine length (35 reproduces the old hardcoded 0.35)
+  // 0..100 (%), default 100. A global "tame" dial: scales ONLY the fractal
+  // noise contributions (the jitter), leaving the structured lane offsets —
+  // and therefore the array's overall shape/width — untouched. Distinct from
+  // `mess`, which scales lanes and noise together: at messMultiplier 0 the
+  // strands run perfectly smooth but keep their spacing.
+  messMultiplier?: number
   avoid: { rect: AvoidRect; strength: number } // strength 0..100; <=0 disables the field entirely (avoidRect no-ops)
+  noise?: NoiseTables // optional precomputed fractal tables (buildNoiseTables) — MUST match this call's harmonics+detail; omitted = compute inline
   thickness: ThicknessParams
   seed: number
 }
@@ -376,7 +412,10 @@ export type BuildParams = {
 export type Stroke = { points: Pt[]; widths: number[]; opacity: number }
 
 export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
-  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, breadth, avoid, thickness } = params
+  const { bezier, lines, mess, detail, resolve, sharp, spread, startScale, endScale, breadth, messMultiplier, avoid, thickness, noise } = params
+  // NaN/undefined-guarded like breadth: params persisted before the field
+  // existed default to full strength (the old behaviour).
+  const mm = Number.isFinite(messMultiplier as number) ? Math.min(100, Math.max(0, messMultiplier as number)) / 100 : 1
   // defensive clamp — buildStrokes is a standalone exported function future
   // tasks may call directly (not just from a bounded UI slider); a stray
   // large `lines` would allocate lines*(SAMPLES+1) points/widths and blow
@@ -404,7 +443,14 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
 
   const out: Stroke[] = []
   for (let i = 0; i < lineCount; i++) {
-    const s = h[i % STRAND_MAX]
+    const strandIdx = i % STRAND_MAX
+    const s = h[strandIdx]
+    // Precomputed noise rows when available (see buildNoiseTables) — the
+    // fractal values only depend on (strand, detail, sample index), all
+    // fixed during a drag, so the inline fractal() calls below are the
+    // fallback path, not the common one.
+    const alongRow = noise?.along[strandIdx]
+    const perpRow = noise?.perp[strandIdx]
     const lane = 0.5 + ((i + 0.5) / lineCount - 0.5) * laneSpread
     const tmS = Math.max(0.04, Math.min(0.97, tm + s.tmJit * 0.16))
 
@@ -413,7 +459,8 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
     for (let j = 0; j <= SAMPLES; j++) {
       const p = j / SAMPLES
       const win = 1 - smoothstep(tmS - width / 2, tmS + width / 2, p)
-      const tAlong = Math.max(0, Math.min(1, p + amp * 0.5 * win * fractal(s.along, oct, p)))
+      const alongVal = alongRow ? alongRow[j] : fractal(s.along, oct, p)
+      const tAlong = Math.max(0, Math.min(1, p + amp * 0.5 * win * mm * alongVal))
       // `amp` scales the whole perpendicular displacement — both the
       // structured lane/spread term and the noise term — not just the
       // noise. Unlike the old canvas-mapped model, `perpOffset` here is a
@@ -428,7 +475,8 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
       // already key off, so "scale near the start" and "scale near the end"
       // stay meaningful even while the tangle itself is busy warping tAlong.
       const endBlend = startScale + (endScale - startScale) * p
-      const perpOffset = amp * endBlend * ((lane - 0.5) * 2 + win * fractal(s.perp, oct, p))
+      const perpVal = perpRow ? perpRow[j] : fractal(s.perp, oct, p)
+      const perpOffset = amp * endBlend * ((lane - 0.5) * 2 + win * mm * perpVal)
 
       const base = bezierPoint(bezier, tAlong)
       const normal = bezierNormal(bezier, tAlong)
@@ -465,9 +513,18 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   return out
 }
 
+/** Fast 1-decimal coordinate formatter for path strings. Several times
+ *  quicker than Number.toFixed (which is the single hottest call at high
+ *  line counts: ~150k coordinates per frame while dragging), and it drops
+ *  redundant trailing ".0"s, which also shrinks the path data the browser
+ *  has to re-parse each frame. */
+function f1(v: number): string {
+  return String(Math.round(v * 10) / 10)
+}
+
 export function catmullRom(points: Pt[]): string {
   if (points.length < 2) return ''
-  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`
+  let d = `M ${f1(points[0].x)} ${f1(points[0].y)}`
   for (let i = 0; i < points.length - 1; i++) {
     const p0 = points[i - 1] || points[i]
     const p1 = points[i]
@@ -477,7 +534,7 @@ export function catmullRom(points: Pt[]): string {
     const c1y = p1.y + (p2.y - p0.y) / 6
     const c2x = p2.x - (p3.x - p1.x) / 6
     const c2y = p2.y - (p3.y - p1.y) / 6
-    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
+    d += ` C ${f1(c1x)} ${f1(c1y)} ${f1(c2x)} ${f1(c2y)} ${f1(p2.x)} ${f1(p2.y)}`
   }
   return d
 }
@@ -513,6 +570,6 @@ export function buildRibbonPath(points: Pt[], widths: number[]): string {
   const leftPath = catmullRom(left)
   const rightPath = catmullRom(right)
   // drop the leading "M x y" of the right half — it continues the same path
-  const rightContinuation = rightPath.replace(/^M [\d.-]+ [\d.-]+/, ` L ${right[0].x.toFixed(1)} ${right[0].y.toFixed(1)}`)
+  const rightContinuation = rightPath.replace(/^M [\d.-]+ [\d.-]+/, ` L ${f1(right[0].x)} ${f1(right[0].y)}`)
   return `${leftPath}${rightContinuation} Z`
 }

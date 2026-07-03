@@ -509,7 +509,9 @@ body:has(.pw-pitch) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  /* Generous gutter: with the svg's overflow visible (below), gizmos that
+     sit outside the canvas render into this space and stay grabbable. */
+  padding: 2rem;
 }
 
 .pw-tool-stage {
@@ -518,7 +520,13 @@ body:has(.pw-pitch) {
   touch-action: none;
 }
 
-.pw-tool-stage svg { display: block; width: 100%; height: auto; }
+/* overflow: visible overrides the UA's `svg:not(:root){overflow:hidden}` so
+   path handles/gizmos dragged past the canvas edge keep rendering (and keep
+   receiving pointer events) in the stage gutter instead of vanishing —
+   manipulating a curve that runs off-canvas no longer requires zooming out.
+   Export is unaffected: getCleanExportSVGString re-forces the true viewBox
+   and strips the export-excluded gizmo layer entirely. */
+.pw-tool-stage svg { display: block; width: 100%; height: auto; overflow: visible; }
 
 .pw-contrast-warning {
   position: absolute;
@@ -904,6 +912,15 @@ body:has(.pw-pitch) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+}
+/* Subtitle between a picker's main-colour row and its derived shades. */
+.pw-swatch-subtitle {
+  font-family: var(--pw-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pw-stone);
+  margin-top: 0.2rem;
 }
 .pw-swatch {
   width: 22px;

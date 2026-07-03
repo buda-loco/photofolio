@@ -17,6 +17,7 @@ import {
   avoidRect,
   relaxPolyline,
   fitCubicBezier,
+  buildNoiseTables,
   type AvoidRect,
   buildStrokes,
   type BuildParams,
@@ -364,6 +365,31 @@ describe('buildStrokes', () => {
     }
   })
 
+  it('messMultiplier tames the jitter: omitted === 100, and 0 hugs the spine tighter than 100', () => {
+    // default: omitted behaves exactly like 100 (backward compatible)
+    expect(buildStrokes(harmonics, { ...params, messMultiplier: 100 })).toEqual(buildStrokes(harmonics, params))
+
+    const spineSamples = Array.from({ length: 400 }, (_, i) => bezierPoint(bez, i / 399))
+    const excursion = (messMultiplier: number) => {
+      const strokes = buildStrokes(harmonics, { ...params, mess: 100, messMultiplier })
+      let worst = 0
+      for (const pt of strokes[0].points) {
+        let best = Infinity
+        for (const s of spineSamples) best = Math.min(best, Math.hypot(pt.x - s.x, pt.y - s.y))
+        worst = Math.max(worst, best)
+      }
+      return worst
+    }
+    expect(excursion(0)).toBeLessThan(excursion(100))
+  })
+
+  it('precomputed noise tables produce bit-identical output to inline fractal evaluation', () => {
+    const tables = buildNoiseTables(harmonics, params.detail)
+    const withTables = buildStrokes(harmonics, { ...params, noise: tables })
+    const inline = buildStrokes(harmonics, params)
+    expect(withTables).toEqual(inline)
+  })
+
   it('breadth: 0 collapses every strand onto the spine; larger breadth widens the array', () => {
     const flat = buildStrokes(harmonics, { ...params, breadth: 0 })
     const spineSamples = Array.from({ length: 400 }, (_, i) => bezierPoint(bez, i / 399))
@@ -511,7 +537,7 @@ describe('fitCubicBezier', () => {
 describe('catmullRom', () => {
   it('starts with an M command at the first point', () => {
     const d = catmullRom([{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 20, y: 0 }])
-    expect(d.startsWith('M 0.0 0.0')).toBe(true)
+    expect(d.startsWith('M 0 0')).toBe(true)
   })
   it('returns empty string for fewer than 2 points', () => {
     expect(catmullRom([{ x: 0, y: 0 }])).toBe('')
@@ -583,10 +609,13 @@ describe('buildRibbonPath', () => {
     expect(right.every((p) => p.y <= 0)).toBe(true)
 
     // and the actual output matches stitching those exact clamped edges
+    // (coordinate formatting mirrors buildRibbonPath's f1: round to 1
+    // decimal, no forced trailing zero)
+    const f1 = (v: number) => String(Math.round(v * 10) / 10)
     const expectedLeft = catmullRom(left)
     const expectedRight = catmullRom(right).replace(
       /^M [\d.-]+ [\d.-]+/,
-      ` L ${right[0].x.toFixed(1)} ${right[0].y.toFixed(1)}`
+      ` L ${f1(right[0].x)} ${f1(right[0].y)}`
     )
     expect(d).toBe(`${expectedLeft}${expectedRight} Z`)
   })

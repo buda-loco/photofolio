@@ -1,12 +1,14 @@
 'use client'
 
+import { memo } from 'react'
+
 type CanvasParams = { widthPx: number; heightPx: number; unit: 'px' | 'cm'; widthCm: number; heightCm: number; dpi: number }
 type Props = { value: CanvasParams; onChange: (v: CanvasParams) => void }
 
 const CM_TO_PX = (cm: number, dpi: number) => Math.round((cm / 2.54) * dpi)
 const PX_TO_CM = (px: number, dpi: number) => (px / dpi) * 2.54
 
-export default function CanvasPanel({ value, onChange }: Props) {
+function CanvasPanel({ value, onChange }: Props) {
   const setUnit = (unit: 'px' | 'cm') => onChange({ ...value, unit })
 
   // widthCm/heightCm are kept continuously in sync with widthPx/heightPx in
@@ -68,3 +70,7 @@ export default function CanvasPanel({ value, onChange }: Props) {
     </div>
   )
 }
+
+// Memoised: props are values + stable useCallback handlers from
+// BrandAssetTool, so canvas drags skip reconciling this panel entirely.
+export default memo(CanvasPanel)
