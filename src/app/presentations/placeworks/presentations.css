@@ -655,6 +655,18 @@ body:has(.pw-pitch) {
   cursor: move;
 }
 .pw-couple-handle:active { cursor: grabbing; }
+.pw-resolve-handle {
+  stroke: var(--pw-accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+.pw-resolve-handle-hit {
+  stroke: transparent;
+  stroke-width: 24;
+  cursor: grab;
+}
+.pw-resolve-handle-hit:active { cursor: grabbing; }
 
 /* ── Brand tool — min/max range pair (randomiser) ────────── */
 .pw-range-pair {

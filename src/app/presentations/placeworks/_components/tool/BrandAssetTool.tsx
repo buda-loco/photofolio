@@ -8,6 +8,7 @@ import type { SwatchRef } from './palette'
 import PlaceWorksLogo from './PlaceWorksLogo'
 import { useLogoBBox } from './useLogoBBox'
 import PathEditor from './PathEditor'
+import ResolveHandle from './ResolveHandle'
 import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
@@ -378,6 +379,21 @@ export default function BrandAssetTool() {
             startScale={params.path.startScale}
             endScale={params.path.endScale}
             onChange={(path) => setParams((p) => ({ ...p, path }))}
+            svgRef={svgRef}
+            viewBoxX={viewBoxX}
+            viewBoxY={viewBoxY}
+            viewBoxW={viewBoxW}
+            viewBoxH={viewBoxH}
+          />
+
+          {/* Direct-manipulation control for `resolve`, as an alternative to
+              the sidebar's Mess-end slider: a thick stick constrained to
+              slide along the (otherwise invisible) bezier spine, always
+              sitting exactly where the tangle actually resolves. */}
+          <ResolveHandle
+            bezier={{ p0: params.path.start, p1: params.path.startHandle, p2: params.path.endHandle, p3: params.path.end }}
+            resolve={params.resolve}
+            onResolveChange={(resolve) => setParams((p) => ({ ...p, resolve }))}
             svgRef={svgRef}
             viewBoxX={viewBoxX}
             viewBoxY={viewBoxY}
