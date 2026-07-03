@@ -285,16 +285,29 @@ export default function BrandAssetTool() {
   const { widthPx: W, heightPx: H } = params.canvas
   const maskId = 'pw-tool-mask'
 
+  // Hides every on-canvas gizmo (path/scale/move handles, the resolve
+  // stick, the mask drag+resize overlays, the zoomed-out canvas boundary
+  // marker) so the artwork can be seen the way it'll actually export,
+  // without needing to reach for Export just to check. Toggling this never
+  // touches params — it's a view mode, same reasoning as zoomStep below.
+  const [previewMode, setPreviewMode] = useState(false)
+
   // Zoom expands the SVG's own viewBox symmetrically around the true canvas
   // rect so off-canvas path/scale handles become visible and draggable —
   // see the ZOOM_STEPS comment above for why this stays out of ToolParams.
+  //
+  // Preview overrides all of it: the viewBox pins to the exact export frame
+  // (zoom margin included would show artwork outside the canvas), and the
+  // CSS class set below flips the svg back to overflow:hidden so strands
+  // running past the canvas edge are clipped exactly as they will be in the
+  // exported file. The user's zoom choice is preserved, just suspended.
   const [zoomStep, setZoomStep] = useState(1)
   const zoomPadX = (W * (zoomStep - 1)) / 2
   const zoomPadY = (H * (zoomStep - 1)) / 2
-  const viewBoxX = -zoomPadX
-  const viewBoxY = -zoomPadY
-  const viewBoxW = W * zoomStep
-  const viewBoxH = H * zoomStep
+  const viewBoxX = previewMode ? 0 : -zoomPadX
+  const viewBoxY = previewMode ? 0 : -zoomPadY
+  const viewBoxW = previewMode ? W : W * zoomStep
+  const viewBoxH = previewMode ? H : H * zoomStep
 
   // Drag-to-move for the mask/container rect — moves x/y only (size is still
   // set via MaskPanel's sliders), clamped so the rect can't be dragged past
@@ -382,13 +395,6 @@ export default function BrandAssetTool() {
   const onResizePointerUp = () => {
     resizing.current = false
   }
-
-  // Hides every on-canvas gizmo (path/scale/couple/move handles, the
-  // resolve stick, the mask drag+resize overlays, the zoomed-out canvas
-  // boundary marker) so the artwork can be seen the way it'll actually
-  // export, without needing to reach for Export just to check. Toggling
-  // this never touches params — it's a view mode, same reasoning as zoomStep.
-  const [previewMode, setPreviewMode] = useState(false)
 
   // Dockable-panel workspace state (which panels sit in which dock, and
   // which tab is active per dock) + the panel currently being tab-dragged.
@@ -732,7 +738,10 @@ export default function BrandAssetTool() {
               canvas is taller than the screen. Ratio-based (not a fixed
               width) so any canvas proportion gets the largest fit. Zoom
               scales W and H equally, so the ratio is zoom-invariant. */}
-          <div className="pw-tool-stage" style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 4rem) * ${(W / H).toFixed(4)}))` }}>
+          <div
+            className={`pw-tool-stage${previewMode ? ' pw-tool-stage--preview' : ''}`}
+            style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 4rem) * ${(W / H).toFixed(4)}))` }}
+          >
             <svg ref={svgRef} viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxW} ${viewBoxH}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
             <clipPath id={`${maskId}-hard`}>

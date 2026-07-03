@@ -528,6 +528,13 @@ body:has(.pw-pitch) {
    and strips the export-excluded gizmo layer entirely. */
 .pw-tool-stage svg { display: block; width: 100%; height: auto; overflow: visible; }
 
+/* Preview mode clips back to the export frame: the workspace's
+   overflow:visible exists for grabbing gizmos outside the canvas, but in
+   preview there are no gizmos and the point is seeing EXACTLY what the
+   exported file will contain — strands running off-canvas get cut at the
+   edge, same as in the export. */
+.pw-tool-stage--preview svg { overflow: hidden; }
+
 .pw-contrast-warning {
   position: absolute;
   left: 0.6rem;
