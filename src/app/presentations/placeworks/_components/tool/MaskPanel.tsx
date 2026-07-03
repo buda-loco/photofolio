@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-type MaskParams = { x: number; y: number; width: number; height: number; style: 'hard' | 'soft' }
+export type MaskParams = { x: number; y: number; width: number; height: number; style: 'hard' | 'soft' }
 type Props = {
   value: MaskParams
   onChange: (v: MaskParams) => void
@@ -22,7 +22,7 @@ type Props = {
 // past that edge uncontained).
 // If `minHeight`/`minWidth` exceed `canvasH`/`canvasW`, canvas bounds win and
 // the logo will visually overflow the mask — accepted tradeoff, not a bug.
-function clampMask(m: MaskParams, canvasW: number, canvasH: number, minWidth: number, minHeight: number): MaskParams {
+export function clampMask(m: MaskParams, canvasW: number, canvasH: number, minWidth: number, minHeight: number): MaskParams {
   const width = Math.min(Math.max(m.width, minWidth), canvasW)
   const height = Math.min(Math.max(m.height, minHeight), canvasH)
   const x = Math.min(Math.max(m.x, 0), canvasW - width)

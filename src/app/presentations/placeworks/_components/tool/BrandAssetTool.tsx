@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { buildHarmonics, buildStrokes, buildRibbonPath } from './yarnMath'
+import { buildHarmonics, buildStrokes, buildRibbonPath, OCT_MAX } from './yarnMath'
 import type { Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
@@ -12,7 +12,7 @@ import ResolveHandle from './ResolveHandle'
 import ColourPanel from './ColourPanel'
 import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
-import MaskPanel from './MaskPanel'
+import MaskPanel, { clampMask } from './MaskPanel'
 import RandomiserPanel from './RandomiserPanel'
 import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
 import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToolPersistence'
@@ -261,6 +261,44 @@ export default function BrandAssetTool() {
     maskDrag.current = null
   }
 
+  // Corner resize gizmo: bottom-right corner only, top-left (x/y) stays
+  // fixed while width/height follow the pointer directly (not a delta-drag
+  // like the move handles — the corner just tracks the cursor). Reuses
+  // MaskPanel's own clampMask so on-canvas resizing can never disagree with
+  // what the Width/Height sliders would allow.
+  const resizing = useRef(false)
+
+  const onResizePointerDown = (e: React.PointerEvent<SVGRectElement>) => {
+    e.stopPropagation()
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // no-op — see PathEditor's identical guard for why this can throw
+    }
+    resizing.current = true
+  }
+
+  const onResizePointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+    if (!resizing.current) return
+    const p = toCanvasPoint(e.clientX, e.clientY)
+    const nextMask = clampMask(
+      { ...params.mask, width: p.x - params.mask.x, height: p.y - params.mask.y },
+      W, H, scaledWidth, scaledHeight
+    )
+    setParams((p2) => ({ ...p2, mask: nextMask }))
+  }
+
+  const onResizePointerUp = () => {
+    resizing.current = false
+  }
+
+  // Hides every on-canvas gizmo (path/scale/couple/move handles, the
+  // resolve stick, the mask drag+resize overlays, the zoomed-out canvas
+  // boundary marker) so the artwork can be seen the way it'll actually
+  // export, without needing to reach for Export just to check. Toggling
+  // this never touches params — it's a view mode, same reasoning as zoomStep.
+  const [previewMode, setPreviewMode] = useState(false)
+
   const logoAspect = logoInkBBox ? logoInkBBox.width / logoInkBBox.height : 1
   const baseWidthPx = W * LOGO_BASE_WIDTH_FRACTION
   const baseHeightPx = baseWidthPx / logoAspect
@@ -311,8 +349,9 @@ export default function BrandAssetTool() {
           {/* True-canvas boundary marker — only shown while zoomed out, so the
               user can tell what's actually inside the exported frame vs. the
               extra off-canvas margin the zoom control reveals. Non-interactive
-              and export-excluded: purely a UI aid. */}
-          {zoomStep > 1 && (
+              and export-excluded: purely a UI aid, so it's also hidden in
+              preview mode along with the rest of the gizmos. */}
+          {zoomStep > 1 && !previewMode && (
             <rect
               className={EXPORT_EXCLUDE_CLASS}
               x={0} y={0} width={W} height={H}
@@ -353,53 +392,70 @@ export default function BrandAssetTool() {
             <PlaceWorksLogo color={logoColor} x={logoX} y={logoY} width={scaledWidth} height={scaledHeight} />
           )}
 
-          {/* Position gizmo for the container (and, since the logo is always
-              centered inside it, the logo along with it): drag anywhere
-              inside the mask/backing rect to move it. Resizing still happens
-              via MaskPanel's Width/Height sliders below — this only moves
-              x/y, clamped to stay on-canvas. */}
-          <rect
-            className={`pw-mask-rect ${EXPORT_EXCLUDE_CLASS}`}
-            x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height}
-            // fill:none means the default `pointer-events: visiblePainted`
-            // would only hit-test the thin dashed stroke — `all` makes the
-            // whole rect area (including its transparent interior) draggable.
-            pointerEvents="all"
-            onPointerDown={onMaskPointerDown}
-            onPointerMove={onMaskPointerMove}
-            onPointerUp={onMaskPointerUp}
-            onPointerCancel={onMaskPointerUp}
-          />
+          {!previewMode && (
+            <>
+              {/* Position gizmo for the container (and, since the logo is
+                  always centered inside it, the logo along with it): drag
+                  anywhere inside the mask/backing rect to move it. */}
+              <rect
+                className={`pw-mask-rect ${EXPORT_EXCLUDE_CLASS}`}
+                x={params.mask.x} y={params.mask.y} width={params.mask.width} height={params.mask.height}
+                // fill:none means the default `pointer-events: visiblePainted`
+                // would only hit-test the thin dashed stroke — `all` makes the
+                // whole rect area (including its transparent interior) draggable.
+                pointerEvents="all"
+                onPointerDown={onMaskPointerDown}
+                onPointerMove={onMaskPointerMove}
+                onPointerUp={onMaskPointerUp}
+                onPointerCancel={onMaskPointerUp}
+              />
 
-          <PathEditor
-            start={params.path.start}
-            startHandle={params.path.startHandle}
-            end={params.path.end}
-            endHandle={params.path.endHandle}
-            startScale={params.path.startScale}
-            endScale={params.path.endScale}
-            onChange={(path) => setParams((p) => ({ ...p, path }))}
-            svgRef={svgRef}
-            viewBoxX={viewBoxX}
-            viewBoxY={viewBoxY}
-            viewBoxW={viewBoxW}
-            viewBoxH={viewBoxH}
-          />
+              {/* Corner resize gizmo — bottom-right only. Top-left (x/y)
+                  stays put; width/height track the pointer directly, run
+                  through the same clampMask MaskPanel's sliders use. */}
+              <rect
+                className={`pw-resize-handle ${EXPORT_EXCLUDE_CLASS}`}
+                x={params.mask.x + params.mask.width - 6}
+                y={params.mask.y + params.mask.height - 6}
+                width={12} height={12}
+                pointerEvents="all"
+                onPointerDown={onResizePointerDown}
+                onPointerMove={onResizePointerMove}
+                onPointerUp={onResizePointerUp}
+                onPointerCancel={onResizePointerUp}
+              />
 
-          {/* Direct-manipulation control for `resolve`, as an alternative to
-              the sidebar's Mess-end slider: a thick stick constrained to
-              slide along the (otherwise invisible) bezier spine, always
-              sitting exactly where the tangle actually resolves. */}
-          <ResolveHandle
-            bezier={{ p0: params.path.start, p1: params.path.startHandle, p2: params.path.endHandle, p3: params.path.end }}
-            resolve={params.resolve}
-            onResolveChange={(resolve) => setParams((p) => ({ ...p, resolve }))}
-            svgRef={svgRef}
-            viewBoxX={viewBoxX}
-            viewBoxY={viewBoxY}
-            viewBoxW={viewBoxW}
-            viewBoxH={viewBoxH}
-          />
+              <PathEditor
+                start={params.path.start}
+                startHandle={params.path.startHandle}
+                end={params.path.end}
+                endHandle={params.path.endHandle}
+                startScale={params.path.startScale}
+                endScale={params.path.endScale}
+                onChange={(path) => setParams((p) => ({ ...p, path }))}
+                svgRef={svgRef}
+                viewBoxX={viewBoxX}
+                viewBoxY={viewBoxY}
+                viewBoxW={viewBoxW}
+                viewBoxH={viewBoxH}
+              />
+
+              {/* Direct-manipulation control for `resolve`, as an alternative
+                  to the sidebar's Mess-end slider: a thick stick constrained
+                  to slide along the (otherwise invisible) bezier spine,
+                  always sitting exactly where the tangle actually resolves. */}
+              <ResolveHandle
+                bezier={{ p0: params.path.start, p1: params.path.startHandle, p2: params.path.endHandle, p3: params.path.end }}
+                resolve={params.resolve}
+                onResolveChange={(resolve) => setParams((p) => ({ ...p, resolve }))}
+                svgRef={svgRef}
+                viewBoxX={viewBoxX}
+                viewBoxY={viewBoxY}
+                viewBoxW={viewBoxW}
+                viewBoxH={viewBoxH}
+              />
+            </>
+          )}
         </svg>
         {lowContrast && <p className="pw-contrast-warning">Logo colour is low-contrast against its container background.</p>}
       </div>
@@ -434,6 +490,13 @@ export default function BrandAssetTool() {
             {pngExportState === 'exporting' ? 'Exporting…' : 'Export PNG'}
           </button>
           <button type="button" className="pw-btn" onClick={handleReset}>Reset to defaults</button>
+          <button
+            type="button"
+            className={`pw-btn${previewMode ? ' pw-btn--solid' : ''}`}
+            onClick={() => setPreviewMode((v) => !v)}
+          >
+            {previewMode ? 'Exit preview' : 'Preview'}
+          </button>
         </div>
 
         {/* Whole-tool action, like Export/Reset above it, rather than a
@@ -478,6 +541,17 @@ export default function BrandAssetTool() {
               step={1}
               value={params.resolve}
               onChange={(e) => setParams((p) => ({ ...p, resolve: +e.target.value }))}
+            />
+          </span>
+          <span className="pw-slider">
+            Mess&nbsp;detail
+            <input
+              type="range"
+              min={1}
+              max={OCT_MAX}
+              step={1}
+              value={params.detail}
+              onChange={(e) => setParams((p) => ({ ...p, detail: +e.target.value }))}
             />
           </span>
         </div>
