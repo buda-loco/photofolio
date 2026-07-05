@@ -30,6 +30,7 @@
   "build": {
     "appId": "com.benjaminarnedo.placeworks-tool",
     "productName": "PlaceWorks Brand Asset Tool",
+    "artifactName": "PlaceWorks-Brand-Asset-Tool-${version}-${arch}.${ext}",
     "files": [
       "dist/**",
       "electron/**"

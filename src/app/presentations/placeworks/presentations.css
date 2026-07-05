@@ -499,6 +499,17 @@ body:has(.pw-pitch) {
   letter-spacing: 0.01em;
   margin: 0;
 }
+/* Desktop-app download link — pushed to the header's far edge, accent on
+   hover only (Restrained: it's a utility link, not a call to action). */
+.pw-tool-download {
+  margin-left: auto;
+  border-bottom: 1px solid var(--pw-hair);
+  padding-bottom: 1px;
+}
+.pw-tool-download:hover {
+  color: var(--pw-accent);
+  border-color: var(--pw-accent);
+}
 
 .pw-workspace {
   display: flex;
