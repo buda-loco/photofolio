@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useEffect } from 'react'
+import { memo } from 'react'
 
 export type MaskParams = {
   x: number; y: number; width: number; height: number; style: 'hard' | 'soft'
@@ -39,18 +39,12 @@ function MaskPanel({ value, onChange, canvasW, canvasH, minWidth, minHeight }: P
     onChange(clampMask({ ...value, ...patch }, canvasW, canvasH, minWidth, minHeight))
   }
 
-  // Re-clamp whenever the *bounds* move out from under the current mask —
-  // the logo scale slider growing minWidth/minHeight, or the canvas being
-  // resized smaller — rather than only when the user drags a mask slider
-  // directly. This is what makes the mask visibly grow to match a larger
-  // logo instead of silently letting the logo overflow its backing panel.
-  useEffect(() => {
-    const next = clampMask(value, canvasW, canvasH, minWidth, minHeight)
-    if (next.x !== value.x || next.y !== value.y || next.width !== value.width || next.height !== value.height) {
-      onChange(next)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasW, canvasH, minWidth, minHeight])
+  // NOTE: the "re-clamp when the canvas shrinks out from under the mask"
+  // effect deliberately does NOT live here anymore. Dock only mounts the
+  // active tab, so an effect in this panel silently stops running whenever
+  // another tab is selected — which is exactly when the Canvas panel (same
+  // dock) is being used to resize. BrandAssetTool owns that effect now; it
+  // is always mounted.
 
   return (
     <div className="pw-controls">

@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { fitCubicBezier, type Bezier, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
+import { capturePointer, useViewBoxPoint } from './svgPointer'
 
 type Props = {
   onCommit: (bezier: Bezier) => void
@@ -33,9 +34,14 @@ const MIN_SAMPLES = 8
  *  the fitted spine, deliberately not from the raw polyline: the whole
  *  generator (resolve/scale/normals) is built around a cubic bezier. */
 export default function DrawPathOverlay({ onCommit, stabiliser, svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH }: Props) {
-  // The in-progress stroke is React state (it renders as a live preview
-  // polyline); appends are gated by MIN_SAMPLE_DIST so re-renders track hand
-  // movement, not the device's report rate.
+  // The stroke lives in BOTH a ref and state: the ref is the source of
+  // truth that event handlers read and write synchronously (so pointer-up
+  // can fit + commit OUTSIDE any state updater — React requires updaters to
+  // be pure, and calling onCommit inside one double-fires the parent
+  // setState under StrictMode); the state mirror exists only to render the
+  // live preview polyline. setStroke here always receives a plain value,
+  // never an updater with side effects.
+  const strokeRef = useRef<Pt[]>([])
   const [stroke, setStroke] = useState<Pt[]>([])
   // Live cursor position while drawing — only used to render the rope
   // affordance (nib→cursor line + slack-radius circle), never fed to the fit.
@@ -44,31 +50,21 @@ export default function DrawPathOverlay({ onCommit, stabiliser, svgRef, viewBoxX
   // The stabilised pen tip. With stabiliser 0 this is just the cursor.
   const nib = useRef<Pt | null>(null)
 
-  const toSvgPoint = useCallback(
-    (clientX: number, clientY: number): Pt => {
-      const svg = svgRef.current
-      if (!svg) return { x: 0, y: 0 }
-      const rect = svg.getBoundingClientRect()
-      return {
-        x: viewBoxX + ((clientX - rect.left) / rect.width) * viewBoxW,
-        y: viewBoxY + ((clientY - rect.top) / rect.height) * viewBoxH,
-      }
-    },
-    [svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH]
-  )
+  const setStrokeBoth = (pts: Pt[]) => {
+    strokeRef.current = pts
+    setStroke(pts)
+  }
+
+  const toSvgPoint = useViewBoxPoint(svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH)
 
   const onPointerDown = (e: React.PointerEvent) => {
     e.stopPropagation()
-    try {
-      ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
-    } catch {
-      // no-op — see PathEditor's identical guard for why this can throw
-    }
+    capturePointer(e)
     drawing.current = true
     const p = toSvgPoint(e.clientX, e.clientY)
     nib.current = p
     setCursor(p)
-    setStroke([p])
+    setStrokeBoth([p])
   }
 
   const onPointerMove = (e: React.PointerEvent) => {
@@ -88,11 +84,10 @@ export default function DrawPathOverlay({ onCommit, stabiliser, svgRef, viewBoxX
     const next = { x: n.x + (dx / dist) * advance, y: n.y + (dy / dist) * advance }
     nib.current = next
 
-    setStroke((cur) => {
-      const last = cur[cur.length - 1]
-      if (last && Math.hypot(next.x - last.x, next.y - last.y) < MIN_SAMPLE_DIST) return cur
-      return [...cur, next]
-    })
+    const cur = strokeRef.current
+    const last = cur[cur.length - 1]
+    if (last && Math.hypot(next.x - last.x, next.y - last.y) < MIN_SAMPLE_DIST) return
+    setStrokeBoth([...cur, next])
   }
 
   const onPointerUp = () => {
@@ -100,15 +95,16 @@ export default function DrawPathOverlay({ onCommit, stabiliser, svgRef, viewBoxX
     drawing.current = false
     nib.current = null
     setCursor(null)
-    setStroke((cur) => {
-      if (cur.length >= MIN_SAMPLES) {
-        const fitted = fitCubicBezier(cur)
-        if (fitted) onCommit(fitted)
-      }
-      // Too short / unfittable: quietly discard and stay in draw mode so
-      // the user just draws again.
-      return []
-    })
+    // Read + clear via the ref, then fit/commit as plain event-handler code
+    // — no work inside a state updater (see strokeRef comment above).
+    const pts = strokeRef.current
+    setStrokeBoth([])
+    if (pts.length >= MIN_SAMPLES) {
+      const fitted = fitCubicBezier(pts)
+      if (fitted) onCommit(fitted)
+    }
+    // Too short / unfittable: quietly discard and stay in draw mode so the
+    // user just draws again.
   }
 
   const nibPoint = stroke[stroke.length - 1] ?? null

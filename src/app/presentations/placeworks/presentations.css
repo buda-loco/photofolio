@@ -49,6 +49,16 @@ body:has(.pw-pitch) {
   --pw-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
   --pw-margin: clamp(1.5rem, 6vw, 7rem);
 
+  /* Brand-tool workspace layout budget. Defined ONCE here (and overridden
+     by the Electron shell) — both the CSS workspace height below and the
+     stage's inline fit calc in BrandAssetTool.tsx read these variables, so
+     the two can't drift apart:
+     - chrome: everything above/around the workspace (page header, toolbar,
+       page paddings, borders)
+     - stage gutter: .pw-stage padding, where off-canvas gizmos render */
+  --pw-workspace-chrome: 9.5rem;
+  --pw-stage-gutter: 2rem;
+
   min-height: 100vh;
   /* clear the fixed site header */
   padding-top: var(--nav-height);
@@ -499,7 +509,7 @@ body:has(.pw-pitch) {
      viewport — no dead band under the canvas, docks scroll internally.
      The Electron shell overrides the variable (its chrome is just the
      toolbar), which is also what the stage's inline max-width calc reads. */
-  height: calc(100vh - var(--pw-workspace-chrome, 9.5rem));
+  height: calc(100vh - var(--pw-workspace-chrome));
   min-height: 24rem;
 }
 
@@ -510,8 +520,10 @@ body:has(.pw-pitch) {
   align-items: center;
   justify-content: center;
   /* Generous gutter: with the svg's overflow visible (below), gizmos that
-     sit outside the canvas render into this space and stay grabbable. */
-  padding: 2rem;
+     sit outside the canvas render into this space and stay grabbable.
+     Sized by the shared --pw-stage-gutter token (see .pw-pitch) so the
+     stage fit calc in BrandAssetTool.tsx stays in sync automatically. */
+  padding: var(--pw-stage-gutter);
 }
 
 .pw-tool-stage {
@@ -637,7 +649,7 @@ body:has(.pw-pitch) {
   .pw-dock--empty { width: 100%; max-height: none; }
   .pw-dock:first-child { border-right: none; border-top: 1px solid var(--pw-hair); }
   .pw-dock:last-child { border-left: none; border-top: 1px solid var(--pw-hair); }
-  .pw-stage { padding: 0.75rem; }
+  .pw-workspace { --pw-stage-gutter: 0.75rem; }
 }
 
 /* ── Brand tool — freehand path drawing ──────────────────── */

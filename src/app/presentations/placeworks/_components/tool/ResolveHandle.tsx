@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
 import { bezierPoint, bezierNormal, type Bezier, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
 import { useRafPointer } from './useRafPointer'
+import { capturePointer, useViewBoxPoint } from './svgPointer'
 
 type Props = {
   bezier: Bezier
@@ -78,26 +79,11 @@ const STICK_HALF_LENGTH = 20 // px, perpendicular to the spine at the handle's p
 export default function ResolveHandle({ bezier, resolve, onResolveChange, svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH }: Props) {
   const dragging = useRef(false)
 
-  const toSvgPoint = useCallback(
-    (clientX: number, clientY: number): Pt => {
-      const svg = svgRef.current
-      if (!svg) return { x: 0, y: 0 }
-      const rect = svg.getBoundingClientRect()
-      return {
-        x: viewBoxX + ((clientX - rect.left) / rect.width) * viewBoxW,
-        y: viewBoxY + ((clientY - rect.top) / rect.height) * viewBoxH,
-      }
-    },
-    [svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH]
-  )
+  const toSvgPoint = useViewBoxPoint(svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH)
 
   const onPointerDown = (e: React.PointerEvent) => {
     e.stopPropagation()
-    try {
-      ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
-    } catch {
-      // no-op — see PathEditor's identical guard for why this can throw
-    }
+    capturePointer(e)
     dragging.current = true
   }
 

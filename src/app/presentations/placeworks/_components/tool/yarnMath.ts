@@ -202,7 +202,13 @@ export function fitCubicBezier(pts: Pt[]): Bezier | null {
   return fit
 }
 
-export type ThicknessPreset = 'flat' | 'thick-thin' | 'thin-thick' | 'thick-thin-thick' | 'thin-thick-thin'
+// Single source of truth for the preset pool: the union type is DERIVED
+// from this array, so adding a preset here automatically widens the type —
+// and every randomiser that rolls from this array picks it up. (Previously
+// the five names were hand-maintained in three places, where a new preset
+// would compile fine while the randomisers silently never rolled it.)
+export const THICKNESS_PRESETS = ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const
+export type ThicknessPreset = (typeof THICKNESS_PRESETS)[number]
 export type ThicknessParams = {
   preset: ThicknessPreset
   min: number
@@ -260,11 +266,17 @@ export type NoiseTables = { perp: number[][]; along: number[][] }
  * every pointer frame). Invariant: must be built from the same harmonics
  * AND the same detail value that buildStrokes is called with.
  */
-export function buildNoiseTables(h: Strand[], detail: number): NoiseTables {
+export function buildNoiseTables(h: Strand[], detail: number, strands?: number): NoiseTables {
   const oct = Math.max(1, Math.min(OCT_MAX, Math.round(detail)))
+  // Only tabulate the strands the current line count can actually index —
+  // at lines:10 that's 6x less trig per rebuild (every Randomise click
+  // rolls seed+detail, so rebuilds are the randomiser's hot path).
+  // buildStrokes falls back to inline fractal() for any row not present,
+  // so under-building is safe, never wrong.
+  const count = strands === undefined ? h.length : Math.min(h.length, Math.max(1, Math.round(strands)))
   const perp: number[][] = []
   const along: number[][] = []
-  for (let s = 0; s < h.length; s++) {
+  for (let s = 0; s < count; s++) {
     const pRow = new Array<number>(SAMPLES + 1)
     const aRow = new Array<number>(SAMPLES + 1)
     for (let j = 0; j <= SAMPLES; j++) {
@@ -431,7 +443,11 @@ export function buildStrokes(h: Strand[], params: BuildParams): Stroke[] {
   // the field's reach scales naturally with the container instead of
   // looking cramped on a big container or absurdly oversized on a small one.
   const avoidRadius = Math.max(avoid.rect.width, avoid.rect.height) * 0.5 + 60
-  const avoidStrength = Math.min(100, Math.max(0, avoid.strength)) / 100
+  // NaN/undefined guard like breadth/messMultiplier: params persisted
+  // before avoidStrength existed can reach here as undefined, and
+  // Math.max(0, undefined) is NaN — which made `avoidStrength > 0` false
+  // AND (with avoid true) left the clip disabled: strands through the logo.
+  const avoidStrength = Number.isFinite(avoid.strength) ? Math.min(100, Math.max(0, avoid.strength)) / 100 : 0
 
   const spineLen = Math.hypot(bezier.p3.x - bezier.p0.x, bezier.p3.y - bezier.p0.y) || 1
   // Ties noise amplitude to how far apart the endpoints are; `breadth` is

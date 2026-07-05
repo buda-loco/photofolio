@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { buildHarmonics, buildNoiseTables, buildStrokes, buildRibbonPath, OCT_MAX, STRAND_MAX } from './yarnMath'
+import { buildHarmonics, buildNoiseTables, buildStrokes, buildRibbonPath, THICKNESS_PRESETS } from './yarnMath'
 import type { Bezier, Pt, ThicknessParams } from './yarnMath'
 import { resolveSwatch, contrastRatio } from './palette'
 import type { SwatchRef } from './palette'
@@ -11,14 +11,16 @@ import PathEditor from './PathEditor'
 import ResolveHandle from './ResolveHandle'
 import DrawPathOverlay from './DrawPathOverlay'
 import ColourPanel from './ColourPanel'
-import ThicknessPanel from './ThicknessPanel'
 import CanvasPanel from './CanvasPanel'
-import MaskPanel, { clampMask } from './MaskPanel'
+import { clampMask } from './MaskPanel'
+import LineShapePanel from './LineShapePanel'
+import ContainerPanel from './ContainerPanel'
 import RandomiserPanel from './RandomiserPanel'
 import PresetsPanel from './PresetsPanel'
 import Dock from './Dock'
 import { useWorkspaceLayout, type PanelId } from './useWorkspaceLayout'
 import { useRafPointer } from './useRafPointer'
+import { capturePointer, useViewBoxPoint } from './svgPointer'
 import { EXPORT_EXCLUDE_CLASS, PNG_SIZE_CAP, downloadPNG, downloadSVG, exceedsSizeCap, getCleanExportSVGString } from './exportCanvas'
 import { clearPersistedParams, loadPersistedParams, useAutosave } from './useToolPersistence'
 
@@ -84,6 +86,28 @@ export const DEFAULT_PARAMS: ToolParams = {
 // (a zero-size rect would be undraggable and invisible), NOT the logo's size:
 // the logo now scales down to fit inside whatever size the container is.
 const MASK_MIN_SIZE = 24
+
+/** Reconciles params from OUTSIDE this build (localStorage saves, imported
+ *  share codes, loaded presets) with the current schema: merges the top
+ *  level AND each known nested object over DEFAULT_PARAMS, so fields added
+ *  after the data was written (breadth, messMultiplier, mask.avoid,
+ *  mask.avoidStrength, logo.visible, …) pick up their defaults instead of
+ *  arriving undefined. A top-level-only merge was the bug here: nested
+ *  objects like `mask` were replaced wholesale, so pre-avoidance saves
+ *  loaded a mask with no avoidStrength — NaN in the generator, avoidance
+ *  silently dead, and the clip disabled with it. */
+export function mergeParamsWithDefaults(persisted: Partial<ToolParams>): ToolParams {
+  return {
+    ...DEFAULT_PARAMS,
+    ...persisted,
+    canvas: { ...DEFAULT_PARAMS.canvas, ...persisted.canvas },
+    path: { ...DEFAULT_PARAMS.path, ...persisted.path },
+    thickness: { ...DEFAULT_PARAMS.thickness, ...persisted.thickness },
+    colours: { ...DEFAULT_PARAMS.colours, ...persisted.colours },
+    mask: { ...DEFAULT_PARAMS.mask, ...persisted.mask },
+    logo: { ...DEFAULT_PARAMS.logo, ...persisted.logo },
+  }
+}
 
 // Module-level constant, not recreated per render: when avoidance is OFF,
 // the strokes useMemo receives this same reference every time, so container
@@ -155,12 +179,11 @@ export default function BrandAssetTool() {
   // before that first client paint rather than after it.
   useLayoutEffect(() => {
     const persisted = loadPersistedParams<ToolParams>()
-    // Shallow-merged over DEFAULT_PARAMS so top-level fields added to
-    // ToolParams after a user's state was saved (e.g. breadth) pick up
-    // their defaults instead of arriving as undefined — avoids a storage
-    // key bump (which would discard the whole saved artwork) for purely
-    // additive top-level changes.
-    if (persisted) setParams({ ...DEFAULT_PARAMS, ...persisted })
+    // Deep-merged over DEFAULT_PARAMS (top level AND known nested objects —
+    // see mergeParamsWithDefaults) so fields added after the state was
+    // saved pick up defaults instead of arriving undefined, without a
+    // storage key bump discarding the saved artwork.
+    if (persisted) setParams(mergeParamsWithDefaults(persisted))
   }, [])
   useAutosave(params)
 
@@ -222,8 +245,26 @@ export default function BrandAssetTool() {
   const harmonics = useMemo(() => buildHarmonics(params.seed), [params.seed])
   // All the trig in stroke generation, precomputed: the fractal noise only
   // depends on (seed, detail) and the fixed sample grid, so it's rebuilt
-  // only when those change — dragging handles/sliders does zero sin calls.
-  const noiseTables = useMemo(() => buildNoiseTables(harmonics, params.detail), [harmonics, params.detail])
+  // only when those (or the strand count it's capped to) change — dragging
+  // handles/sliders does zero sin calls. Capped to the current line count:
+  // buildStrokes falls back to inline fractal() for missing rows, so this
+  // can never under-serve, only avoid tabulating strands nothing reads.
+  const noiseTables = useMemo(() => buildNoiseTables(harmonics, params.detail, params.lines), [harmonics, params.detail, params.lines])
+
+  // Keeps the container inside the canvas when the CANVAS changes size out
+  // from under it. Lives here — always mounted — and not in MaskPanel:
+  // Dock only mounts the active tab, and Canvas/Container share a dock, so
+  // an effect inside MaskPanel is guaranteed to NOT be running at exactly
+  // the moment the Canvas panel is being used to shrink the canvas. An
+  // out-of-bounds container silently crops the logo out of exports and
+  // makes the drag clamps produce negative positions.
+  useEffect(() => {
+    setParams((p) => {
+      const next = clampMask(p.mask, p.canvas.widthPx, p.canvas.heightPx, MASK_MIN_SIZE, MASK_MIN_SIZE)
+      if (next.x === p.mask.x && next.y === p.mask.y && next.width === p.mask.width && next.height === p.mask.height) return p
+      return { ...p, mask: next }
+    })
+  }, [params.canvas.widthPx, params.canvas.heightPx])
 
   // Resolved separately from the strokes memo so its identity only changes
   // when the field can actually affect the artwork: with avoidance OFF this
@@ -317,23 +358,11 @@ export default function BrandAssetTool() {
   // origin, so dragging still tracks the cursor correctly while zoomed out.
   const maskDrag = useRef<{ pointerStart: Pt; maskStart: Pt } | null>(null)
 
-  const toCanvasPoint = (clientX: number, clientY: number): Pt => {
-    const svg = svgRef.current
-    if (!svg) return { x: 0, y: 0 }
-    const rect = svg.getBoundingClientRect()
-    return {
-      x: viewBoxX + ((clientX - rect.left) / rect.width) * viewBoxW,
-      y: viewBoxY + ((clientY - rect.top) / rect.height) * viewBoxH,
-    }
-  }
+  const toCanvasPoint = useViewBoxPoint(svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH)
 
   const onMaskPointerDown = (e: React.PointerEvent<SVGRectElement>) => {
     e.stopPropagation()
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId)
-    } catch {
-      // no-op — see PathEditor's identical guard for why this can throw
-    }
+    capturePointer(e)
     maskDrag.current = { pointerStart: toCanvasPoint(e.clientX, e.clientY), maskStart: { x: params.mask.x, y: params.mask.y } }
   }
 
@@ -369,11 +398,7 @@ export default function BrandAssetTool() {
 
   const onResizePointerDown = (e: React.PointerEvent<SVGRectElement>) => {
     e.stopPropagation()
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId)
-    } catch {
-      // no-op — see PathEditor's identical guard for why this can throw
-    }
+    capturePointer(e)
     resizing.current = true
   }
 
@@ -450,7 +475,7 @@ export default function BrandAssetTool() {
   const paramsRef = useRef(params)
   paramsRef.current = params
   const getParams = useCallback(() => paramsRef.current, [])
-  const applyPreset = useCallback((next: ToolParams) => setParams({ ...DEFAULT_PARAMS, ...next }), [])
+  const applyPreset = useCallback((next: ToolParams) => setParams(mergeParamsWithDefaults(next)), [])
 
   // Scoped randomiser for the Line shape panel only: rolls the params this
   // panel owns (count, thickness profile, mess character, array width) and
@@ -458,7 +483,6 @@ export default function BrandAssetTool() {
   // explores line treatments without trashing the composition.
   const randomiseLineShape = useCallback(() => {
     const r = (lo: number, hi: number) => lo + Math.random() * (hi - lo)
-    const presets = ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const
     setParams((p) => ({
       ...p,
       lines: Math.round(r(3, 24)),
@@ -467,7 +491,7 @@ export default function BrandAssetTool() {
       sharp: r(20, 90),
       breadth: r(8, 45),
       thickness: {
-        preset: presets[Math.floor(Math.random() * presets.length)],
+        preset: THICKNESS_PRESETS[Math.floor(Math.random() * THICKNESS_PRESETS.length)],
         min: r(0.5, 3),
         max: r(2, 10),
         transitionPos: r(0.2, 0.8),
@@ -511,144 +535,30 @@ export default function BrandAssetTool() {
       />
     ),
     line: (
-      <>
-        <div className="pw-controls">
-          {/* Direct line-count control — previously only reachable through
-              the randomiser's bounds, which made "start with one line and
-              build up" impossible to do deliberately. */}
-          <span className="pw-slider">
-            Lines
-            <input
-              type="range"
-              min={1}
-              max={STRAND_MAX}
-              step={1}
-              value={params.lines}
-              onChange={(e) => setParams((p) => ({ ...p, lines: +e.target.value }))}
-            />
-          </span>
-          {/* Master width: one slider that scales the whole stroke. It moves
-              thickness.max and keeps min at the same RATIO to it, so the
-              thick-to-thin profile shaped by ThicknessPanel's own Min/Max
-              sliders is preserved — this scales the line, those sculpt it. */}
-          <span className="pw-slider">
-            Width
-            <input
-              type="range"
-              min={0.5}
-              max={24}
-              step={0.5}
-              value={params.thickness.max}
-              onChange={(e) =>
-                setParams((p) => {
-                  const nextMax = +e.target.value
-                  const ratio = p.thickness.max > 0 ? p.thickness.min / p.thickness.max : 0.3
-                  return { ...p, thickness: { ...p.thickness, max: nextMax, min: Math.max(0.1, nextMax * ratio) } }
-                })
-              }
-            />
-          </span>
-          {/* Perpendicular width of the WHOLE array (how far strands can
-              stray from the spine) — distinct from Width above, which is
-              the stroke thickness of each individual line. */}
-          <span className="pw-slider">
-            Array&nbsp;width
-            <input
-              type="range"
-              min={2}
-              max={100}
-              step={1}
-              value={params.breadth}
-              onChange={(e) => setParams((p) => ({ ...p, breadth: +e.target.value }))}
-            />
-          </span>
-        </div>
-        <ThicknessPanel value={params.thickness} onChange={onThicknessChange} />
-        <div className="pw-controls">
-          <span className="pw-slider">
-            Mess&nbsp;end
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={params.resolve}
-              onChange={(e) => setParams((p) => ({ ...p, resolve: +e.target.value }))}
-            />
-          </span>
-          <span className="pw-slider">
-            Mess&nbsp;detail
-            <input
-              type="range"
-              min={1}
-              max={OCT_MAX}
-              step={1}
-              value={params.detail}
-              onChange={(e) => setParams((p) => ({ ...p, detail: +e.target.value }))}
-            />
-          </span>
-          {/* Global tame dial: scales only the jitter, keeping lane
-              structure — 0% = perfectly smooth strands at the same
-              spacing. See yarnMath's messMultiplier doc. */}
-          <span className="pw-slider">
-            Mess&nbsp;multiplier
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={params.messMultiplier}
-              onChange={(e) => setParams((p) => ({ ...p, messMultiplier: +e.target.value }))}
-            />
-          </span>
-        </div>
-        <div className="pw-controls">
-          <button type="button" className="pw-btn pw-btn--solid" onClick={randomiseLineShape}>Randomise shape</button>
-        </div>
-      </>
+      <LineShapePanel
+        lines={params.lines}
+        thickness={params.thickness}
+        resolve={params.resolve}
+        detail={params.detail}
+        messMultiplier={params.messMultiplier}
+        breadth={params.breadth}
+        onUpdate={setParams}
+        onThicknessChange={onThicknessChange}
+        onRandomiseShape={randomiseLineShape}
+      />
     ),
     canvas: <CanvasPanel value={params.canvas} onChange={onCanvasChange} />,
     container: (
-      <>
-        {/* MASK_MIN_SIZE is a small usability floor only — the logo scales
-            down to fit whatever container size the sliders (or the corner
-            gizmo) choose, so the container's minimum is no longer tied to
-            the logo's rendered size. */}
-        <MaskPanel
-          value={params.mask}
-          onChange={onMaskChange}
-          canvasW={W}
-          canvasH={H}
-          minWidth={MASK_MIN_SIZE}
-          minHeight={MASK_MIN_SIZE}
-        />
-        <div className="pw-controls">
-          {/* Logo visibility — `!== false` so pre-field persisted state
-              (visible: undefined) keeps showing it. */}
-          <button
-            type="button"
-            className={`pw-btn${params.logo.visible !== false ? ' pw-btn--solid' : ''}`}
-            onClick={() => setParams((p) => ({ ...p, logo: { ...p.logo, visible: p.logo.visible === false } }))}
-          >
-            {params.logo.visible !== false ? 'Logo on' : 'Logo off'}
-          </button>
-          <span className="pw-slider">
-            Logo&nbsp;scale
-            <input
-              type="range"
-              min={1}
-              // max=4 keeps the natural size (0.22 x 4 = 0.88 of canvas
-              // width) inside the canvas; the fit-to-container clamp caps
-              // the rendered size regardless, so this is a comfort range,
-              // not a safety bound.
-              max={4}
-              step={0.1}
-              value={params.logo.scale}
-              onChange={(e) => setParams((p) => ({ ...p, logo: { ...p.logo, scale: +e.target.value } }))}
-            />
-          </span>
-        </div>
-      </>
+      <ContainerPanel
+        mask={params.mask}
+        logoScale={params.logo.scale}
+        logoVisible={logoVisible}
+        canvasW={W}
+        canvasH={H}
+        maskMinSize={MASK_MIN_SIZE}
+        onMaskChange={onMaskChange}
+        onUpdate={setParams}
+      />
     ),
   }
 
@@ -754,7 +664,7 @@ export default function BrandAssetTool() {
               scales W and H equally, so the ratio is zoom-invariant. */}
           <div
             className={`pw-tool-stage${previewMode ? ' pw-tool-stage--preview' : ''}`}
-            style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome, 9.5rem) - 4rem) * ${(W / H).toFixed(4)}))` }}
+            style={{ maxWidth: `min(100%, calc((100vh - var(--pw-workspace-chrome) - 2 * var(--pw-stage-gutter)) * ${(W / H).toFixed(4)}))` }}
           >
             <svg ref={svgRef} viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxW} ${viewBoxH}`} role="img" aria-label="PlaceWorks brand asset generator canvas">
           <defs>
@@ -885,6 +795,28 @@ export default function BrandAssetTool() {
                 onPointerCancel={onResizePointerUp}
               />
 
+              {/* Direct-manipulation control for `resolve`, as an alternative
+                  to the sidebar's Mess-end slider: a thick stick constrained
+                  to slide along the bezier spine, always sitting exactly
+                  where the tangle actually resolves.
+
+                  Rendered BEFORE PathEditor deliberately: later SVG siblings
+                  win hit-testing, and the stick's fat invisible hit line
+                  crosses the spine — at resolve ~47% its centre coincides
+                  with the transform gizmo (t=0.5), and rendering the stick
+                  on top made grabbing the gizmo silently drag the stick,
+                  destroying the user's resolve value. */}
+              <ResolveHandle
+                bezier={{ p0: params.path.start, p1: params.path.startHandle, p2: params.path.endHandle, p3: params.path.end }}
+                resolve={params.resolve}
+                onResolveChange={(resolve) => setParams((p) => ({ ...p, resolve }))}
+                svgRef={svgRef}
+                viewBoxX={viewBoxX}
+                viewBoxY={viewBoxY}
+                viewBoxW={viewBoxW}
+                viewBoxH={viewBoxH}
+              />
+
               <PathEditor
                 start={params.path.start}
                 startHandle={params.path.startHandle}
@@ -893,21 +825,6 @@ export default function BrandAssetTool() {
                 startScale={params.path.startScale}
                 endScale={params.path.endScale}
                 onChange={(path) => setParams((p) => ({ ...p, path }))}
-                svgRef={svgRef}
-                viewBoxX={viewBoxX}
-                viewBoxY={viewBoxY}
-                viewBoxW={viewBoxW}
-                viewBoxH={viewBoxH}
-              />
-
-              {/* Direct-manipulation control for `resolve`, as an alternative
-                  to the sidebar's Mess-end slider: a thick stick constrained
-                  to slide along the (otherwise invisible) bezier spine,
-                  always sitting exactly where the tangle actually resolves. */}
-              <ResolveHandle
-                bezier={{ p0: params.path.start, p1: params.path.startHandle, p2: params.path.endHandle, p3: params.path.end }}
-                resolve={params.resolve}
-                onResolveChange={(resolve) => setParams((p) => ({ ...p, resolve }))}
                 svgRef={svgRef}
                 viewBoxX={viewBoxX}
                 viewBoxY={viewBoxY}

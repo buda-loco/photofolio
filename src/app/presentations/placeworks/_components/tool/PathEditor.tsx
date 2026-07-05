@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
 import { SCALE_MIN, SCALE_MAX, bezierPoint, type Pt } from './yarnMath'
 import { EXPORT_EXCLUDE_CLASS } from './exportCanvas'
 import { useRafPointer } from './useRafPointer'
+import { capturePointer, useViewBoxPoint } from './svgPointer'
 
 export type PathValue = { start: Pt; startHandle: Pt; end: Pt; endHandle: Pt; startScale: number; endScale: number }
 
@@ -94,34 +95,14 @@ export default function PathEditor({
     endHandle: Pt
   } | null>(null)
 
-  const toSvgPoint = useCallback(
-    (clientX: number, clientY: number): Pt => {
-      const svg = svgRef.current
-      if (!svg) return { x: 0, y: 0 }
-      const rect = svg.getBoundingClientRect()
-      return {
-        x: viewBoxX + ((clientX - rect.left) / rect.width) * viewBoxW,
-        y: viewBoxY + ((clientY - rect.top) / rect.height) * viewBoxH,
-      }
-    },
-    [svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH]
-  )
+  const toSvgPoint = useViewBoxPoint(svgRef, viewBoxX, viewBoxY, viewBoxW, viewBoxH)
 
   const isTransformKey = (key: DragKey): key is TransformKey =>
     key === 'move' || key === 'rotate' || key === 'scaleUniform' || key === 'moveStart' || key === 'moveEnd'
 
   const onPointerDown = (key: DragKey) => (e: React.PointerEvent) => {
     e.stopPropagation()
-    // setPointerCapture can throw (e.g. NotFoundError) in edge cases where the
-    // browser doesn't recognise the pointer id as active. Swallow it rather
-    // than let it escape as an uncaught exception — worst case we lose
-    // capture (tracking degrades once the cursor leaves the hit target)
-    // but the drag still starts and works while the cursor stays over it.
-    try {
-      ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
-    } catch {
-      // no-op — see comment above
-    }
+    capturePointer(e)
     dragging.current = key
     if (isTransformKey(key)) {
       transformOrigin.current = {

@@ -1,7 +1,35 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest'
 import { serializePreset, deserializePreset, loadPresets, savePreset, deletePreset } from './presets'
-import { DEFAULT_PARAMS } from './BrandAssetTool'
+import { DEFAULT_PARAMS, mergeParamsWithDefaults, type ToolParams } from './BrandAssetTool'
+
+describe('mergeParamsWithDefaults', () => {
+  it('backfills nested fields added after the data was saved (the v2 avoidance bug)', () => {
+    // Simulates state persisted under the v2 key BEFORE mask.avoid /
+    // avoidStrength / logo.visible / breadth / messMultiplier existed.
+    const old = JSON.parse(JSON.stringify(DEFAULT_PARAMS)) as Record<string, unknown>
+    const oldMask = old.mask as Record<string, unknown>
+    delete oldMask.avoid
+    delete oldMask.avoidStrength
+    const oldLogo = old.logo as Record<string, unknown>
+    delete oldLogo.visible
+    delete old.breadth
+    delete old.messMultiplier
+    oldMask.x = 111 // saved values must survive the merge
+
+    const merged = mergeParamsWithDefaults(old as Partial<ToolParams>)
+    expect(merged.mask.avoid).toBe(DEFAULT_PARAMS.mask.avoid)
+    expect(merged.mask.avoidStrength).toBe(DEFAULT_PARAMS.mask.avoidStrength)
+    expect(merged.logo.visible).toBe(DEFAULT_PARAMS.logo.visible)
+    expect(merged.breadth).toBe(DEFAULT_PARAMS.breadth)
+    expect(merged.messMultiplier).toBe(DEFAULT_PARAMS.messMultiplier)
+    expect(merged.mask.x).toBe(111)
+  })
+
+  it('is an identity for complete, current-schema params', () => {
+    expect(mergeParamsWithDefaults(DEFAULT_PARAMS)).toEqual(DEFAULT_PARAMS)
+  })
+})
 
 describe('share codes', () => {
   it('round-trips the full params object', () => {

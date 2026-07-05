@@ -1,7 +1,7 @@
 'use client'
 
 import { memo, useState } from 'react'
-import { mulberry32 } from './yarnMath'
+import { mulberry32, THICKNESS_PRESETS } from './yarnMath'
 import { PALETTE, shadesOf, type PaletteKey } from './palette'
 import type { ToolParams } from './BrandAssetTool'
 
@@ -36,7 +36,6 @@ const DEFAULT_BOUNDS: Bounds = {
 // immune to staleness.
 type Props = { onRandomise: (update: (prev: ToolParams) => ToolParams) => void }
 
-const PRESET_SHAPES = ['flat', 'thick-thin', 'thin-thick', 'thick-thin-thick', 'thin-thick-thin'] as const
 const PALETTE_KEYS = Object.keys(PALETTE) as PaletteKey[]
 // Derived rather than hardcoded to `5`: palette.ts's shade-ramp length is a
 // private implementation detail (SHADE_STEPS isn't exported) — reading it off
@@ -79,7 +78,7 @@ function RandomiserPanel({ onRandomise }: Props) {
       spread: between(bounds.spread),
       thickness: {
         ...params.thickness,
-        preset: PRESET_SHAPES[Math.floor(rng() * PRESET_SHAPES.length)],
+        preset: THICKNESS_PRESETS[Math.floor(rng() * THICKNESS_PRESETS.length)],
         min: between(bounds.thicknessMin),
         max: between(bounds.thicknessMax),
       },
