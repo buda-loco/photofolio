@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     title: 'Benjamin Arnedo — Photographer & Cinematographer',
     description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
     url: 'https://benjaminarnedo.com',
-    images: [{ url: '/images/about/portrait.gif' }],
+    images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'Benjamin Arnedo — Photographer & Cinematographer',
     description: 'Benjamin Arnedo is a photographer and cinematographer specializing in motion and light.',
-    images: ['/images/about/portrait.gif'],
+    images: ['/social-media.jpg'],
   },
 }
 

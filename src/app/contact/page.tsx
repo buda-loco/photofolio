@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     title: 'Contact — Benjamin Arnedo',
     description: "Let's work together — get in touch with Benjamin Arnedo.",
     url: 'https://benjaminarnedo.com/contact',
-    images: [{ url: '/images/about/portrait.gif' }],
+    images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'Contact — Benjamin Arnedo',
     description: "Let's work together — get in touch with Benjamin Arnedo.",
-    images: ['/images/about/portrait.gif'],
+    images: ['/social-media.jpg'],
   },
 }
 

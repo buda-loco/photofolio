@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     title: 'About — Benjamin Arnedo',
     description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
     url: 'https://benjaminarnedo.com/about',
-    images: [{ url: '/images/about/portrait.gif' }],
+    images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'About — Benjamin Arnedo',
     description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
-    images: ['/images/about/portrait.gif'],
+    images: ['/social-media.jpg'],
   },
 }
 
