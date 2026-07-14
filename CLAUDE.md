@@ -451,14 +451,33 @@ First deck: **PlaceWorks** (`/presentations/placeworks`).
 - **Assets:** deck images/models go in `public/presentations/<client>/`
   (slider proofs, wordmark SVGs, GLB models).
 
+### Tus CFO deck (`/presentations/tuscfo`) — the reference implementation
+
+Second deck (July 2026, es-AR voseo): 4 concepts, each with a live logo editor
++ pattern/system generator, sharing a reusable editor infrastructure in
+`tuscfo/_components/`: `EditorShell` (stage + dock workspace), `ui` controls,
+`palettes` (client palettes + shade/remap/contrast engine), `exportUtils`
+(SVG/PNG Full HD), `rand` (seeded, hydration-safe), `tiles` (quadtree grids),
+`LogoMockups` (4 live mockups under every logo editor), `patternPreview`
+(generator → mockups blob-URL bridge) and `paletteSync` (one palette per page).
+Highlights: 3D coin (three.js, transparent PNG export), animated glyph
+patterns, pixel-lettering generator with draw mode/heatmaps/Excel selection,
+multi-stage Sankey flow generator.
+
 ### Adding a new presentation
 
-1. Create `src/app/presentations/<client>/layout.tsx` (copy PlaceWorks: noindex
-   + `.pw-pitch` wrapper + import its CSS) and `page.tsx`.
-2. Put deck-only styles in a co-located `presentations.css`; put assets in
+**Full replication guide: [`docs/deck-playbook.md`](docs/deck-playbook.md)** —
+skeleton, shared-component APIs, editor conventions (seed model, contrast
+guards, invert/sorprendeme/export), known gotchas, and the new-client
+checklist. Short version:
+
+1. Create `src/app/presentations/<client>/layout.tsx` (noindex + pitch wrapper
+   + own CSS) and `page.tsx`; copy from **tuscfo**, not placeworks.
+2. Swap the `PALETTES` array; reuse the shared editor infrastructure.
+3. Put deck-only styles in a co-located `presentations.css`; put assets in
    `public/presentations/<client>/`.
-3. Keep it `noindex` — these are private client links, not public pages.
-4. Push to `main` — Vercel deploys automatically.
+4. Keep it `noindex` — these are private client links, not public pages.
+5. Push to `main` — Vercel deploys automatically.
 
 ### Brand Asset Tool — Electron app (`placeworks-tool-electron/`)
 
