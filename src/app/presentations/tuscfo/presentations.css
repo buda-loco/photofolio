@@ -1,0 +1,669 @@
+/* ──────────────────────────────────────────────────────────
+   Tus CFO — client pitch (/presentations/tuscfo)
+
+   Self-contained deck surface, tc- prefixed. benjaminarnedo
+   site scheme — black / white / yellow, same as the
+   PlaceWorks deck — so the brand work carries all the colour.
+   Uses the site typography (Adrianna family) but none of the
+   site chrome.
+
+   Site chrome (global nav menu, mini logo, footer, skip link)
+   is hidden whenever a `.tc-pitch` wrapper is present, via
+   :has() — no JS, no flash on first paint.
+   ────────────────────────────────────────────────────────── */
+
+body:has(.tc-pitch) .nav-links,
+body:has(.tc-pitch) .nav-hamburger,
+body:has(.tc-pitch) .mobile-menu,
+body:has(.tc-pitch) .nav-mini,
+body:has(.tc-pitch) .site-footer,
+body:has(.tc-pitch) .skip-nav {
+  display: none !important;
+}
+
+html:has(.tc-pitch),
+body:has(.tc-pitch) {
+  background: #000000;
+}
+
+/* ── Pitch root + scoped tokens ───────────────────────────── */
+.tc-pitch {
+  /* Site colour scheme (benjaminarnedo.com) — black / white / yellow */
+  --tc-paper: #000000;                        /* page surface */
+  --tc-paper-raised: #0b0b0b;                 /* raised surface — cards, tool stage */
+  --tc-ink: #ffffff;                          /* primary text */
+  --tc-ink-soft: rgba(255, 255, 255, 0.66);   /* secondary body */
+  --tc-stone: #767676;                        /* muted text */
+  --tc-hair: rgba(255, 255, 255, 0.1);        /* hairlines, borders */
+  --tc-accent: #f4ff26;                       /* yellow accent / labels */
+  --tc-petrol: #00545f;                       /* brand petróleo (artwork only) */
+
+  --tc-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --tc-margin: clamp(1.5rem, 6vw, 7rem);
+
+  min-height: 100vh;
+  /* clear the fixed site header */
+  padding-top: var(--nav-height);
+  background: var(--tc-paper);
+  color: var(--tc-ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tc-pitch ::selection {
+  background: var(--tc-accent);
+  color: var(--tc-paper);
+}
+
+/* ── Shared page furniture ────────────────────────────────── */
+.tc-credit {
+  font-family: var(--tc-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--tc-stone);
+}
+
+.tc-eyebrow {
+  font-family: var(--tc-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tc-accent);
+}
+
+.tc-foot {
+  padding: var(--tc-margin);
+  border-top: 1px solid var(--tc-hair);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.tc-foot a { border-bottom: 1px solid var(--tc-hair); padding-bottom: 1px; }
+.tc-foot a:hover { border-color: var(--tc-ink); }
+
+/* ════════════════════════════════════════════════════════════
+   LANDING — /presentations/tuscfo
+   ════════════════════════════════════════════════════════════ */
+
+.tc-hero {
+  padding: calc(var(--tc-margin) * 1.4) var(--tc-margin) var(--tc-margin);
+}
+
+.tc-hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 10vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.tc-hero-title em {
+  font-style: normal;
+  color: var(--tc-accent);
+}
+
+.tc-hero-sub {
+  font-family: var(--tc-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tc-stone);
+  margin-top: 1.5rem;
+}
+
+.tc-hero-intro {
+  max-width: 52ch;
+  margin-top: 2.5rem;
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: var(--tc-ink-soft);
+}
+
+.tc-brief {
+  padding: var(--tc-margin);
+  border-top: 1px solid var(--tc-hair);
+  max-width: 72ch;
+  color: var(--tc-ink-soft);
+}
+
+.tc-brief strong { color: var(--tc-ink); font-weight: 600; }
+
+.tc-why {
+  padding: var(--tc-margin);
+  border-top: 1px solid var(--tc-hair);
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .tc-why {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: 4rem;
+  }
+}
+
+.tc-why-body {
+  max-width: 62ch;
+  color: var(--tc-ink-soft);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.tc-why-body em { font-style: normal; color: var(--tc-accent); }
+
+/* ── Concept cards ────────────────────────────────────────── */
+.tc-cards {
+  border-top: 1px solid var(--tc-hair);
+  display: grid;
+}
+
+@media (min-width: 900px) {
+  .tc-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+.tc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: calc(var(--tc-margin) * 0.75) var(--tc-margin);
+  border-bottom: 1px solid var(--tc-hair);
+  transition: background 0.25s ease;
+}
+
+@media (min-width: 900px) {
+  .tc-card {
+    border-bottom: none;
+    border-right: 1px solid var(--tc-hair);
+    padding: calc(var(--tc-margin) * 0.75) 2.5rem;
+    min-height: 24rem;
+  }
+  /* 2×2 hairlines: no right border at the end of each row,
+     bottom border only under the first row */
+  .tc-card:nth-child(2n) { border-right: none; }
+  .tc-card:nth-child(-n + 2) { border-bottom: 1px solid var(--tc-hair); }
+}
+
+.tc-card:hover { background: var(--tc-paper-raised); }
+
+.tc-card-num {
+  font-family: var(--tc-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--tc-accent);
+}
+
+.tc-card-mark {
+  height: 5.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.tc-card-mark img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  /* concept SVGs are black-on-transparent — invert onto petróleo paper */
+  filter: invert(1) brightness(0.93);
+}
+
+.tc-card-tagline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.tc-card-desc {
+  color: var(--tc-ink-soft);
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.tc-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--tc-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tc-ink);
+}
+
+.tc-card-arrow { transition: transform 0.25s ease; }
+.tc-card:hover .tc-card-arrow { transform: translateX(5px); color: var(--tc-accent); }
+
+/* ════════════════════════════════════════════════════════════
+   CONCEPT PAGES — /presentations/tuscfo/01|02|03
+   ════════════════════════════════════════════════════════════ */
+
+.tc-concept-head {
+  padding: calc(var(--tc-margin) * 0.9) var(--tc-margin);
+}
+
+.tc-concept-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  margin: 1rem 0 0;
+}
+
+.tc-concept-tagline {
+  max-width: 52ch;
+  margin-top: 1.6rem;
+  font-size: 1.1rem;
+  color: var(--tc-ink-soft);
+}
+
+.tc-rationale {
+  padding: var(--tc-margin);
+  border-top: 1px solid var(--tc-hair);
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .tc-rationale {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: 4rem;
+  }
+}
+
+.tc-rationale-body {
+  max-width: 64ch;
+  color: var(--tc-ink-soft);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.tc-rationale-body strong { color: var(--tc-ink); font-weight: 600; }
+
+/* Full-bleed brandmark strip */
+.tc-brandmark {
+  border-top: 1px solid var(--tc-hair);
+  background: var(--tc-paper-raised);
+  padding: calc(var(--tc-margin) * 0.9) var(--tc-margin);
+  display: flex;
+  justify-content: center;
+}
+
+.tc-brandmark img {
+  width: min(100%, 40rem);
+  height: auto;
+  filter: invert(1) brightness(0.93);
+}
+
+/* ════════════════════════════════════════════════════════════
+   EDITOR WORKSPACE — shared by all six generators
+   Canvas clean on the left, tools docked on the right.
+   ════════════════════════════════════════════════════════════ */
+
+.tc-tool-section {
+  border-top: 1px solid var(--tc-hair);
+  padding: calc(var(--tc-margin) * 0.75) var(--tc-margin);
+}
+
+.tc-tool-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem 2.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.tc-tool-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.tc-tool-hint {
+  font-size: 0.9rem;
+  color: var(--tc-stone);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* Workspace = stage + dock */
+.tc-workspace {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  border: 1px solid var(--tc-hair);
+  background: var(--tc-paper-raised);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (min-width: 1000px) {
+  .tc-workspace {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    /* Pin the single row to the workspace height — without this the
+       implicit row grows to the dock's content height and the overflow:
+       hidden simply cuts the bottom controls off instead of letting the
+       dock scroll. */
+    grid-template-rows: 100%;
+    gap: 0;
+    height: min(46rem, 82vh);
+  }
+}
+
+/* Stage — the distraction-free canvas area */
+.tc-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  min-height: 20rem;
+  overflow: hidden;
+  position: relative;
+  /* subtle checker so canvas bounds & transparency read clearly */
+  background:
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.045), transparent 75%),
+    var(--tc-paper);
+}
+
+.tc-stage svg,
+.tc-stage canvas {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* The framed artwork — always shows the exact export frame */
+.tc-canvas-frame {
+  box-shadow: 0 0 0 1px var(--tc-hair), 0 18px 50px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s ease;
+  line-height: 0;
+}
+
+/* Dock — right-hand tool column */
+.tc-dock {
+  border-top: 1px solid var(--tc-hair);
+  background: var(--tc-paper-raised);
+  padding: 1.1rem 1.2rem 1.4rem;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 1000px) {
+  .tc-dock {
+    border-top: none;
+    border-left: 1px solid var(--tc-hair);
+  }
+}
+
+/* Always-visible scrollbar so it's obvious there are more tools below —
+   macOS overlay scrollbars hide themselves and the dock looked "cut". */
+.tc-dock {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.tc-dock::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tc-dock::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tc-dock::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.tc-dock::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.tc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-bottom: 1.05rem;
+  border-bottom: 1px solid var(--tc-hair);
+}
+
+.tc-panel:last-child { border-bottom: none; padding-bottom: 0; }
+
+.tc-panel-label {
+  font-family: var(--tc-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tc-stone);
+}
+
+/* ── Controls ─────────────────────────────────────────────── */
+
+/* Buttons */
+.tc-btn {
+  appearance: none;
+  border: 1px solid var(--tc-hair);
+  background: transparent;
+  color: var(--tc-ink);
+  font-family: var(--tc-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.tc-btn:hover { border-color: var(--tc-ink-soft); }
+
+.tc-btn:disabled { opacity: 0.4; cursor: default; }
+
+.tc-btn--primary {
+  background: var(--tc-accent);
+  border-color: var(--tc-accent);
+  color: #000000;
+  font-weight: 600;
+}
+
+.tc-btn--primary:hover { background: #f8ff5c; border-color: #f8ff5c; }
+
+.tc-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Segmented control */
+.tc-seg {
+  display: flex;
+  border: 1px solid var(--tc-hair);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.tc-seg button {
+  appearance: none;
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--tc-stone);
+  font-family: var(--tc-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.4rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tc-seg button + button { border-left: 1px solid var(--tc-hair); }
+
+.tc-seg button[aria-pressed='true'] {
+  background: var(--tc-ink);
+  color: var(--tc-paper);
+}
+
+/* Sliders */
+.tc-slider-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.tc-slider-value {
+  font-family: var(--tc-mono);
+  font-size: 0.66rem;
+  color: var(--tc-stone);
+  min-width: 2.6rem;
+  text-align: right;
+}
+
+.tc-pitch input[type='range'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tc-hair);
+  outline: none;
+  cursor: pointer;
+}
+
+.tc-pitch input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--tc-ink);
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.tc-pitch input[type='range']::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--tc-ink);
+  border: none;
+}
+
+.tc-pitch input[type='range']:hover::-webkit-slider-thumb { background: var(--tc-accent); }
+
+/* Colour swatches */
+.tc-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tc-swatch {
+  appearance: none;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tc-swatch:hover { transform: scale(1.12); }
+
+.tc-swatch[aria-pressed='true'] {
+  box-shadow: 0 0 0 2px var(--tc-paper-raised), 0 0 0 4px var(--tc-accent);
+}
+
+.tc-swatch--sm { width: 1.15rem; height: 1.15rem; border-radius: 3px; }
+
+/* Checkbox / toggle row */
+.tc-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  color: var(--tc-ink-soft);
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+.tc-check input {
+  accent-color: var(--tc-accent);
+  width: 0.95rem;
+  height: 0.95rem;
+  cursor: pointer;
+}
+
+/* Number/text field */
+.tc-field {
+  appearance: none;
+  width: 100%;
+  border: 1px solid var(--tc-hair);
+  background: var(--tc-paper);
+  color: var(--tc-ink);
+  font-family: var(--tc-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.65rem;
+  border-radius: 5px;
+  outline: none;
+}
+
+.tc-field:focus { border-color: var(--tc-accent); }
+
+/* ── Logo mockups strip (below each logo editor) ──────────── */
+.tc-mockups {
+  margin-top: 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .tc-mockups { grid-template-columns: repeat(4, 1fr); }
+}
+
+.tc-mockup-tile {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tc-mockup-tile svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--tc-paper-raised);
+  border: 1px solid var(--tc-hair);
+  border-radius: 8px;
+}
+
+.tc-mockup-label {
+  font-family: var(--tc-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tc-stone);
+}
+
+/* ── Mobile ───────────────────────────────────────────────── */
+@media (max-width: 999px) {
+  .tc-workspace { min-height: 0; }
+  .tc-stage { min-height: 16rem; padding: 1rem; }
+}
