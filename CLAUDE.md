@@ -405,7 +405,13 @@ steps: disciplines → scope → project conditions → details → **quote docu
   (25%) and `supermatesrates` (45%). Matched case-insensitively and trimmed; an
   unrecognised code says so and charges nothing. The field sits at the end of
   the quote step, right above the document whose total it changes, and the
-  discount appears as its own line on the quote.
+  discount appears as its own line on the quote. It sits **last on the Project
+  step**, below Delivery — at the end of the flow nobody found it.
+  - The field is a warm invitation ("Do we know each other?" / "¿Nos
+    conocemos?") rather than a form label. ⚠️ **Never put a working code in the
+    placeholder** — it read "e.g. matesrates…" and was handing one out.
+  - The hard-cost caveat only appears once a code lands, so the idle state stays
+    an invitation instead of a wall of terms.
   - ⚠️ **The discount base excludes hard costs** — `itemFees` (gear and studio
     hire) and `travelExpenses`. Knocking 45% off a studio hire or a flight isn't
     a discount, it's paying out of pocket. It applies to labour, priority,

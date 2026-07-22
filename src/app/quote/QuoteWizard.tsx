@@ -860,6 +860,34 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   <p className="qw-param-help">{T.delivery.startHelp(PRICING.schedule.leadDays)}</p>
                   <p className="qw-delivery-note">{T.delivery.note}</p>
                 </div>
+
+                {/* Discount code — last on the step, next to the other levers
+                    that move the price, with the rail updating as you type. */}
+                <div className="qw-promo">
+                  <label className="qw-field">
+                    <span>{T.quote.promoLabel}</span>
+                    <input
+                      className="qw-input qw-promo-input"
+                      name="promo"
+                      value={options.promoCode}
+                      onChange={(e) => setOptions({ ...options, promoCode: e.target.value })}
+                      placeholder={T.quote.promoPlaceholder}
+                      autoComplete="off"
+                      spellCheck={false}
+                      autoCapitalize="none"
+                      aria-invalid={totals.promoInvalid || undefined}
+                      aria-describedby="qw-promo-status"
+                    />
+                  </label>
+                  <p className="qw-promo-status" id="qw-promo-status" role="status" data-state={totals.promo ? 'ok' : totals.promoInvalid ? 'bad' : 'idle'}>
+                    {totals.promo
+                      ? `✓ ${T.quote.promoApplied(totals.promo.label, Math.round(totals.promo.percent * 100))} — −${money(totals.discountAmount)}`
+                      : totals.promoInvalid
+                        ? T.quote.promoInvalid
+                        : T.quote.promoHelp}
+                  </p>
+                  {totals.promo && <p className="qw-promo-scope">{T.quote.promoScope}</p>}
+                </div>
               </div>
             )}
 
@@ -950,33 +978,6 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                       {T.quote.whatsapp}
                     </a>
                   </div>
-                </div>
-
-                {/* Discount code — last thing before the document, so the
-                    total it changes is right underneath. */}
-                <div className="qw-promo">
-                  <label className="qw-field">
-                    <span>{T.quote.promoLabel}</span>
-                    <input
-                      className="qw-input qw-promo-input"
-                      name="promo"
-                      value={options.promoCode}
-                      onChange={(e) => setOptions({ ...options, promoCode: e.target.value })}
-                      placeholder={T.quote.promoPlaceholder}
-                      autoComplete="off"
-                      spellCheck={false}
-                      autoCapitalize="none"
-                      aria-invalid={totals.promoInvalid || undefined}
-                      aria-describedby="qw-promo-status"
-                    />
-                  </label>
-                  <p className="qw-promo-status" id="qw-promo-status" role="status" data-state={totals.promo ? 'ok' : totals.promoInvalid ? 'bad' : 'idle'}>
-                    {totals.promo
-                      ? `✓ ${T.quote.promoApplied(totals.promo.label, Math.round(totals.promo.percent * 100))} — −${money(totals.discountAmount)}`
-                      : totals.promoInvalid
-                        ? T.quote.promoInvalid
-                        : T.quote.promoHelp}
-                  </p>
                 </div>
 
                 <div className="qw-doc-frame">

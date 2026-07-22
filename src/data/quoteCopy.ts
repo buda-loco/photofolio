@@ -123,6 +123,8 @@ export interface QuoteCopy {
     promoApplied: (label: string, percent: number) => string;
     promoInvalid: string;
     promoHelp: string;
+    /** The hard-cost caveat — only shown once a code actually lands. */
+    promoScope: string;
     sendError: (msg: string) => string;
     emailDirectly: string;
     needDetails: string;
@@ -331,11 +333,13 @@ export const EN_COPY: QuoteCopy = {
     whatsappMessage: (number, total, currency) =>
       `Hi Benjamin — I built quote ${number} on your site (${total} ${currency}). Can we talk it through?`,
     copyPrompt: 'Copy your quote link:',
-    promoLabel: 'Discount code',
-    promoPlaceholder: 'e.g. matesrates…',
-    promoApplied: (label, percent) => `${label} applied — ${percent}% off`,
-    promoInvalid: 'That code isn’t recognised.',
-    promoHelp: 'Applies to my time. Equipment hire and travel expenses are billed at cost either way.',
+    promoLabel: 'Do we know each other?',
+    // Never an example that works — the placeholder was handing out a live code.
+    promoPlaceholder: 'Try a code…',
+    promoApplied: (label, percent) => `${label} — ${percent}% off, because you asked nicely`,
+    promoInvalid: 'Not one of mine. Worth double-checking the spelling.',
+    promoHelp: 'Mates, regulars and anyone I’ve shared a beer with tend to know the words. If that’s you, they go here.',
+    promoScope: 'Comes off my time. Equipment hire and travel are still billed at cost — even for you.',
     sendError: (msg) => `Couldn’t send (${msg}).`,
     emailDirectly: 'Email it to me directly →',
     needDetails: 'Add your name and email to send this →',
