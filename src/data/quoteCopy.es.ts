@@ -541,6 +541,24 @@ export const ES_COPY: QuoteCopy = {
     sub: 'Elegí todo lo que aplique — los detalles los configurás en el paso siguiente.',
   },
 
+  presets: {
+    label: '¿Qué tan completo?',
+    help: 'Configura todos los ítems de una, y también los que agregues después. Podés ajustar cada ítem más abajo.',
+    custom: 'Personalizado — ajustaste ítems por separado.',
+    minimum: {
+      label: 'Lo mínimo',
+      desc: 'La versión más acotada que igual resuelve. Menos de todo, las opciones más simples, sin extras.',
+    },
+    recommended: {
+      label: 'Recomendado',
+      desc: 'Lo que realmente propondría para un trabajo así.',
+    },
+    complete: {
+      label: 'Completo',
+      desc: 'La versión más completa — más de todo, las mejores opciones y todos los extras incluidos.',
+    },
+  },
+
   scope: {
     title: 'Armá el alcance',
     sub: 'Seleccioná un ítem y después ajustá su detalle. Cada número de acá abajo impacta directo en el precio.',

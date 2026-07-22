@@ -419,6 +419,25 @@ steps: disciplines → scope → project conditions → details → **quote docu
     date and the caveat. Don't scatter it.
   - ⚠️ The estimate is **an indication, not a commitment**, and says so in the
     UI and on the document. Keep that wording.
+- **Scope presets — bare minimum / recommended / complete.** One control at the
+  top of the Scope step sets every selected item at once, and anything added
+  afterwards adopts the active preset (`options.preset`, so it rides share
+  links). The rule is generic, which is what makes it work for every job:
+  quantities step to ×0.5 / ×1 / ×1.5 of their default (deliberately *not* the
+  param's own min/max — a "complete" 300-page editorial is absurd), choices take
+  the leanest or richest option, and toggles are all-off or all-on. "Complete"
+  also adds a revision round and the working files.
+  - Choices are ranked by a computed cost weight, not by authoring order, so
+    reordering options in the catalogue can't silently change what a preset does.
+  - ⚠️ Params marked **`descriptive: true`** are skipped — they describe the
+    client's own situation, not a level of service ("how much footage do you
+    have", "whose design is it"). A preset must not claim you have five hours of
+    rushes. Mark new params accordingly.
+  - The active button is **recomputed from the selection**, not trusted from
+    state, so fine-tuning one item honestly clears the highlight and shows
+    "Custom" rather than leaving a button asserting something untrue.
+  - Matching ignores the hours dial: dialling time down is a budget decision and
+    doesn't stop a scope being "complete".
 - **Hours dial — buying less than recommended.** The params compute what the
   scope *needs* (`recommendedHours`); the client can then buy a share of it,
   stored per item under the reserved `HOURS_FACTOR_KEY` (`__hoursFactor`) in the

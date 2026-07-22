@@ -34,6 +34,15 @@ export interface QuoteCopy {
 
   work: { title: string; sub: string };
 
+  presets: {
+    label: string;
+    help: string;
+    custom: string;
+    minimum: { label: string; desc: string };
+    recommended: { label: string; desc: string };
+    complete: { label: string; desc: string };
+  };
+
   scope: {
     title: string;
     sub: string;
@@ -212,6 +221,24 @@ export const EN_COPY: QuoteCopy = {
   work: {
     title: 'What do you need?',
     sub: 'Pick everything that applies — you’ll configure the specifics next.',
+  },
+
+  presets: {
+    label: 'How thorough?',
+    help: 'Sets every item at once, and anything you add next. Fine-tune individual items underneath.',
+    custom: 'Custom — you’ve adjusted individual items.',
+    minimum: {
+      label: 'Bare minimum',
+      desc: 'The leanest version that still does the job. Fewer of everything, simplest options, no extras.',
+    },
+    recommended: {
+      label: 'Recommended',
+      desc: 'What I’d actually propose for a job like this.',
+    },
+    complete: {
+      label: 'Complete',
+      desc: 'The fullest version — more of everything, richest options, every extra included.',
+    },
   },
 
   scope: {

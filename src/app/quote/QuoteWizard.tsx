@@ -20,6 +20,7 @@ import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, clamp, plural,
   hoursFactorOf, HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, HOURS_FACTOR_MAX,
   earliestStart, parseISODate, toISODate,
+  presetValues, itemMatchesPreset, PRESETS, type PresetId,
   type CatalogItem, type Param, type ParamValues, type ProjectOptions, type QuoteLine, type Selection,
 } from '@/lib/quotePricing';
 
@@ -33,7 +34,15 @@ const WhatsAppIcon = () => (
 const HOURS_STEP = 0.05;
 const pct = (factor: number) => Math.round(factor * 100);
 
+/** What a preset sets beyond the per-item params. */
+const PRESET_PROJECT: Record<PresetId, Pick<ProjectOptions, 'extraRevisions' | 'sourceFiles'>> = {
+  minimum: { extraRevisions: 0, sourceFiles: false },
+  recommended: { extraRevisions: 0, sourceFiles: false },
+  complete: { extraRevisions: 1, sourceFiles: true },
+};
+
 const DEFAULT_OPTIONS: ProjectOptions = {
+  preset: 'recommended',
   priority: false,
   startDate: '',
   travel: 'local',
@@ -182,7 +191,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
         const { [item.id]: _removed, ...rest } = sel;
         return rest;
       }
-      return { ...sel, [item.id]: defaultValues(item) };
+      return { ...sel, [item.id]: presetValues(item, options.preset) };
     });
     // Opening the params on selection makes the parametrisation discoverable.
     setExpanded((e) => {
@@ -195,6 +204,37 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
 
   const setParam = (itemId: string, paramId: string, value: number | string | boolean) =>
     setSelection((sel) => (sel[itemId] ? { ...sel, [itemId]: { ...sel[itemId], [paramId]: value } } : sel));
+
+  const applyPreset = (preset: PresetId) => {
+    setOptions((o) => ({ ...o, preset, ...PRESET_PROJECT[preset] }));
+    setSelection((sel) =>
+      Object.fromEntries(
+        Object.entries(sel).map(([id, values]) => {
+          const entry = ALL_ITEMS[id];
+          if (!entry) return [id, values];
+          const next = presetValues(entry.item, preset);
+          const factor = values[HOURS_FACTOR_KEY];
+          return [id, factor === undefined ? next : { ...next, [HOURS_FACTOR_KEY]: factor }];
+        }),
+      ),
+    );
+  };
+
+  /**
+   * Which preset the current scope actually sits on. Recomputed rather than
+   * trusted from state, so fine-tuning one item honestly clears the highlight
+   * instead of leaving a button claiming something that's no longer true.
+   */
+  const activePreset: PresetId | null = useMemo(() => {
+    const entries = Object.entries(selection);
+    if (!entries.length) return options.preset;
+    return PRESETS.find((preset) =>
+      entries.every(([id, values]) => {
+        const entry = ALL_ITEMS[id];
+        return !entry || itemMatchesPreset(entry.item, values, preset);
+      }),
+    ) ?? null;
+  }, [selection, ALL_ITEMS, options.preset]);
 
   /**
    * The global hours dial. Flattens every selected item to the same share of
@@ -471,6 +511,29 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
               <div className="qw-step">
                 <h2 className="display-md">{T.scope.title}</h2>
                 <p className="quote-section-sub">{T.scope.sub}</p>
+
+                {/* One control for the whole quote — sets every item at once,
+                    and anything added afterwards adopts it too. */}
+                <div className="qw-presets">
+                  <span className="qw-param-label">{T.presets.label}</span>
+                  <div className="qw-choice-row">
+                    {PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        className="qw-choice"
+                        data-active={activePreset === preset}
+                        onClick={() => applyPreset(preset)}
+                      >
+                        <span className="qw-choice-label">{T.presets[preset].label}</span>
+                        <span className="qw-choice-desc">{T.presets[preset].desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <span className="qw-param-help">
+                    {activePreset === null ? T.presets.custom : T.presets.help}
+                  </span>
+                </div>
                 {visibleDisciplines.map((d) => (
                   <div key={d.id} className="quote-phase">
                     <span className="label quote-subhead">{d.label}</span>

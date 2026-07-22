@@ -375,7 +375,7 @@ export const DISCIPLINES: Discipline[] = [
         params: [
           qty('minutes', 'Finished runtime', 'minute', { min: 1, max: 60, default: 3, hoursPer: 5 }),
           {
-            kind: 'choice', id: 'rushes', label: 'How much footage?', default: 'medium',
+            kind: 'choice', id: 'rushes', label: 'How much footage?', default: 'medium', descriptive: true,
             help: 'Sorting and reviewing rushes is often the longest part of an edit.',
             options: [
               { id: 'light', label: 'Under an hour', hoursMult: 0.8 },
@@ -439,7 +439,7 @@ export const DISCIPLINES: Discipline[] = [
         params: [
           qty('seconds', 'Finished animation', 'second', { min: 5, max: 600, default: 30, hoursPer: 0.35 }),
           {
-            kind: 'choice', id: 'source', label: 'Whose design?', default: 'supplied',
+            kind: 'choice', id: 'source', label: 'Whose design?', default: 'supplied', descriptive: true,
             help: 'Animating a finished design is faster than designing the frames first.',
             options: [
               { id: 'supplied', label: 'You supply the design', desc: 'Layered, production-ready artwork.', hoursMult: 1 },

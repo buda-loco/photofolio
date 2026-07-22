@@ -1670,3 +1670,18 @@ input[type='date'].qw-input {
 @media print {
   .qd-delivery { break-inside: avoid; }
 }
+
+/* ═══════════════════════════════════════════
+   PRESETS — one control for the whole scope
+   ═══════════════════════════════════════════ */
+
+.qw-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-surface));
+}

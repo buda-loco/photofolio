@@ -13,8 +13,18 @@
 
 export type RateId = 'shoot' | 'post' | 'design' | 'build' | 'motion';
 
+/**
+ * Marks a param that describes the client's own situation rather than how
+ * thorough the work is — how much footage they already have, whose artwork it
+ * is. Presets leave these alone: "complete" shouldn't claim you have five hours
+ * of rushes when you don't.
+ */
+export interface DescriptiveParam {
+  descriptive?: boolean;
+}
+
 /** A numeric stepper — "how many shoot hours", "how many edited images". */
-export interface QtyParam {
+export interface QtyParam extends DescriptiveParam {
   kind: 'qty';
   id: string;
   label: string;
@@ -38,7 +48,7 @@ export interface ChoiceOption {
 }
 
 /** A one-of selector — crew size, retouch level, edit complexity. */
-export interface ChoiceParam {
+export interface ChoiceParam extends DescriptiveParam {
   kind: 'choice';
   id: string;
   label: string;
@@ -48,7 +58,7 @@ export interface ChoiceParam {
 }
 
 /** An on/off add-on — lighting package, drone, motion titles. */
-export interface ToggleParam {
+export interface ToggleParam extends DescriptiveParam {
   kind: 'toggle';
   id: string;
   label: string;
@@ -105,6 +115,8 @@ export type ParamValues = Record<string, number | string | boolean>;
 export type Selection = Record<string, ParamValues>;
 
 export interface ProjectOptions {
+  /** Which scope tier newly-added items adopt. */
+  preset: PresetId;
   /**
    * Sole focus of the day rather than one of several jobs in progress. Costs
    * more and finishes sooner — the only speed lever there is, deliberately, so
@@ -139,9 +151,66 @@ export const paramDefault = (p: Param): number | string | boolean => {
   return p.default ?? false;
 };
 
+/* ─────────────────────────── Presets ─────────────────────────── */
+
+export type PresetId = 'minimum' | 'recommended' | 'complete';
+
+export const PRESETS: PresetId[] = ['minimum', 'recommended', 'complete'];
+
+/**
+ * How far a preset moves a quantity from its recommended value. Deliberately a
+ * step either side rather than the param's own min/max — "complete" on a
+ * 300-page editorial ceiling would be absurd, and a 1-image shoot isn't a job.
+ */
+const QTY_FACTOR: Record<PresetId, number> = {
+  minimum: 0.5,
+  recommended: 1,
+  complete: 1.5,
+};
+
+/**
+ * Rough cost of a choice, used to find the leanest and richest option without
+ * relying on the order they happen to be authored in.
+ */
+const optionWeight = (o: ChoiceOption): number =>
+  num(o.hoursMult, 1) * 1000 + num(o.hoursAdd) * 10 + num(o.feeAdd) / 100;
+
+/** One param's value under a preset. */
+export const presetParamValue = (p: Param, preset: PresetId): number | string | boolean => {
+  if (preset === 'recommended' || p.descriptive) return paramDefault(p);
+
+  if (p.kind === 'qty') {
+    const scaled = num(p.default, p.min) * QTY_FACTOR[preset];
+    const snapped = p.step > 0 ? Math.round(scaled / p.step) * p.step : Math.round(scaled);
+    return clamp(snapped, p.min, p.max);
+  }
+
+  if (p.kind === 'choice') {
+    if (!p.options.length) return paramDefault(p);
+    const sorted = [...p.options].sort((a, b) => optionWeight(a) - optionWeight(b));
+    return (preset === 'minimum' ? sorted[0] : sorted[sorted.length - 1]).id;
+  }
+
+  // Optional extras: stripped out at minimum, all in at complete.
+  return preset === 'complete';
+};
+
+/** Every param set to the given preset. */
+export const presetValues = (item: CatalogItem, preset: PresetId): ParamValues =>
+  Object.fromEntries((item.params ?? []).map((p) => [p.id, presetParamValue(p, preset)]));
+
 /** Every param at its default — the state an item enters the quote with. */
-export const defaultValues = (item: CatalogItem): ParamValues =>
-  Object.fromEntries((item.params ?? []).map((p) => [p.id, paramDefault(p)]));
+export const defaultValues = (item: CatalogItem): ParamValues => presetValues(item, 'recommended');
+
+/**
+ * Whether an item currently sits exactly on a preset. The hours dial is a
+ * separate budget lever, so it's ignored — dialling time down doesn't stop a
+ * scope being "complete".
+ */
+export const itemMatchesPreset = (item: CatalogItem, values: ParamValues, preset: PresetId): boolean => {
+  const target = presetValues(item, preset);
+  return Object.entries(target).every(([id, v]) => values?.[id] === v);
+};
 
 /* ─────────────────────── Per-item pricing ─────────────────────── */
 

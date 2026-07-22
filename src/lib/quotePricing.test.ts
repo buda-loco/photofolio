@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, num, clamp,
   HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, earliestStart, parseISODate, toISODate,
+  presetValues, itemMatchesPreset, PRESETS,
   type CatalogItem, type Discipline, type PricingConfig, type ProjectOptions, type QuoteLine,
 } from './quotePricing';
 
@@ -28,7 +29,7 @@ const cfg: PricingConfig = {
 };
 
 const opts = (over: Partial<ProjectOptions> = {}): ProjectOptions => ({
-  priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, ...over,
+  preset: 'recommended', priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, ...over,
 });
 
 const disc: Discipline = { id: 'd', label: 'D', blurb: '', items: [] };
@@ -343,6 +344,110 @@ describe('buying fewer hours', () => {
   it('rides share links without extra plumbing', () => {
     const sel = { 'ph-shoot': { hours: 6, [HOURS_FACTOR_KEY]: 0.7 } };
     expect(decodeState(encodeState(sel, opts()))?.s).toEqual(sel);
+  });
+});
+
+describe('presets', () => {
+  const item: CatalogItem = {
+    id: 'p', name: 'P', rate: 'design', baseHours: 10,
+    params: [
+      { kind: 'qty', id: 'pages', label: 'Pages', unit: 'page', min: 4, max: 300, step: 1, default: 24, hoursPer: 0.6 },
+      { kind: 'choice', id: 'scope', label: 'Scope', default: 'full', options: [
+        { id: 'template', label: 'Template', hoursMult: 0.45 },
+        { id: 'full', label: 'Full', hoursMult: 1 },
+        { id: 'art', label: 'Art directed', hoursMult: 1.35 },
+      ] },
+      { kind: 'toggle', id: 'extra', label: 'Extra', hoursAdd: 4 },
+    ],
+  };
+
+  it('recommended is exactly the authored defaults', () => {
+    expect(presetValues(item, 'recommended')).toEqual(defaultValues(item));
+    expect(presetValues(item, 'recommended')).toEqual({ pages: 24, scope: 'full', extra: false });
+  });
+
+  it('minimum takes the leanest of everything', () => {
+    expect(presetValues(item, 'minimum')).toEqual({ pages: 12, scope: 'template', extra: false });
+  });
+
+  it('complete takes the richest of everything', () => {
+    expect(presetValues(item, 'complete')).toEqual({ pages: 36, scope: 'art', extra: true });
+  });
+
+  it('steps either side of the default rather than to the param bounds', () => {
+    // A "complete" 300-page editorial or a "minimum" 4-page one would be absurd.
+    const v = presetValues(item, 'complete');
+    expect(v.pages).toBeLessThan(300);
+    expect(presetValues(item, 'minimum').pages).toBeGreaterThan(4);
+  });
+
+  it('respects the param bounds when the default sits near an edge', () => {
+    const tight: CatalogItem = {
+      id: 't', name: 'T', rate: 'design',
+      params: [{ kind: 'qty', id: 'n', label: 'N', unit: 'n', min: 2, max: 3, step: 1, default: 2, hoursPer: 1 }],
+    };
+    expect(presetValues(tight, 'minimum').n).toBe(2);
+    expect(presetValues(tight, 'complete').n).toBe(3);
+  });
+
+  it('ranks choices by cost, not by the order they were authored', () => {
+    const shuffled: CatalogItem = {
+      id: 's', name: 'S', rate: 'design',
+      params: [{ kind: 'choice', id: 'c', label: 'C', default: 'b', options: [
+        { id: 'b', label: 'B', hoursMult: 1.35 },
+        { id: 'a', label: 'A', hoursMult: 0.45 },
+        { id: 'c', label: 'C', hoursMult: 2 },
+      ] }],
+    };
+    expect(presetValues(shuffled, 'minimum').c).toBe('a');
+    expect(presetValues(shuffled, 'complete').c).toBe('c');
+  });
+
+  it('leaves descriptive params alone — a preset cannot invent the client’s footage', () => {
+    const descriptive: CatalogItem = {
+      id: 'd', name: 'D', rate: 'post',
+      params: [{ kind: 'choice', id: 'rushes', label: 'How much footage?', default: 'medium', descriptive: true, options: [
+        { id: 'light', label: 'Light', hoursMult: 0.8 },
+        { id: 'medium', label: 'Medium', hoursMult: 1 },
+        { id: 'heavy', label: 'Heavy', hoursMult: 1.5 },
+      ] }],
+    };
+    for (const preset of PRESETS) {
+      expect(presetValues(descriptive, preset).rushes).toBe('medium');
+    }
+  });
+
+  it('prices minimum below recommended below complete', () => {
+    const totals = PRESETS.map((preset) => {
+      const values = presetValues(item, preset);
+      return priceQuote([{ item, discipline: disc, values, breakdown: priceItem(item, values, rates) }], opts(), cfg).total;
+    });
+    expect(totals[0]).toBeLessThan(totals[1]);
+    expect(totals[1]).toBeLessThan(totals[2]);
+  });
+
+  it('itemMatchesPreset identifies the tier a scope sits on', () => {
+    for (const preset of PRESETS) {
+      expect(itemMatchesPreset(item, presetValues(item, preset), preset)).toBe(true);
+    }
+    expect(itemMatchesPreset(item, presetValues(item, 'minimum'), 'complete')).toBe(false);
+  });
+
+  it('ignores the hours dial when matching — that is a budget lever, not scope', () => {
+    const values = { ...presetValues(item, 'complete'), [HOURS_FACTOR_KEY]: 0.6 };
+    expect(itemMatchesPreset(item, values, 'complete')).toBe(true);
+  });
+
+  it('a hand-tweaked scope matches no preset', () => {
+    const values = { ...presetValues(item, 'recommended'), pages: 99 };
+    expect(PRESETS.some((p) => itemMatchesPreset(item, values, p))).toBe(false);
+  });
+
+  it('an item with no params matches every preset', () => {
+    const bare: CatalogItem = { id: 'b', name: 'B', rate: 'design', baseHours: 2 };
+    for (const preset of PRESETS) {
+      expect(itemMatchesPreset(bare, {}, preset)).toBe(true);
+    }
   });
 });
 
