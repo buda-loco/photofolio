@@ -11,7 +11,7 @@
 // data/quoteCatalogue.ts; everything regional arrives via the `bundle` prop.
 // This file is UI only and holds no locale-specific strings.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageTransition from '@/components/PageTransition';
 import QuoteDocument, { type QuoteMeta } from './QuoteDocument';
 import { getQuoteBundle, type QuoteRegion } from '@/data/quoteRegions';
@@ -40,6 +40,15 @@ const PRESET_PROJECT: Record<PresetId, Pick<ProjectOptions, 'extraRevisions' | '
   recommended: { extraRevisions: 0, sourceFiles: false },
   complete: { extraRevisions: 1, sourceFiles: true },
 };
+
+/**
+ * Scope and project options live in the URL so a refresh, a browser-back or a
+ * forwarded link all survive. Contact details deliberately do NOT — they don't
+ * belong in something that gets pasted into a chat — so they go to
+ * sessionStorage instead, which survives a refresh but never leaves the tab.
+ */
+const DETAILS_KEY = 'ba-quote-details';
+const LAST_STEP = 4;
 
 const DEFAULT_OPTIONS: ProjectOptions = {
   preset: 'recommended',
@@ -87,21 +96,32 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const [selection, setSelection] = useState<Selection>({});
   const [options, setOptions] = useState<ProjectOptions>(DEFAULT_OPTIONS);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [form, setForm] = useState({ name: '', email: '', company: '', timeline: '', message: '', website: '' });
+  // No "when do you need it?" — the Delivery step already asks for a start date.
+  const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [meta, setMeta] = useState<QuoteMeta | null>(null);
   const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
   const [minStartDate, setMinStartDate] = useState('');
+  /** Blocks the URL sync until the incoming ?q= has been read. */
+  const [hydrated, setHydrated] = useState(false);
+  /** Errors stay quiet until a field is left or the step is submitted. */
+  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   /* ── Restore from a share link, once, after mount ──
      Deliberately client-only: reading location during render would desync
      the server-rendered markup. */
   useEffect(() => {
+    try {
+      const saved = window.sessionStorage.getItem(DETAILS_KEY);
+      if (saved) setForm((f) => ({ ...f, ...JSON.parse(saved), website: '' }));
+    } catch { /* storage disabled or corrupt — start blank */ }
+
     const q = new URLSearchParams(window.location.search).get('q');
-    if (!q) return;
-    const decoded = decodeState(q);
-    if (!decoded) return;
+    const decoded = q ? decodeState(q) : null;
+    if (!decoded) { setHydrated(true); return; }
 
     // Items absent from this region (on-location work on the remote-only page)
     // are dropped rather than silently priced.
@@ -109,17 +129,39 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     for (const [id, values] of Object.entries(decoded.s ?? {})) {
       if (ALL_ITEMS[id]) valid[id] = values;
     }
-    if (!Object.keys(valid).length) return;
+    if (!Object.keys(valid).length) { setHydrated(true); return; }
 
     setSelection(valid);
     setSelectedDisciplines(new Set(Object.keys(valid).map((id) => ALL_ITEMS[id].discipline.id)));
     setOptions({ ...DEFAULT_OPTIONS, ...(decoded.o ?? {}) });
-    // Straight to the finished quote — a shared link exists to be read, not
-    // rebuilt. Contact details aren't encoded (they don't belong in a URL that
-    // gets forwarded), so the document falls back to a generic "Prepared for"
-    // and sending is gated until the recipient fills them in.
-    setStep(4);
+    // A link written by "Copy link" carries no step and means "read this quote".
+    // One written by the live URL sync carries the step the author was on, so a
+    // refresh lands you back where you were rather than at the end.
+    setStep(typeof decoded.p === 'number' ? clamp(Math.round(decoded.p), 0, LAST_STEP) : LAST_STEP);
+    setHydrated(true);
   }, [ALL_ITEMS]);
+
+  /* ── Keep the URL in step with the build ──
+     replaceState rather than push: every keystroke shouldn't become a history
+     entry. Debounced so dragging a slider doesn't rewrite the URL per frame. */
+  useEffect(() => {
+    if (!hydrated) return;
+    const id = window.setTimeout(() => {
+      const q = encodeState(selection, options, step);
+      const url = q ? `${window.location.pathname}?q=${q}` : window.location.pathname;
+      window.history.replaceState(window.history.state, '', url);
+    }, 300);
+    return () => window.clearTimeout(id);
+  }, [hydrated, selection, options, step]);
+
+  /* ── Contact details survive a refresh without entering the URL ── */
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      const { website: _hp, ...rest } = form;
+      window.sessionStorage.setItem(DETAILS_KEY, JSON.stringify(rest));
+    } catch { /* storage disabled — the form still works, it just won't persist */ }
+  }, [hydrated, form]);
 
   /* ── Quote identity — generated on the client so SSR stays deterministic ── */
   useEffect(() => {
@@ -266,8 +308,30 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
   // Step 4 is reachable directly from a share link, so this is now a real gate
   // rather than a formality — without it the API just returns a 400.
-  const detailsComplete = form.name.trim() !== '' && emailOk;
+  const nameOk = form.name.trim() !== '';
+  const detailsComplete = nameOk && emailOk;
   const canAdvance = [selectedDisciplines.size > 0, selectedCount > 0, true, detailsComplete, true][step];
+
+  /** Why Continue is greyed out. Null when it isn't. */
+  const blockedReason: string | null = canAdvance
+    ? null
+    : [T.nav.needWork, T.nav.needItems, null, T.quote.needDetails, null][step] ?? null;
+
+  /**
+   * Move to the details step and put the cursor on the first thing that's
+   * wrong, rather than leaving the user to hunt for it.
+   */
+  const focusFirstError = () => {
+    setTouched({ name: true, email: true });
+    const target = !nameOk ? nameRef.current : !emailOk ? emailRef.current : null;
+    target?.focus();
+  };
+
+  const submitDetails = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (detailsComplete) setStep(LAST_STEP);
+    else focusFirstError();
+  };
 
   const payload = () => ({
     ...form,
@@ -801,14 +865,64 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
               <div className="qw-step">
                 <h2 className="display-md">{T.details.title}</h2>
                 <p className="quote-section-sub">{T.details.sub}</p>
-                <div className="qw-form">
-                  <label className="qw-field"><span>{T.details.name}</span><input className="qw-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="name" /></label>
-                  <label className="qw-field"><span>{T.details.email}</span><input className="qw-input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} data-ok={form.email === '' || emailOk} autoComplete="email" /></label>
-                  <label className="qw-field"><span>{T.details.company}</span><input className="qw-input" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} autoComplete="organization" /></label>
-                  <label className="qw-field"><span>{T.details.timeline}</span><input className="qw-input" value={form.timeline} onChange={(e) => setForm({ ...form, timeline: e.target.value })} placeholder={T.details.timelinePlaceholder} /></label>
-                  <label className="qw-field qw-field-full"><span>{T.details.message}</span><textarea className="qw-input" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={T.details.messagePlaceholder} /></label>
-                  <input className="qw-hp" tabIndex={-1} autoComplete="off" aria-hidden value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-                </div>
+                {/* A real <form>, so Enter finishes the step like it does
+                    everywhere else on the web. */}
+                <form className="qw-form" onSubmit={submitDetails} noValidate>
+                  <label className="qw-field">
+                    <span>{T.details.name}</span>
+                    <input
+                      ref={nameRef}
+                      className="qw-input"
+                      name="name"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                      autoComplete="name"
+                      aria-invalid={touched.name && !nameOk ? true : undefined}
+                      aria-describedby={touched.name && !nameOk ? 'qw-err-name' : undefined}
+                    />
+                    {touched.name && !nameOk && (
+                      <span className="qw-field-error" id="qw-err-name">{T.details.nameRequired}</span>
+                    )}
+                  </label>
+
+                  <label className="qw-field">
+                    <span>{T.details.email}</span>
+                    <input
+                      ref={emailRef}
+                      className="qw-input"
+                      type="email"
+                      name="email"
+                      inputMode="email"
+                      spellCheck={false}
+                      autoCapitalize="none"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                      data-ok={!(touched.email && !emailOk)}
+                      autoComplete="email"
+                      aria-invalid={touched.email && !emailOk ? true : undefined}
+                      aria-describedby={touched.email && !emailOk ? 'qw-err-email' : undefined}
+                    />
+                    {touched.email && !emailOk && (
+                      <span className="qw-field-error" id="qw-err-email">{T.details.emailInvalid}</span>
+                    )}
+                  </label>
+
+                  <label className="qw-field">
+                    <span>{T.details.company}</span>
+                    <input className="qw-input" name="organization" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} autoComplete="organization" />
+                  </label>
+
+                  <label className="qw-field qw-field-full">
+                    <span>{T.details.message}</span>
+                    <textarea className="qw-input" name="message" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={T.details.messagePlaceholder} />
+                  </label>
+
+                  <input className="qw-hp" tabIndex={-1} autoComplete="off" aria-hidden name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+                  {/* Enter needs a submit target; the visible CTA lives in the shared nav. */}
+                  <button type="submit" className="qw-hp" tabIndex={-1} aria-hidden>{T.nav.seeQuote}</button>
+                </form>
               </div>
             )}
 
@@ -850,10 +964,22 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
             {/* Nav */}
             <div className="qw-nav">
               <button className="qw-back" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0 || status === 'sending'}>{T.nav.back}</button>
-              {step < 4 ? (
-                <button className="quote-cta" onClick={() => canAdvance && setStep((s) => s + 1)} disabled={!canAdvance} data-disabled={!canAdvance}>
-                  {step === 3 ? T.nav.seeQuote : T.nav.continue}
-                </button>
+              {step < LAST_STEP ? (
+                <div className="qw-send">
+                  {blockedReason && (
+                    <span className="qw-send-hint" role="status">{blockedReason}</span>
+                  )}
+                  {/* Stays clickable so it can explain itself instead of being a
+                      dead end; it just doesn't advance until the step is valid. */}
+                  <button
+                    className="quote-cta"
+                    onClick={() => (canAdvance ? setStep((s) => s + 1) : focusFirstError())}
+                    data-disabled={!canAdvance}
+                    aria-disabled={!canAdvance}
+                  >
+                    {step === 3 ? T.nav.seeQuote : T.nav.continue}
+                  </button>
+                </div>
               ) : (
                 <div className="qw-send">
                   {!detailsComplete && (
@@ -876,9 +1002,13 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
 
           {/* Running total */}
           {step >= 1 && step < 4 && (
-            <aside className="qw-rail" aria-live="polite">
+            <aside className="qw-rail" aria-label={T.rail.total}>
               <span className="label">{T.rail.total}</span>
-              <span className="qw-rail-total">{money(totals.total)} <small>{region.currency}</small></span>
+              {/* Only the total announces. Putting aria-live on the whole panel
+                  made every slider tick re-read each line item and the deposit. */}
+              <span className="qw-rail-total" aria-live="polite" aria-atomic="true">
+                {money(totals.total)} <small>{region.currency}</small>
+              </span>
               <span className="qw-rail-sub">
                 {T.rail.summary(selectedCount, hrs(totals.hours + totals.revisionsHours + totals.travelHours))}
               </span>

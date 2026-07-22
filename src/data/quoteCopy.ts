@@ -103,8 +103,8 @@ export interface QuoteCopy {
     name: string;
     email: string;
     company: string;
-    timeline: string;
-    timelinePlaceholder: string;
+    nameRequired: string;
+    emailInvalid: string;
     message: string;
     messagePlaceholder: string;
   };
@@ -123,7 +123,10 @@ export interface QuoteCopy {
     needDetails: string;
   };
 
-  nav: { back: string; continue: string; seeQuote: string; send: string; sending: string };
+  nav: {
+    back: string; continue: string; seeQuote: string; send: string; sending: string;
+    needWork: string; needItems: string;
+  };
 
   rail: {
     total: string;
@@ -304,8 +307,8 @@ export const EN_COPY: QuoteCopy = {
     name: 'Name *',
     email: 'Email *',
     company: 'Company',
-    timeline: 'When do you need it?',
-    timelinePlaceholder: 'e.g. mid-August',
+    nameRequired: 'I need a name to put on the quote.',
+    emailInvalid: 'Check the email — it should look like name@example.com',
     message: 'Anything I should know?',
     messagePlaceholder: 'A sentence about the project helps me sanity-check the quote.',
   },
@@ -331,6 +334,8 @@ export const EN_COPY: QuoteCopy = {
     seeQuote: 'See my quote',
     send: 'Send it to Benjamin',
     sending: 'Sending…',
+    needWork: 'Pick at least one kind of work to continue →',
+    needItems: 'Select at least one item to continue →',
   },
 
   rail: {

@@ -17,7 +17,6 @@ interface Body {
   region?: string;
   email?: string;
   company?: string;
-  timeline?: string;
   message?: string;
   quoteNumber?: string;
   validUntil?: string;
@@ -191,7 +190,7 @@ export async function POST(req: Request) {
   const internal = `
     <div style="font-family:system-ui,sans-serif;color:#111;max-width:620px">
       <h2 style="margin:0 0 4px">New quote${esc(ref)} — ${esc(name)}</h2>
-      <p style="margin:0 0 12px;color:#555">${esc(email)}${body.company ? ` · ${esc(body.company)}` : ''}${body.timeline ? ` · needs it ${esc(body.timeline)}` : ''}</p>
+      <p style="margin:0 0 12px;color:#555">${esc(email)}${body.company ? ` · ${esc(body.company)}` : ''}</p>
       ${conds}
       <p style="margin:0 0 4px;color:#555;font-size:13px">${Math.round(Number(body.hours) || 0)} hrs total${body.validUntil ? ` · valid until ${esc(body.validUntil)}` : ''}</p>
       ${body.message ? `<p style="margin:12px 0;padding:12px;background:#f5f5f5;border-radius:8px">${esc(body.message)}</p>` : ''}

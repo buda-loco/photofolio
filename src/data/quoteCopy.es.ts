@@ -622,8 +622,8 @@ export const ES_COPY: QuoteCopy = {
     name: 'Nombre *',
     email: 'Email *',
     company: 'Empresa',
-    timeline: '¿Para cuándo lo necesitás?',
-    timelinePlaceholder: 'ej. mediados de agosto',
+    nameRequired: 'Necesito un nombre para poner en el presupuesto.',
+    emailInvalid: 'Revisá el email — tiene que ser del tipo nombre@ejemplo.com',
     message: '¿Algo que deba saber?',
     messagePlaceholder: 'Una línea sobre el proyecto me ayuda a verificar que el presupuesto cierre.',
   },
@@ -649,6 +649,8 @@ export const ES_COPY: QuoteCopy = {
     seeQuote: 'Ver mi presupuesto',
     send: 'Enviárselo a Benjamin',
     sending: 'Enviando…',
+    needWork: 'Elegí al menos un tipo de trabajo para continuar →',
+    needItems: 'Seleccioná al menos un ítem para continuar →',
   },
 
   rail: {

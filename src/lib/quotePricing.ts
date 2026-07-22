@@ -587,6 +587,8 @@ export function priceQuote(
 interface ShareState {
   s: Selection;
   o: ProjectOptions;
+  /** Which step to open on. Absent in links written before this existed. */
+  p?: number;
 }
 
 /** Base64url so the string survives a URL without escaping. */
@@ -602,9 +604,11 @@ const fromB64 = (s: string) => {
     : Buffer.from(b64, 'base64').toString('utf8');
 };
 
-export function encodeState(selection: Selection, options: ProjectOptions): string {
+export function encodeState(selection: Selection, options: ProjectOptions, step?: number): string {
   try {
-    return toB64(JSON.stringify({ s: selection, o: options } satisfies ShareState));
+    const state: ShareState = { s: selection, o: options };
+    if (typeof step === 'number') state.p = step;
+    return toB64(JSON.stringify(state));
   } catch {
     return '';
   }

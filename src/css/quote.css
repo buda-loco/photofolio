@@ -494,7 +494,7 @@ textarea.qw-input { resize: vertical; }
 .qw-back:hover:not(:disabled) { color: var(--color-text); border-color: var(--color-text-muted); }
 .qw-back:disabled { opacity: 0; pointer-events: none; }
 
-.quote-cta[data-disabled='true'] { opacity: 0.4; pointer-events: none; }
+.quote-cta[data-disabled='true'] { opacity: 0.45; }
 .quote-cta:disabled { opacity: 0.5; pointer-events: none; }
 
 /* Running total rail */
@@ -1684,4 +1684,31 @@ input[type='date'].qw-input {
   border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-accent) 5%, var(--color-surface));
+}
+
+/* ═══════════════════════════════════════════
+   FORM VALIDATION & BLOCKED-STEP HINTS
+   ═══════════════════════════════════════════ */
+
+.qw-field-error {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: #ff8f7a;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* The hint sits beside Continue and reads as guidance, not as a link. */
+.qw-send-hint[role='status'] {
+  cursor: default;
+  text-decoration: none;
+  color: var(--color-text-muted);
+}
+
+/* aria-disabled rather than disabled — the button stays focusable so it can
+   explain why it isn't advancing. */
+.quote-cta[aria-disabled='true'] {
+  opacity: 0.45;
+  pointer-events: auto;
+  cursor: not-allowed;
 }

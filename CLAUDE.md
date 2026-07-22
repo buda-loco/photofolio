@@ -463,15 +463,36 @@ steps: disciplines → scope → project conditions → details → **quote docu
   out, project costs, total, 50% deposit and terms. "Save as PDF" is
   `window.print()`; the `@media print` block in `quote.css` strips all site
   chrome so the document prints as a standalone sheet. No PDF dependency.
-- **Share links:** the whole configuration is encoded into `?q=` (base64url) and
-  restored on mount, landing straight on the **finished quote** (step 4) — a
-  shared link exists to be read, not rebuilt. Malformed links are ignored rather
-  than throwing, and items absent from the region are dropped, not priced.
-  Contact details are deliberately NOT encoded (they don't belong in a URL that
-  gets forwarded), so the document shows a generic "Prepared for" and the send
-  button is gated on name + email, with a link back to the Details step.
-  ⚠️ Because step 4 is now reachable directly, that gate is load-bearing —
-  without it the API just returns a 400.
+- **State lives in the URL.** Scope and project options are encoded into `?q=`
+  (base64url) and written back with `history.replaceState` on every change,
+  debounced 300ms. A refresh, a browser-back or a forwarded link all survive.
+  - The encoded `p` field is the step. A URL written by the **live sync**
+    carries it, so a refresh lands you where you were; a URL from the
+    **"Copy link" button** omits it and therefore opens on the finished quote —
+    a shared link exists to be read, not rebuilt. Don't add `step` to the
+    `share()` call or that distinction collapses.
+  - The sync is blocked behind a `hydrated` flag until the incoming `?q=` has
+    been read, otherwise mount would overwrite the link before restoring it.
+  - Malformed links are ignored rather than throwing; items absent from the
+    region are dropped, not priced.
+- **Contact details never enter the URL** — they'd end up pasted into chats.
+  They persist in `sessionStorage` (`ba-quote-details`) instead: survives a
+  refresh, never leaves the tab, honeypot excluded. The document shows a generic
+  "Prepared for" until they're filled in, and sending is gated on name + email.
+  ⚠️ Because step 4 is reachable directly from a link, that gate is
+  load-bearing — without it the API just returns a 400.
+- **Form conventions** (from a Web Interface Guidelines pass):
+  - The details step is a real `<form onSubmit>` with a visually-hidden submit
+    button, so Enter finishes the step. Without the button, Enter does nothing
+    in a multi-input form.
+  - Continue uses `aria-disabled`, not `disabled`, and stays clickable: pressing
+    it focuses the first invalid field instead of doing nothing. A per-step hint
+    beside it says *why* it won't advance.
+  - Errors are inline, tied by `aria-describedby` + `aria-invalid`, and stay
+    quiet until a field is blurred or the step is submitted.
+  - `aria-live` sits on the **running total only**, never the whole rail —
+    on the panel it made every slider tick re-read each line item and the
+    deposit.
 - **Submission:** `/api/quote-submit` (Resend) emails the itemised quote to
   Benjamin *and* a copy to the client. The client copy failing never fails the
   request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
