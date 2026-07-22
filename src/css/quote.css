@@ -87,16 +87,33 @@
   color: var(--color-text-muted);
 }
 
-/* Range slider */
+/* ── Range slider ──
+   The control is 44px tall so it can actually be grabbed on a touchscreen; the
+   4px track people see is drawn by the track pseudo-element instead of by the
+   input's own box. Negative margins absorb the extra height so the surrounding
+   rhythm is unchanged. Styling the track this way means the thumb needs an
+   explicit margin-top in WebKit to sit centred on it. */
 .quote-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
+  height: 44px;
+  margin: calc(var(--sp-3) - 20px) 0 -20px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.quote-slider::-webkit-slider-runnable-track {
   height: 4px;
-  margin-top: var(--sp-3);
   border-radius: 999px;
   background: var(--color-surface);
-  cursor: pointer;
+}
+
+.quote-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-surface);
 }
 
 .quote-slider::-webkit-slider-thumb {
@@ -104,6 +121,7 @@
   appearance: none;
   width: 20px;
   height: 20px;
+  margin-top: -8px; /* centres a 20px thumb on the 4px track */
   border-radius: 50%;
   background: var(--color-accent);
   cursor: pointer;
@@ -121,6 +139,13 @@
   border-radius: 50%;
   background: var(--color-accent);
   cursor: pointer;
+}
+
+/* The input box is transparent, so the focus ring needs to hug the track. */
+.quote-slider:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -18px;
+  border-radius: 999px;
 }
 
 .quote-slider-scale {
@@ -266,7 +291,6 @@
 
 .quote-promo-input:focus,
 .quote-promo-input[data-ok='true'] {
-  outline: none;
   border-color: var(--color-accent);
 }
 
@@ -441,7 +465,9 @@
   transition: border-color 0.2s var(--ease-out);
 }
 
-.qw-input:focus { outline: none; border-color: var(--color-accent); }
+/* Border change on any focus; the global :focus-visible ring still applies for
+   keyboard users because we no longer set outline: none. */
+.qw-input:focus { border-color: var(--color-accent); }
 .qw-input[data-ok='false'] { border-color: #e0563f; }
 textarea.qw-input { resize: vertical; }
 
@@ -928,8 +954,9 @@ textarea.qw-input { resize: vertical; }
 }
 
 .qw-stepper button {
-  width: 2em;
-  height: 2em;
+  /* 44px — the minimum a thumb can reliably hit. */
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   border: none;
   background: transparent;
   color: var(--color-text);
@@ -944,6 +971,8 @@ textarea.qw-input { resize: vertical; }
 
 .qw-stepper-input {
   width: 3.5em;
+  /* Stretches so the divider borders run the full height of the taller group. */
+  align-self: stretch;
   padding: 0.3em 0;
   border: none;
   border-left: 1px solid var(--color-border);
@@ -960,7 +989,13 @@ textarea.qw-input { resize: vertical; }
 
 .qw-stepper-input::-webkit-outer-spin-button,
 .qw-stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* The number sits inside a bordered group, so light the group up and keep a
+   real ring on the input for keyboard users. Previously this was `outline:
+   none` with nothing in its place — focus was simply invisible. */
+.qw-stepper:focus-within { border-color: var(--color-accent); }
 .qw-stepper-input:focus { outline: none; }
+.qw-stepper-input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
 
 /* Choice buttons */
 .qw-choice-row {
@@ -1711,4 +1746,36 @@ input[type='date'].qw-input {
   opacity: 0.45;
   pointer-events: auto;
   cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════
+   TOUCH
+   ═══════════════════════════════════════════ */
+
+/* Kills the ~300ms wait iOS holds every tap for in case it's a double-tap
+   zoom. The builder is almost entirely taps, so the delay is felt everywhere. */
+.quote-page button,
+.quote-page a,
+.quote-page label,
+.quote-page input,
+.quote-page select,
+.quote-page summary {
+  touch-action: manipulation;
+}
+
+/* Comfortable targets on touch without bulking up the desktop layout.
+   .qw-item-toggle matters most — it's how every item gets selected, and its
+   height is driven by its text, so a one-line item was only ~21px tall. */
+@media (pointer: coarse) {
+  .qw-item-toggle,
+  .qw-item-expand,
+  .qw-ghost-btn,
+  .qw-send-hint,
+  .qw-progress-step,
+  .qw-back,
+  .quote-cta {
+    min-height: 2.75rem;
+  }
+
+  .qw-item-toggle { align-items: center; }
 }

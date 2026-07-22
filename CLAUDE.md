@@ -493,6 +493,20 @@ steps: disciplines → scope → project conditions → details → **quote docu
   - `aria-live` sits on the **running total only**, never the whole rail —
     on the panel it made every slider tick re-read each line item and the
     deposit.
+  - **Touch targets are 44px.** `.quote-slider` is a 44px-tall control whose
+    visible 4px track is drawn by `::-webkit-slider-runnable-track` /
+    `::-moz-range-track`, with negative margins absorbing the height and a
+    `margin-top: -8px` thumb to sit centred. Setting `height: 4px` on the input
+    itself (the old approach) left a 4px hit area. Steppers are 44px; a
+    `(pointer: coarse)` block lifts `.qw-item-toggle` and friends, whose height
+    would otherwise be whatever their text happens to be (~21px for a one-liner).
+  - `touch-action: manipulation` across the page kills iOS's ~300ms double-tap
+    wait — the builder is almost entirely taps.
+  - ⚠️ **Never `outline: none` without a replacement.** `.qw-stepper-input` had
+    exactly that and its keyboard focus was invisible; it now pairs
+    `:focus-visible` with a `:focus-within` highlight on the group. Text inputs
+    keep the accent border on `:focus` but no longer suppress the global
+    `:focus-visible` ring in base.css.
 - **Submission:** `/api/quote-submit` (Resend) emails the itemised quote to
   Benjamin *and* a copy to the client. The client copy failing never fails the
   request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
