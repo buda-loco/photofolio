@@ -638,6 +638,11 @@ export const ES_COPY: QuoteCopy = {
     whatsappMessage: (number, total, currency) =>
       `Hola Benjamin — armé el presupuesto ${number} en tu sitio (${total} ${currency}). ¿Lo charlamos?`,
     copyPrompt: 'Copiá el enlace de tu presupuesto:',
+    promoLabel: 'Código de descuento',
+    promoPlaceholder: 'ej. matesrates…',
+    promoApplied: (label, percent) => `${label} aplicado — ${percent}% de descuento`,
+    promoInvalid: 'Ese código no es válido.',
+    promoHelp: 'Se aplica sobre mi tiempo. El alquiler de equipos y los gastos de viaje se facturan al costo igual.',
     sendError: (msg) => `No se pudo enviar (${msg}).`,
     emailDirectly: 'Mandámelo por email →',
     needDetails: 'Agregá tu nombre y email para enviarlo →',
@@ -661,6 +666,7 @@ export const ES_COPY: QuoteCopy = {
     travel: 'Viaje',
     licence: 'Licencia de uso',
     sourceFiles: 'Archivos editables',
+    discount: 'Descuento',
     delivery: (days) => `${days} día${days === 1 ? '' : 's'} hábil${days === 1 ? '' : 'es'} de trabajo`,
     deposit: (amount) => `${amount} de anticipo para reservar`,
     poa: 'Algunos ítems son a consultar',
@@ -710,6 +716,8 @@ export const ES_COPY: QuoteCopy = {
     licence: (label) => `Licencia de uso — ${label}`,
     sourceFiles: 'Entrega de archivos editables',
     sourceFilesNote: 'Archivos fuente en capas y de proyecto entregados',
+    discount: (label, percent) => `${label} — ${percent}% de descuento`,
+    discountNote: 'Aplicado sobre tiempo y margen, no sobre lo que se factura al costo',
     reducedSpec: (bought, recommended) => `${bought} de ${recommended} recomendadas`,
     reducedNote: (percent, bought, recommended) =>
       `Este presupuesto está calculado sobre ${bought} de las ${recommended} recomendadas — el ${percent}% del tiempo que el trabajo realmente necesita. La lista de entregables es la misma, pero cada uno recibe proporcionalmente menos tiempo: menos propuestas, menos pasadas y menos terminación.`,

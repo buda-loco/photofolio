@@ -58,6 +58,7 @@ const DEFAULT_OPTIONS: ProjectOptions = {
   licence: 'organic',
   extraRevisions: 0,
   sourceFiles: false,
+  promoCode: '',
 };
 
 /**
@@ -354,6 +355,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
       deliveryDate: totals.schedule.end ?? '',
       workingDays: totals.schedule.workingDays,
       hoursPerDay: totals.schedule.hoursPerDay,
+      promo: totals.promo ? `${totals.promo.label} (${Math.round(totals.promo.percent * 100)}%)` : '',
     },
     lines: lines.map((l) => ({
       discipline: l.discipline.label,
@@ -370,6 +372,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
       travelExpenses: totals.travelExpenses,
       licence: totals.licenceFee,
       sourceFiles: totals.sourceFilesFee,
+      discount: -totals.discountAmount,
     },
   });
 
@@ -949,6 +952,33 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   </div>
                 </div>
 
+                {/* Discount code — last thing before the document, so the
+                    total it changes is right underneath. */}
+                <div className="qw-promo">
+                  <label className="qw-field">
+                    <span>{T.quote.promoLabel}</span>
+                    <input
+                      className="qw-input qw-promo-input"
+                      name="promo"
+                      value={options.promoCode}
+                      onChange={(e) => setOptions({ ...options, promoCode: e.target.value })}
+                      placeholder={T.quote.promoPlaceholder}
+                      autoComplete="off"
+                      spellCheck={false}
+                      autoCapitalize="none"
+                      aria-invalid={totals.promoInvalid || undefined}
+                      aria-describedby="qw-promo-status"
+                    />
+                  </label>
+                  <p className="qw-promo-status" id="qw-promo-status" role="status" data-state={totals.promo ? 'ok' : totals.promoInvalid ? 'bad' : 'idle'}>
+                    {totals.promo
+                      ? `✓ ${T.quote.promoApplied(totals.promo.label, Math.round(totals.promo.percent * 100))} — −${money(totals.discountAmount)}`
+                      : totals.promoInvalid
+                        ? T.quote.promoInvalid
+                        : T.quote.promoHelp}
+                  </p>
+                </div>
+
                 <div className="qw-doc-frame">
                   <QuoteDocument bundle={bundle} totals={totals} options={options} client={form} meta={meta} />
                 </div>
@@ -1035,6 +1065,11 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                 </ul>
               )}
 
+              {totals.discountAmount > 0 && totals.promo && (
+                <span className="qw-rail-line qw-warn">
+                  {T.rail.discount}: −{money(totals.discountAmount)}
+                </span>
+              )}
               {totals.schedule.workingDays > 0 && (
                 <span className="qw-rail-line">{T.rail.delivery(totals.schedule.workingDays)}</span>
               )}

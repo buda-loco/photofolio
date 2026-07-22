@@ -82,7 +82,7 @@ describe('price scaling', () => {
         return { item, discipline, values, breakdown: priceItem(item, values, b.rates) };
       });
 
-    const opts = { preset: 'recommended' as const, priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false };
+    const opts = { preset: 'recommended' as const, priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, promoCode: '' };
     const auTotal = priceQuote(build(au), opts, au.pricing).total;
     const arTotal = priceQuote(build(ar), opts, ar.pricing).total;
 
@@ -113,7 +113,7 @@ describe('Argentina is remote-only', () => {
     const lines = [{ item, discipline, values, breakdown: priceItem(item, values, ar.rates) }];
     const totals = priceQuote(
       lines,
-      { preset: 'recommended' as const, priority: false, startDate: '', travel: 'interstate', licence: 'organic', extraRevisions: 0, sourceFiles: false },
+      { preset: 'recommended' as const, priority: false, startDate: '', travel: 'interstate', licence: 'organic', extraRevisions: 0, sourceFiles: false, promoCode: '' },
       ar.pricing,
     );
     expect(totals.travelLabour).toBe(0);
@@ -145,7 +145,7 @@ describe('licensing switch', () => {
     const lines = [{ item, discipline, values, breakdown: priceItem(item, values, au.rates) }];
     const totals = priceQuote(
       lines,
-      { preset: 'recommended' as const, priority: false, startDate: '', travel: 'local', licence: 'national', extraRevisions: 0, sourceFiles: false },
+      { preset: 'recommended' as const, priority: false, startDate: '', travel: 'local', licence: 'national', extraRevisions: 0, sourceFiles: false, promoCode: '' },
       au.pricing,
     );
     expect(totals.licenceFee).toBe(0);

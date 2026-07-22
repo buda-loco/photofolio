@@ -118,6 +118,11 @@ export interface QuoteCopy {
     whatsapp: string;
     whatsappMessage: (quoteNumber: string, total: string, currency: string) => string;
     copyPrompt: string;
+    promoLabel: string;
+    promoPlaceholder: string;
+    promoApplied: (label: string, percent: number) => string;
+    promoInvalid: string;
+    promoHelp: string;
     sendError: (msg: string) => string;
     emailDirectly: string;
     needDetails: string;
@@ -136,6 +141,7 @@ export interface QuoteCopy {
     travel: string;
     licence: string;
     sourceFiles: string;
+    discount: string;
     delivery: (days: number) => string;
     deposit: (amount: string) => string;
     poa: string;
@@ -184,6 +190,8 @@ export interface QuoteCopy {
     licence: (label: string) => string;
     sourceFiles: string;
     sourceFilesNote: string;
+    discount: (label: string, percent: number) => string;
+    discountNote: string;
     reducedSpec: (bought: string, recommended: string) => string;
     reducedNote: (percent: number, bought: string, recommended: string) => string;
     reducedTerm: (percent: number) => string;
@@ -323,6 +331,11 @@ export const EN_COPY: QuoteCopy = {
     whatsappMessage: (number, total, currency) =>
       `Hi Benjamin — I built quote ${number} on your site (${total} ${currency}). Can we talk it through?`,
     copyPrompt: 'Copy your quote link:',
+    promoLabel: 'Discount code',
+    promoPlaceholder: 'e.g. matesrates…',
+    promoApplied: (label, percent) => `${label} applied — ${percent}% off`,
+    promoInvalid: 'That code isn’t recognised.',
+    promoHelp: 'Applies to my time. Equipment hire and travel expenses are billed at cost either way.',
     sendError: (msg) => `Couldn’t send (${msg}).`,
     emailDirectly: 'Email it to me directly →',
     needDetails: 'Add your name and email to send this →',
@@ -346,6 +359,7 @@ export const EN_COPY: QuoteCopy = {
     travel: 'Travel',
     licence: 'Usage licence',
     sourceFiles: 'Working files',
+    discount: 'Discount',
     // No "~" — Adrianna's tilde sits high enough to read as a diaeresis.
     delivery: (days) => `${days} working day${days === 1 ? '' : 's'} of work`,
     deposit: (amount) => `${amount} deposit to book`,
@@ -396,6 +410,8 @@ export const EN_COPY: QuoteCopy = {
     licence: (label) => `Usage licence — ${label}`,
     sourceFiles: 'Working files released',
     sourceFilesNote: 'Layered source and project files handed over',
+    discount: (label, percent) => `${label} — ${percent}% off`,
+    discountNote: 'Applied to time and margin, not to costs billed at cost',
     reducedSpec: (bought, recommended) => `${bought} of ${recommended} recommended`,
     reducedNote: (percent, bought, recommended) =>
       `This quote is scoped to ${bought} of the ${recommended} recommended — ${percent}% of the time the work really needs. The deliverables are the same list, but each gets proportionally less time: fewer concepts, fewer passes, less polish.`,

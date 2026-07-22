@@ -8,7 +8,7 @@
 // (gear packages, travel, licensing), never for labour.
 
 import type {
-  CatalogItem, Discipline, LicenceTier, PricingConfig, RateId, ScheduleConfig, TravelZone,
+  CatalogItem, Discipline, LicenceTier, PricingConfig, PromoCode, RateId, ScheduleConfig, TravelZone,
 } from '@/lib/quotePricing';
 
 export const CURRENCY = 'AUD';
@@ -694,9 +694,21 @@ export const LICENCES: LicenceTier[] = [
   { id: 'buyout', label: 'Full buyout', desc: 'Unlimited use, in perpetuity, worldwide.', fee: 0, poa: true },
 ];
 
+/**
+ * Discount codes. Shared by both regions — a percentage doesn't need scaling.
+ *
+ * ⚠️ These live in the client bundle, so anyone who opens devtools can read
+ * them. Fine for mates' rates; don't put anything here you'd mind being found.
+ */
+export const PROMOS: PromoCode[] = [
+  { code: 'matesrates', percent: 0.25, label: 'Mates rates' },
+  { code: 'supermatesrates', percent: 0.45, label: 'Super mates rates' },
+];
+
 export const PRICING: PricingConfig = {
   rates: RATES,
   schedule: SCHEDULE,
+  promos: PROMOS,
   travel: TRAVEL,
   licences: LICENCES,
   revisionsIncluded: 2,

@@ -130,6 +130,8 @@ export interface ProjectOptions {
   extraRevisions: number;
   /** Client keeps the working files (.ai/.psd/.indd, project + raw footage). */
   sourceFiles: boolean;
+  /** Whatever the client typed in the discount box. Matched case-insensitively. */
+  promoCode: string;
 }
 
 /* ─────────────────────────── Helpers ─────────────────────────── */
@@ -304,6 +306,14 @@ export function priceItem(item: CatalogItem, values: ParamValues, rates: Record<
 
 /* ─────────────────── Project-level modifiers ─────────────────── */
 
+export interface PromoCode {
+  /** Compared lower-cased and trimmed. */
+  code: string;
+  /** Share off, as a fraction. 0.25 = 25%. */
+  percent: number;
+  label: string;
+}
+
 export interface ScheduleConfig {
   /** Hours a day a normal job gets, sharing the week with other work. */
   hoursPerDay: number;
@@ -372,6 +382,13 @@ export interface QuoteTotals {
   licenceFee: number;
   licencePoa: boolean;
   sourceFilesFee: number;
+  /** The matched code, or null when the box is empty or the code is wrong. */
+  promo: PromoCode | null;
+  /** True only when something was typed and it didn't match. */
+  promoInvalid: boolean;
+  discountAmount: number;
+  /** What the quote would cost without the code — for the struck-through price. */
+  subtotalBeforeDiscount: number;
   subtotal: number;
   total: number;
   deposit: number;
@@ -397,6 +414,7 @@ export interface Schedule {
 export interface PricingConfig {
   rates: Record<RateId, number>;
   schedule: ScheduleConfig;
+  promos: PromoCode[];
   travel: TravelZone[];
   licences: LicenceTier[];
   revisionsIncluded: number;
@@ -543,8 +561,22 @@ export function priceQuote(
     ? Math.max(Math.max(0, num(cfg.sourceFiles?.min)), labour * Math.max(0, num(cfg.sourceFiles?.percent)))
     : 0;
 
-  const subtotal =
+  const beforeDiscount =
     productionLabour + priorityAmount + travelLabour + travelExpenses + itemFees + licenceFee + sourceFilesFee;
+
+  // A discount comes off my time and margin — never off money I've already paid
+  // out. Knocking 45% off a studio hire or a flight isn't a discount, it's a
+  // loss, so hard costs (itemFees, travelExpenses) are excluded from the base.
+  const typed = String(options.promoCode ?? '').trim().toLowerCase();
+  const promo = typed
+    ? (cfg.promos ?? []).find((p) => p.code.trim().toLowerCase() === typed) ?? null
+    : null;
+  const discountable = productionLabour + priorityAmount + travelLabour + licenceFee + sourceFilesFee;
+  const discountAmount = promo
+    ? Math.max(0, discountable * clamp(num(promo.percent), 0, 1))
+    : 0;
+
+  const subtotal = beforeDiscount - discountAmount;
   const total = Math.max(0, subtotal);
 
   const travelPoa = !!zone?.poa;
@@ -574,6 +606,10 @@ export function priceQuote(
     licenceFee,
     licencePoa,
     sourceFilesFee,
+    promo,
+    promoInvalid: typed !== '' && promo === null,
+    discountAmount,
+    subtotalBeforeDiscount: beforeDiscount,
     subtotal,
     total,
     deposit: total * clamp(num(cfg.depositPercent), 0, 1),

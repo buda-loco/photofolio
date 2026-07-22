@@ -401,6 +401,22 @@ steps: disciplines → scope → project conditions → details → **quote docu
   - *Working files* (source/project files) are priced off production labour
     (20%, min $250) — a value transfer, not extra effort.
   - Extra revision rounds are labour (2 rounds included).
+- **Discount codes.** `PROMOS` in `quoteCatalogue.ts` — currently `matesrates`
+  (25%) and `supermatesrates` (45%). Matched case-insensitively and trimmed; an
+  unrecognised code says so and charges nothing. The field sits at the end of
+  the quote step, right above the document whose total it changes, and the
+  discount appears as its own line on the quote.
+  - ⚠️ **The discount base excludes hard costs** — `itemFees` (gear and studio
+    hire) and `travelExpenses`. Knocking 45% off a studio hire or a flight isn't
+    a discount, it's paying out of pocket. It applies to labour, priority,
+    travel *time*, licensing and the working-files fee. Change
+    `discountable` in `priceQuote` if that judgement should differ.
+  - ⚠️ Percentages don't scale per region — a 25% discount is 25% in both.
+  - ⚠️ The codes ship in the client bundle and are readable in devtools. Fine
+    for mates' rates; don't put anything sensitive there.
+  - Money formatting rounds the **magnitude**, not the signed value:
+    `Math.round(-337.5)` is `-337`, which disagreed with the `-338` shown
+    elsewhere for the same figure.
 - **Delivery calendar & priority — the only speed lever.** There are
   deliberately no "1 week / 2 week" rush tiers: a tier promises a duration the
   job's own hours can contradict, whereas a date derived from those hours

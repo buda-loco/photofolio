@@ -31,6 +31,7 @@ interface Body {
     licence?: string;
     extraRevisions?: number;
     sourceFiles?: boolean;
+    promo?: string;
     startDate?: string;
     deliveryDate?: string;
     workingDays?: number;
@@ -56,6 +57,7 @@ const CHARGE_LABELS: Record<string, Record<string, string>> = {
     travelExpenses: 'Travel expenses',
     licence: 'Usage licence',
     sourceFiles: 'Working files released',
+    discount: 'Discount',
   },
   es: {
     itemFees: 'Equipamiento y alquileres',
@@ -65,6 +67,7 @@ const CHARGE_LABELS: Record<string, Record<string, string>> = {
     travelExpenses: 'Gastos de viaje',
     licence: 'Licencia de uso',
     sourceFiles: 'Entrega de archivos editables',
+    discount: 'Descuento',
   },
 };
 
@@ -114,7 +117,7 @@ function scopeTable(body: Body, cur: string) {
     .join('');
 
   const charges = Object.entries(body.charges ?? {})
-    .filter(([, v]) => Number(v) > 0)
+    .filter(([, v]) => Number(v) !== 0)
     .map(
       ([k, v]) => `<tr>
         <td style="padding:6px 12px 6px 0;border-top:1px solid #eee;color:#555">${esc(labels[k] ?? k)}</td>
@@ -140,6 +143,7 @@ function conditions(body: Body) {
   const o = body.options ?? {};
   const bits = [
     o.priority ? 'PRIORITY — sole focus' : null,
+    o.promo && `DISCOUNT: ${o.promo}`,
     o.workingDays ? `${o.workingDays} working days at ${o.hoursPerDay}h/day` : null,
     o.startDate && `Start ${o.startDate}`,
     o.deliveryDate && `Delivery ~${o.deliveryDate}`,

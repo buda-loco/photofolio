@@ -1779,3 +1779,36 @@ input[type='date'].qw-input {
 
   .qw-item-toggle { align-items: center; }
 }
+
+/* ═══════════════════════════════════════════
+   DISCOUNT CODE
+   ═══════════════════════════════════════════ */
+
+.qw-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+@media (max-width: 640px) {
+  .qw-promo { grid-template-columns: 1fr; }
+}
+
+.qw-promo-input {
+  letter-spacing: 0.04em;
+}
+
+.qw-promo-status {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.qw-promo-status[data-state='ok'] { color: var(--color-accent); font-weight: 700; }
+.qw-promo-status[data-state='bad'] { color: #ff8f7a; }
+
+/* Discount rows read as credits, not charges. */
+.qd-table tbody tr:last-child .qd-num,
+.qd-discount-row .qd-num { font-variant-numeric: tabular-nums; }

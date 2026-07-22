@@ -38,7 +38,12 @@ const find = <T extends { id: string; label: string; desc: string }>(list: T[], 
 export default function QuoteDocument({ bundle, totals, options, client, meta }: Props) {
   const { region, rateLabels, pricing, business, validDays, copy } = bundle;
   const t = copy.doc;
-  const money = (n: number) => `${region.currencySymbol}${Math.round(n).toLocaleString(region.locale)}`;
+  // Rounds the magnitude, not the signed value: Math.round(-337.5) is -337,
+  // which would disagree with the -338 the builder shows for the same figure.
+  const money = (n: number) => {
+    const v = Math.round(Math.abs(n));
+    return `${n < 0 ? '−' : ''}${region.currencySymbol}${v.toLocaleString(region.locale)}`;
+  };
   const hrs = (n: number) => `${Math.round(n * 10) / 10}h`;
   const longDate = (iso: string) => {
     const d = parseISODate(iso);
@@ -73,6 +78,13 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
   if (totals.travelExpenses > 0 || totals.travelPoa) adjustments.push({ label: t.travelExpenses, note: totals.travelPoa ? t.travelExpensesPoa : t.travelExpensesEstimated, amount: totals.travelExpenses, poa: totals.travelPoa });
   if (licensable && (totals.licenceFee > 0 || totals.licencePoa)) adjustments.push({ label: t.licence(licence.label), note: licence.desc, amount: totals.licenceFee, poa: totals.licencePoa });
   if (totals.sourceFilesFee > 0) adjustments.push({ label: t.sourceFiles, note: t.sourceFilesNote, amount: totals.sourceFilesFee });
+  if (totals.discountAmount > 0 && totals.promo) {
+    adjustments.push({
+      label: t.discount(totals.promo.label, Math.round(totals.promo.percent * 100)),
+      note: t.discountNote,
+      amount: -totals.discountAmount,
+    });
+  }
 
   // Only advertise rates this region can actually book — the remote-only page
   // has no shoot items, so quoting a shoot rate there would be misleading.

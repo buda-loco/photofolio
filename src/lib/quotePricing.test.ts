@@ -11,6 +11,7 @@ const rates = { shoot: 120, post: 100, design: 100, build: 140, motion: 150 };
 const cfg: PricingConfig = {
   rates,
   schedule: { hoursPerDay: 2, priorityHoursPerDay: 6, priorityUplift: 0.5, leadDays: 7 },
+  promos: [{ code: 'matesrates', percent: 0.25, label: 'Mates' }],
   travel: [
     { id: 'local', label: 'Local', desc: '', hours: 0, expenses: 0 },
     { id: 'away', label: 'Away', desc: '', hours: 5, expenses: 300 },
@@ -29,7 +30,7 @@ const cfg: PricingConfig = {
 };
 
 const opts = (over: Partial<ProjectOptions> = {}): ProjectOptions => ({
-  preset: 'recommended', priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, ...over,
+  preset: 'recommended', priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, promoCode: '', ...over,
 });
 
 const disc: Discipline = { id: 'd', label: 'D', blurb: '', items: [] };
@@ -448,6 +449,93 @@ describe('presets', () => {
     for (const preset of PRESETS) {
       expect(itemMatchesPreset(bare, {}, preset)).toBe(true);
     }
+  });
+});
+
+describe('discount codes', () => {
+  const tenHours: CatalogItem = { id: 'a', name: 'A', rate: 'design', baseHours: 10 }; // $1000
+
+  it('does nothing when the box is empty', () => {
+    const t = priceQuote([line(tenHours)], opts(), cfg);
+    expect(t.promo).toBeNull();
+    expect(t.promoInvalid).toBe(false);
+    expect(t.discountAmount).toBe(0);
+    expect(t.total).toBe(1000);
+  });
+
+  it('applies a matching code', () => {
+    const t = priceQuote([line(tenHours)], opts({ promoCode: 'matesrates' }), cfg);
+    expect(t.promo?.code).toBe('matesrates');
+    expect(t.discountAmount).toBe(250);
+    expect(t.total).toBe(750);
+    expect(t.subtotalBeforeDiscount).toBe(1000);
+  });
+
+  it('is case- and whitespace-insensitive', () => {
+    for (const typed of ['MatesRates', '  matesrates  ', 'MATESRATES']) {
+      expect(priceQuote([line(tenHours)], opts({ promoCode: typed }), cfg).discountAmount).toBe(250);
+    }
+  });
+
+  it('flags a wrong code without charging or crashing', () => {
+    const t = priceQuote([line(tenHours)], opts({ promoCode: 'nope' }), cfg);
+    expect(t.promo).toBeNull();
+    expect(t.promoInvalid).toBe(true);
+    expect(t.discountAmount).toBe(0);
+    expect(t.total).toBe(1000);
+  });
+
+  it('an empty or whitespace-only box is not "invalid"', () => {
+    expect(priceQuote([line(tenHours)], opts({ promoCode: '   ' }), cfg).promoInvalid).toBe(false);
+  });
+
+  it('never discounts hard costs — equipment and travel expenses are paid out', () => {
+    const shoot: CatalogItem = {
+      id: 's', name: 'S', rate: 'shoot', baseHours: 10, onLocation: true,
+      params: [{ kind: 'toggle', id: 'kit', label: 'Kit', feeAdd: 500 }],
+    };
+    const values = { kit: true };
+    const l: QuoteLine = { item: shoot, discipline: disc, values, breakdown: priceItem(shoot, values, rates) };
+    const o = opts({ travel: 'away', promoCode: 'matesrates' });
+    const t = priceQuote([l], o, cfg);
+
+    // Labour 1200 + travel time 600 = 1800 discountable → 450 off.
+    // The $500 kit and $300 of flights are untouched.
+    expect(t.discountAmount).toBe(450);
+    expect(t.itemFees).toBe(500);
+    expect(t.travelExpenses).toBe(300);
+    expect(t.total).toBe(1200 + 600 + 500 + 300 - 450);
+  });
+
+  it('discounts priority, revisions and working files — those are my time', () => {
+    const plain = priceQuote([line(tenHours)], opts({ priority: true, extraRevisions: 1, sourceFiles: true }), cfg);
+    const cut = priceQuote([line(tenHours)], opts({ priority: true, extraRevisions: 1, sourceFiles: true, promoCode: 'matesrates' }), cfg);
+    expect(cut.discountAmount).toBeCloseTo(plain.total * 0.25);
+    expect(cut.total).toBeCloseTo(plain.total * 0.75);
+  });
+
+  it('shrinks the deposit with the total', () => {
+    const t = priceQuote([line(tenHours)], opts({ promoCode: 'matesrates' }), cfg);
+    expect(t.deposit).toBe(375); // 50% of 750, not of 1000
+  });
+
+  it('an unknown code in a share link cannot conjure a discount', () => {
+    const t = priceQuote([line(tenHours)], opts({ promoCode: 'supermatesrates' }), cfg);
+    // Not in this test config's promo list.
+    expect(t.discountAmount).toBe(0);
+    expect(t.total).toBe(1000);
+  });
+
+  it('never produces a negative total or NaN', () => {
+    const wild: PricingConfig = { ...cfg, promos: [{ code: 'x', percent: 5, label: 'X' }] };
+    const t = priceQuote([line(tenHours)], opts({ promoCode: 'x' }), wild);
+    expect(t.total).toBeGreaterThanOrEqual(0);
+    expect(Number.isNaN(t.total)).toBe(false);
+  });
+
+  it('rides share links', () => {
+    const o = opts({ promoCode: 'matesrates' });
+    expect(decodeState(encodeState({}, o))?.o.promoCode).toBe('matesrates');
   });
 });
 
