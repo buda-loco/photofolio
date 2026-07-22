@@ -511,12 +511,6 @@ export const ES_CATALOGUE: CatalogueCopy = {
     },
   },
 
-  turnaround: {
-    standard: { label: 'Estándar', desc: 'Un cronograma acordado que le sirva al trabajo.' },
-    tight: { label: 'Ajustado — 2 semanas', desc: 'Con prioridad sobre el resto del trabajo.' },
-    rush: { label: 'Urgente — 1 semana', desc: 'Corre todo lo demás en la fila.' },
-    urgent: { label: 'Para mañana / fin de semana', desc: 'Noches y fines de semana para llegar.' },
-  },
 
   licences: {
     organic: { label: 'Interno y redes orgánicas', desc: 'Tus canales, sitio y redes. Sin pauta paga.' },
@@ -567,8 +561,6 @@ export const ES_COPY: QuoteCopy = {
   project: {
     title: 'Condiciones del proyecto',
     sub: 'Lo que cambia el precio sin cambiar los entregables.',
-    turnaround: 'Plazo de entrega',
-    turnaroundHelp: 'El recargo por urgencia se aplica sólo al tiempo de producción — nunca al equipamiento ni a la licencia.',
     travel: '¿Dónde es el rodaje?',
     travelHelp: 'El tiempo de viaje se factura a la tarifa de rodaje.',
     licence: 'Licencia de uso',
@@ -589,6 +581,21 @@ export const ES_COPY: QuoteCopy = {
     hoursRecommended: (hours, amount) => `Recomendado: ${hours} · ${amount}`,
     hoursBuying: (hours, percent) => `Contratás ${hours} — ${percent}% de lo recomendado`,
     hoursAtFloor: 'Es lo mínimo con lo que puedo entregar este alcance. Por debajo, mejor hablamos de recortar entregables.',
+  },
+
+  delivery: {
+    title: 'Entrega',
+    sub: 'Aproximadamente cuándo lo vas a tener.',
+    priority: 'Prioridad — que sea el único proyecto del día',
+    priorityDesc: (standard, priority, uplift) =>
+      `El trabajo estándar recibe ${standard} horas por día y comparte la semana con otros proyectos. Con prioridad, el tuyo es lo único sobre el escritorio: ${priority} horas por día, por un ${uplift}% más.`,
+    pace: (hoursPerDay) => `${hoursPerDay} horas por día`,
+    startLabel: 'Fecha de inicio',
+    startHelp: (leadDays) => `Lo antes que puedo arrancar es dentro de ${leadDays} días.`,
+    duration: (days) => `${days} día${days === 1 ? '' : 's'} hábil${days === 1 ? '' : 'es'}`,
+    deliveryLabel: 'Entrega estimada',
+    pickDate: 'Elegí una fecha de inicio para ver cuándo estaría listo.',
+    note: 'Estos tiempos son un cálculo aproximado a partir de las horas de este presupuesto, repartidas en días hábiles — son una referencia, no un compromiso. El cronograma real depende de qué tan rápido vuelvan las devoluciones y de qué otros trabajos haya agendados.',
   },
 
   details: {
@@ -630,10 +637,11 @@ export const ES_COPY: QuoteCopy = {
     total: 'Total parcial',
     summary: (items, hours) => `${items} ítem${items === 1 ? '' : 's'} · ${hours}`,
     revisions: 'Revisiones extra',
-    rush: 'Recargo por urgencia',
+    priority: 'Prioridad',
     travel: 'Viaje',
     licence: 'Licencia de uso',
     sourceFiles: 'Archivos editables',
+    delivery: (days) => `${days} día${days === 1 ? '' : 's'} hábil${days === 1 ? '' : 'es'} de trabajo`,
     deposit: (amount) => `${amount} de anticipo para reservar`,
     poa: 'Algunos ítems son a consultar',
     reduced: (percent, recommended) => `${percent}% de las ${recommended} recomendadas`,
@@ -666,8 +674,14 @@ export const ES_COPY: QuoteCopy = {
     equipmentNote: 'Costos directos asociados a los ítems de arriba',
     revisions: (rounds) => `Rondas de revisión adicionales (${rounds})`,
     revisionsNote: (hours, included) => `${hours} por encima de las ${included} incluidas`,
-    rush: (label) => `Recargo por urgencia — ${label}`,
-    rushNote: (percent) => `+${percent}% sobre el tiempo de producción`,
+    priority: 'Prioridad — dedicación exclusiva',
+    priorityNote: (percent) => `+${percent}% sobre el tiempo de producción`,
+    deliveryTitle: 'Entrega',
+    deliveryStart: 'Inicio',
+    deliveryEnd: 'Entrega estimada',
+    deliveryDays: 'Días hábiles',
+    deliveryPace: (hoursPerDay) => `${hoursPerDay} horas por día`,
+    deliveryNote: 'Los tiempos son un cálculo aproximado a partir de las horas de arriba, repartidas en días hábiles. Son una referencia, no un compromiso, y asumen que las devoluciones vuelven a tiempo.',
     travelTime: (label) => `Tiempo de viaje — ${label}`,
     travelTimeNote: (hours) => `${hours} facturadas a la tarifa de rodaje`,
     travelExpenses: 'Gastos de viaje',

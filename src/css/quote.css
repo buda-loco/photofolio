@@ -1559,3 +1559,114 @@ textarea.qw-input { resize: vertical; }
 }
 
 .qw-send-hint:hover { opacity: 0.8; }
+
+/* ═══════════════════════════════════════════
+   DELIVERY — one block, last on the project step
+   ═══════════════════════════════════════════ */
+
+.qw-delivery {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.qw-delivery-head {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+}
+
+.qw-delivery .qw-toggle { margin-top: var(--sp-2); }
+
+.qw-delivery-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: center;
+  margin-top: var(--sp-4);
+}
+
+@media (max-width: 640px) {
+  .qw-delivery-grid { grid-template-columns: 1fr; }
+}
+
+/* The native date picker inherits the dark surface; without this the control
+   renders near-black-on-black in Safari and Chrome. */
+input[type='date'].qw-input {
+  color-scheme: dark;
+  font-variant-numeric: tabular-nums;
+}
+
+.qw-delivery-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  padding: var(--sp-3);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.qw-delivery-days {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+}
+
+.qw-delivery-pace {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.qw-delivery-date {
+  margin-top: 0.3em;
+  font-size: var(--text-sm);
+}
+
+.qw-delivery-note {
+  margin-top: var(--sp-3);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* ── Document ── */
+.qd-delivery {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.qd-delivery-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.qd-delivery-list dt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.qd-delivery-list dd { margin: 0.2em 0 0; font-size: 12px; }
+.qd-delivery-end dd { font-weight: 700; }
+
+.qd-delivery-note {
+  margin-top: 0.9em;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #999;
+}
+
+@media print {
+  .qd-delivery { break-inside: avoid; }
+}

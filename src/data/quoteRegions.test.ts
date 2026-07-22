@@ -67,7 +67,7 @@ describe('price scaling', () => {
     expect(ar.pricing.revisionsIncluded).toBe(PRICING.revisionsIncluded);
     expect(ar.pricing.depositPercent).toBe(PRICING.depositPercent);
     expect(ar.pricing.sourceFiles.percent).toBe(PRICING.sourceFiles.percent);
-    expect(ar.turnaround.map((t) => t.mult)).toEqual(au.turnaround.map((t) => t.mult));
+    expect(ar.pricing.schedule).toEqual(PRICING.schedule);
 
     const auLogo = au.allItems['br-logo'].item;
     const arLogo = ar.allItems['br-logo'].item;
@@ -82,7 +82,7 @@ describe('price scaling', () => {
         return { item, discipline, values, breakdown: priceItem(item, values, b.rates) };
       });
 
-    const opts = { turnaround: 'standard', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false };
+    const opts = { priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false };
     const auTotal = priceQuote(build(au), opts, au.pricing).total;
     const arTotal = priceQuote(build(ar), opts, ar.pricing).total;
 
@@ -113,7 +113,7 @@ describe('Argentina is remote-only', () => {
     const lines = [{ item, discipline, values, breakdown: priceItem(item, values, ar.rates) }];
     const totals = priceQuote(
       lines,
-      { turnaround: 'standard', travel: 'interstate', licence: 'organic', extraRevisions: 0, sourceFiles: false },
+      { priority: false, startDate: '', travel: 'interstate', licence: 'organic', extraRevisions: 0, sourceFiles: false },
       ar.pricing,
     );
     expect(totals.travelLabour).toBe(0);
@@ -145,7 +145,7 @@ describe('licensing switch', () => {
     const lines = [{ item, discipline, values, breakdown: priceItem(item, values, au.rates) }];
     const totals = priceQuote(
       lines,
-      { turnaround: 'standard', travel: 'local', licence: 'national', extraRevisions: 0, sourceFiles: false },
+      { priority: false, startDate: '', travel: 'local', licence: 'national', extraRevisions: 0, sourceFiles: false },
       au.pricing,
     );
     expect(totals.licenceFee).toBe(0);
@@ -170,9 +170,8 @@ describe('translation', () => {
     }
   });
 
-  it('translates rate labels, turnaround tiers and licences', () => {
+  it('translates rate labels and licences', () => {
     expect(ar.rateLabels.design).toBe('Diseño');
-    expect(ar.turnaround.find((t) => t.id === 'rush')?.label).toBe('Urgente — 1 semana');
     expect(ar.licences.find((l) => l.id === 'buyout')?.label).toBe('Cesión total');
   });
 

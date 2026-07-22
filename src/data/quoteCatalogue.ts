@@ -8,7 +8,7 @@
 // (gear packages, travel, licensing), never for labour.
 
 import type {
-  CatalogItem, Discipline, LicenceTier, PricingConfig, RateId, TravelZone, TurnaroundTier,
+  CatalogItem, Discipline, LicenceTier, PricingConfig, RateId, ScheduleConfig, TravelZone,
 } from '@/lib/quotePricing';
 
 export const CURRENCY = 'AUD';
@@ -664,12 +664,20 @@ export const DISCIPLINES: Discipline[] = [
 
 /* ─────────────────── Project-level modifiers ─────────────────── */
 
-export const TURNAROUND: TurnaroundTier[] = [
-  { id: 'standard', label: 'Standard', desc: 'An agreed schedule that suits the work.', mult: 1 },
-  { id: 'tight', label: 'Tight — 2 weeks', desc: 'Prioritised over other work.', mult: 1.2 },
-  { id: 'rush', label: 'Rush — 1 week', desc: 'Bumps everything else in the queue.', mult: 1.4 },
-  { id: 'urgent', label: 'Next-day / weekend', desc: 'Evenings and weekends to hit it.', mult: 1.75 },
-];
+/**
+ * Speed has exactly one lever: whether a job is the only thing on the desk.
+ *
+ * Standard work shares the week with everything else, so it gets 2 hours a day.
+ * Priority means sole focus and 6 hours a day — three times faster, for 35%
+ * more. There are deliberately no "1 week" tiers: a promise like that can be
+ * contradicted by the job's own hours, whereas a date derived from them cannot.
+ */
+export const SCHEDULE: ScheduleConfig = {
+  hoursPerDay: 2,
+  priorityHoursPerDay: 6,
+  priorityUplift: 0.35,
+  leadDays: 7,
+};
 
 export const TRAVEL: TravelZone[] = [
   { id: 'local', label: 'Brisbane & Gold Coast', desc: 'No travel charge.', hours: 0, expenses: 0 },
@@ -688,7 +696,7 @@ export const LICENCES: LicenceTier[] = [
 
 export const PRICING: PricingConfig = {
   rates: RATES,
-  turnaround: TURNAROUND,
+  schedule: SCHEDULE,
   travel: TRAVEL,
   licences: LICENCES,
   revisionsIncluded: 2,

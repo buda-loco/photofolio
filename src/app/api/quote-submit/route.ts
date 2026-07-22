@@ -27,11 +27,15 @@ interface Body {
   hasPoa?: boolean;
   currency?: string;
   options?: {
-    turnaround?: string;
+    priority?: boolean;
     travel?: string;
     licence?: string;
     extraRevisions?: number;
     sourceFiles?: boolean;
+    startDate?: string;
+    deliveryDate?: string;
+    workingDays?: number;
+    hoursPerDay?: number;
   };
   lines?: Line[];
   charges?: Record<string, number>;
@@ -48,7 +52,7 @@ const CHARGE_LABELS: Record<string, Record<string, string>> = {
   en: {
     itemFees: 'Equipment & hire',
     revisions: 'Extra revision rounds',
-    rush: 'Rush fee',
+    priority: 'Priority — sole focus',
     travelLabour: 'Travel time',
     travelExpenses: 'Travel expenses',
     licence: 'Usage licence',
@@ -57,7 +61,7 @@ const CHARGE_LABELS: Record<string, Record<string, string>> = {
   es: {
     itemFees: 'Equipamiento y alquileres',
     revisions: 'Rondas de revisión extra',
-    rush: 'Recargo por urgencia',
+    priority: 'Prioridad — dedicación exclusiva',
     travelLabour: 'Tiempo de viaje',
     travelExpenses: 'Gastos de viaje',
     licence: 'Licencia de uso',
@@ -136,8 +140,11 @@ function scopeTable(body: Body, cur: string) {
 function conditions(body: Body) {
   const o = body.options ?? {};
   const bits = [
-    o.turnaround && `Turnaround: ${o.turnaround}`,
-    o.travel && `Location: ${o.travel}`,
+    o.priority ? 'PRIORITY — sole focus' : null,
+    o.workingDays ? `${o.workingDays} working days at ${o.hoursPerDay}h/day` : null,
+    o.startDate && `Start ${o.startDate}`,
+    o.deliveryDate && `Delivery ~${o.deliveryDate}`,
+    o.travel && o.travel !== 'n/a' && `Location: ${o.travel}`,
     o.licence && o.licence !== 'n/a' && `Licence: ${o.licence}`,
     o.extraRevisions ? `+${o.extraRevisions} revision round(s)` : null,
     o.sourceFiles ? 'Working files included' : null,

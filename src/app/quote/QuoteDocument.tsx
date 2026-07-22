@@ -9,7 +9,7 @@
 
 import { whatsappLink } from '@/data/quoteCatalogue';
 import type { QuoteBundle } from '@/data/quoteRegions';
-import type { ProjectOptions, QuoteTotals } from '@/lib/quotePricing';
+import { parseISODate, type ProjectOptions, type QuoteTotals } from '@/lib/quotePricing';
 
 export interface QuoteMeta {
   number: string;
@@ -40,6 +40,14 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
   const t = copy.doc;
   const money = (n: number) => `${region.currencySymbol}${Math.round(n).toLocaleString(region.locale)}`;
   const hrs = (n: number) => `${Math.round(n * 10) / 10}h`;
+  const longDate = (iso: string) => {
+    const d = parseISODate(iso);
+    // Rendered from the UTC parts the engine stored, so the printed date can't
+    // slide a day in a different timezone.
+    return d
+      ? d.toLocaleDateString(region.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+      : iso;
+  };
 
   const { lines } = totals;
 
@@ -52,7 +60,6 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
     return acc;
   }, []);
 
-  const turnaround = find(bundle.turnaround, options.turnaround);
   const licence = find(bundle.licences, options.licence);
   const travel = bundle.travel.length ? find(bundle.travel, options.travel) : null;
   const licensable = lines.some((l) => l.item.licensable);
@@ -61,7 +68,7 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
   const adjustments: { label: string; note?: string; amount: number; poa?: boolean }[] = [];
   if (totals.itemFees > 0) adjustments.push({ label: t.equipment, note: t.equipmentNote, amount: totals.itemFees });
   if (totals.revisionsCost > 0) adjustments.push({ label: t.revisions(options.extraRevisions), note: t.revisionsNote(hrs(totals.revisionsHours), pricing.revisionsIncluded), amount: totals.revisionsCost });
-  if (totals.rushAmount > 0) adjustments.push({ label: t.rush(turnaround.label), note: t.rushNote(Math.round((totals.rushMult - 1) * 100)), amount: totals.rushAmount });
+  if (totals.priorityAmount > 0) adjustments.push({ label: t.priority, note: t.priorityNote(Math.round(totals.priorityUplift * 100)), amount: totals.priorityAmount });
   if (totals.travelLabour > 0 && travel) adjustments.push({ label: t.travelTime(travel.label), note: t.travelTimeNote(hrs(totals.travelHours)), amount: totals.travelLabour });
   if (totals.travelExpenses > 0 || totals.travelPoa) adjustments.push({ label: t.travelExpenses, note: totals.travelPoa ? t.travelExpensesPoa : t.travelExpensesEstimated, amount: totals.travelExpenses, poa: totals.travelPoa });
   if (licensable && (totals.licenceFee > 0 || totals.licencePoa)) adjustments.push({ label: t.licence(licence.label), note: licence.desc, amount: totals.licenceFee, poa: totals.licencePoa });
@@ -199,6 +206,28 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
 
         {totals.hasPoa && <p className="qd-poa">{t.poaNote}</p>}
       </section>
+
+      {/* ── Delivery ── */}
+      {totals.schedule.workingDays > 0 && (
+        <section className="qd-delivery">
+          <span className="qd-label">{t.deliveryTitle}</span>
+          <dl className="qd-delivery-list">
+            {totals.schedule.start && (
+              <div><dt>{t.deliveryStart}</dt><dd>{longDate(totals.schedule.start)}</dd></div>
+            )}
+            <div>
+              <dt>{t.deliveryDays}</dt>
+              <dd>{totals.schedule.workingDays} · {t.deliveryPace(totals.schedule.hoursPerDay)}</dd>
+            </div>
+            {totals.schedule.end && (
+              <div className="qd-delivery-end">
+                <dt>{t.deliveryEnd}</dt><dd>{longDate(totals.schedule.end)}</dd>
+              </div>
+            )}
+          </dl>
+          <p className="qd-delivery-note">{t.deliveryNote}</p>
+        </section>
+      )}
 
       {/* ── Terms ── */}
       <section className="qd-terms">

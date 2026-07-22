@@ -20,7 +20,6 @@ export interface CatalogueCopy {
     }>;
   }>;
   rateLabels?: Partial<Record<RateId, string>>;
-  turnaround?: Record<string, { label?: string; desc?: string }>;
   travel?: Record<string, { label?: string; desc?: string }>;
   licences?: Record<string, { label?: string; desc?: string }>;
 }
@@ -55,8 +54,6 @@ export interface QuoteCopy {
   project: {
     title: string;
     sub: string;
-    turnaround: string;
-    turnaroundHelp: string;
     travel: string;
     travelHelp: string;
     licence: string;
@@ -74,6 +71,21 @@ export interface QuoteCopy {
     hoursRecommended: (hours: string, amount: string) => string;
     hoursBuying: (hours: string, percent: number) => string;
     hoursAtFloor: string;
+  };
+
+  /** One block, at the end of the project step. */
+  delivery: {
+    title: string;
+    sub: string;
+    priority: string;
+    priorityDesc: (standard: number, priority: number, uplift: number) => string;
+    pace: (hoursPerDay: number) => string;
+    startLabel: string;
+    startHelp: (leadDays: number) => string;
+    duration: (days: number) => string;
+    deliveryLabel: string;
+    pickDate: string;
+    note: string;
   };
 
   details: {
@@ -108,10 +120,11 @@ export interface QuoteCopy {
     total: string;
     summary: (items: number, hours: string) => string;
     revisions: string;
-    rush: string;
+    priority: string;
     travel: string;
     licence: string;
     sourceFiles: string;
+    delivery: (days: number) => string;
     deposit: (amount: string) => string;
     poa: string;
     reduced: (percent: number, recommended: string) => string;
@@ -143,8 +156,14 @@ export interface QuoteCopy {
     equipmentNote: string;
     revisions: (rounds: number) => string;
     revisionsNote: (hours: string, included: number) => string;
-    rush: (label: string) => string;
-    rushNote: (percent: number) => string;
+    priority: string;
+    priorityNote: (percent: number) => string;
+    deliveryTitle: string;
+    deliveryStart: string;
+    deliveryEnd: string;
+    deliveryDays: string;
+    deliveryPace: (hoursPerDay: number) => string;
+    deliveryNote: string;
     travelTime: (label: string) => string;
     travelTimeNote: (hours: string) => string;
     travelExpenses: string;
@@ -215,8 +234,6 @@ export const EN_COPY: QuoteCopy = {
   project: {
     title: 'Project conditions',
     sub: 'The things that change a price without changing the deliverables.',
-    turnaround: 'Turnaround',
-    turnaroundHelp: 'A rush fee applies to production time only — never to travel, equipment or licensing.',
     travel: 'Where’s the shoot?',
     travelHelp: 'Travel time is billed at the shoot rate; flights and accommodation are estimated and billed at cost. Only applies because you’ve selected work that puts me on location.',
     licence: 'Usage licence',
@@ -237,6 +254,21 @@ export const EN_COPY: QuoteCopy = {
     hoursRecommended: (hours, amount) => `Recommended: ${hours} · ${amount}`,
     hoursBuying: (hours, percent) => `Buying ${hours} — ${percent}% of the recommendation`,
     hoursAtFloor: 'This is the least I can deliver this scope on. Less than that, let’s talk about cutting deliverables instead.',
+  },
+
+  delivery: {
+    title: 'Delivery',
+    sub: 'Roughly when the work lands.',
+    priority: 'Priority — make it the only project of the day',
+    priorityDesc: (standard, priority, uplift) =>
+      `Standard work gets ${standard} hours a day and shares the week with other projects. Priority makes yours the only thing on the desk at ${priority} hours a day, for ${uplift}% more.`,
+    pace: (hoursPerDay) => `${hoursPerDay} hours a day`,
+    startLabel: 'Start date',
+    startHelp: (leadDays) => `The earliest I can start is ${leadDays} days from today.`,
+    duration: (days) => `${days} working day${days === 1 ? '' : 's'}`,
+    deliveryLabel: 'Estimated delivery',
+    pickDate: 'Pick a start date to see when the work would land.',
+    note: 'These timings are a rough calculation from the hours in this quote, spread over working days — an indication, not a commitment. The real schedule depends on how quickly feedback comes back and what else is booked at the time.',
   },
 
   details: {
@@ -278,10 +310,12 @@ export const EN_COPY: QuoteCopy = {
     total: 'Running total',
     summary: (items, hours) => `${items} item${items === 1 ? '' : 's'} · ${hours}`,
     revisions: 'Extra revisions',
-    rush: 'Rush fee',
+    priority: 'Priority',
     travel: 'Travel',
     licence: 'Usage licence',
     sourceFiles: 'Working files',
+    // No "~" — Adrianna's tilde sits high enough to read as a diaeresis.
+    delivery: (days) => `${days} working day${days === 1 ? '' : 's'} of work`,
     deposit: (amount) => `${amount} deposit to book`,
     poa: 'Some items are POA',
     reduced: (percent, recommended) => `${percent}% of the recommended ${recommended}`,
@@ -314,8 +348,14 @@ export const EN_COPY: QuoteCopy = {
     equipmentNote: 'Hard costs attached to the items above',
     revisions: (rounds) => `Additional revision rounds (${rounds})`,
     revisionsNote: (hours, included) => `${hours} beyond the ${included} included`,
-    rush: (label) => `Rush fee — ${label}`,
-    rushNote: (percent) => `+${percent}% on production time`,
+    priority: 'Priority — sole focus',
+    priorityNote: (percent) => `+${percent}% on production time`,
+    deliveryTitle: 'Delivery',
+    deliveryStart: 'Start',
+    deliveryEnd: 'Estimated delivery',
+    deliveryDays: 'Working days',
+    deliveryPace: (hoursPerDay) => `${hoursPerDay} hours a day`,
+    deliveryNote: 'Timings are a rough calculation from the hours above, spread over working days. They are an indication, not a commitment, and assume feedback comes back promptly.',
     travelTime: (label) => `Travel time — ${label}`,
     travelTimeNote: (hours) => `${hours} billed at the shoot rate`,
     travelExpenses: 'Travel expenses',

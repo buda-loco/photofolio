@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, num, clamp,
-  HOURS_FACTOR_KEY, HOURS_FACTOR_MIN,
+  HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, earliestStart, parseISODate, toISODate,
   type CatalogItem, type Discipline, type PricingConfig, type ProjectOptions, type QuoteLine,
 } from './quotePricing';
 
@@ -9,10 +9,7 @@ const rates = { shoot: 120, post: 100, design: 100, build: 140, motion: 150 };
 
 const cfg: PricingConfig = {
   rates,
-  turnaround: [
-    { id: 'standard', label: 'Standard', desc: '', mult: 1 },
-    { id: 'rush', label: 'Rush', desc: '', mult: 1.5 },
-  ],
+  schedule: { hoursPerDay: 2, priorityHoursPerDay: 6, priorityUplift: 0.5, leadDays: 7 },
   travel: [
     { id: 'local', label: 'Local', desc: '', hours: 0, expenses: 0 },
     { id: 'away', label: 'Away', desc: '', hours: 5, expenses: 300 },
@@ -31,7 +28,7 @@ const cfg: PricingConfig = {
 };
 
 const opts = (over: Partial<ProjectOptions> = {}): ProjectOptions => ({
-  turnaround: 'standard', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, ...over,
+  priority: false, startDate: '', travel: 'local', licence: 'organic', extraRevisions: 0, sourceFiles: false, ...over,
 });
 
 const disc: Discipline = { id: 'd', label: 'D', blurb: '', items: [] };
@@ -142,16 +139,16 @@ describe('priceQuote', () => {
     expect(t.hours).toBe(10);
   });
 
-  it('rush multiplies production labour', () => {
-    const t = priceQuote([line(tenHourDesign)], opts({ turnaround: 'rush' }), cfg);
-    expect(t.rushAmount).toBe(500);
+  it('priority multiplies production labour', () => {
+    const t = priceQuote([line(tenHourDesign)], opts({ priority: true }), cfg);
+    expect(t.priorityAmount).toBe(500);
     expect(t.total).toBe(1500);
   });
 
-  it('rush does not multiply travel, expenses or licence fees', () => {
+  it('priority does not multiply travel, expenses or licence fees', () => {
     const shoot: CatalogItem = { id: 's', name: 'S', rate: 'shoot', baseHours: 10, licensable: true, onLocation: true };
     const std = priceQuote([line(shoot)], opts({ travel: 'away', licence: 'national' }), cfg);
-    const rush = priceQuote([line(shoot)], opts({ turnaround: 'rush', travel: 'away', licence: 'national' }), cfg);
+    const rush = priceQuote([line(shoot)], opts({ priority: true, travel: 'away', licence: 'national' }), cfg);
     // Only the 1200 labour is inflated; travel labour, expenses and licence are not.
     expect(rush.total - std.total).toBe(600);
     expect(rush.travelLabour).toBe(std.travelLabour);
@@ -189,13 +186,13 @@ describe('priceQuote', () => {
     expect(priceQuote([line(shoot)], opts({ licence: 'national' }), cfg).licenceFee).toBe(1800);
   });
 
-  it('extra revisions are labour, and are affected by rush', () => {
+  it('extra revisions are labour, and are affected by priority', () => {
     const t = priceQuote([line(tenHourDesign)], opts({ extraRevisions: 2 }), cfg);
     expect(t.revisionsHours).toBe(8);
     expect(t.revisionsCost).toBe(800);
     expect(t.total).toBe(1800);
 
-    const r = priceQuote([line(tenHourDesign)], opts({ extraRevisions: 2, turnaround: 'rush' }), cfg);
+    const r = priceQuote([line(tenHourDesign)], opts({ extraRevisions: 2, priority: true }), cfg);
     expect(r.total).toBe(1800 * 1.5);
   });
 
@@ -211,8 +208,8 @@ describe('priceQuote', () => {
     expect(priceQuote([], opts({ sourceFiles: true }), cfg).sourceFilesFee).toBe(0);
   });
 
-  it('source files are not inflated by rush', () => {
-    const t = priceQuote([line(tenHourDesign)], opts({ sourceFiles: true, turnaround: 'rush' }), cfg);
+  it('source files are not inflated by priority', () => {
+    const t = priceQuote([line(tenHourDesign)], opts({ sourceFiles: true, priority: true }), cfg);
     expect(t.sourceFilesFee).toBe(250);
     expect(t.total).toBe(1500 + 250);
   });
@@ -236,9 +233,9 @@ describe('priceQuote', () => {
   });
 
   it('unknown option ids fall back to the first tier rather than breaking', () => {
-    const t = priceQuote([line(tenHourDesign)], opts({ turnaround: 'nope', travel: 'nope', licence: 'nope' }), cfg);
+    const t = priceQuote([line(tenHourDesign)], opts({ priority: false, travel: 'nope', licence: 'nope' }), cfg);
     expect(Number.isNaN(t.total)).toBe(false);
-    expect(t.rushMult).toBe(1);
+    expect(t.priorityUplift).toBe(0);
   });
 });
 
@@ -333,19 +330,121 @@ describe('buying fewer hours', () => {
     expect(Number.isNaN(t.hoursFactor)).toBe(false);
   });
 
-  it('a reduced quote still gets rushed on what was bought, not what was recommended', () => {
+  it('priority applies to what was bought, not what was recommended', () => {
     const item: CatalogItem = { id: 'a', name: 'A', rate: 'design', baseHours: 10 };
     const values = { [HOURS_FACTOR_KEY]: 0.6 };
     const lines = [{ item, discipline: disc, values, breakdown: priceItem(item, values, rates) }];
-    const t = priceQuote(lines, opts({ turnaround: 'rush' }), cfg);
+    const t = priceQuote(lines, opts({ priority: true }), cfg);
     expect(t.labour).toBeCloseTo(600);
-    expect(t.rushAmount).toBeCloseTo(300);
+    expect(t.priorityAmount).toBeCloseTo(300);
     expect(t.total).toBeCloseTo(900);
   });
 
   it('rides share links without extra plumbing', () => {
     const sel = { 'ph-shoot': { hours: 6, [HOURS_FACTOR_KEY]: 0.7 } };
     expect(decodeState(encodeState(sel, opts()))?.s).toEqual(sel);
+  });
+});
+
+describe('delivery calendar', () => {
+  // 2026-07-22 is a Wednesday; 2026-07-25 a Saturday; 2026-07-27 a Monday.
+  const twentyHours: CatalogItem = { id: 'a', name: 'A', rate: 'design', baseHours: 20 };
+  const sched = (over: Partial<ProjectOptions> = {}) =>
+    priceQuote([line(twentyHours)], opts(over), cfg).schedule;
+
+  it('spreads hours over the standard 2h/day', () => {
+    const s = sched();
+    expect(s.hoursPerDay).toBe(2);
+    expect(s.totalHours).toBe(20);
+    expect(s.workingDays).toBe(10);
+  });
+
+  it('priority triples the pace at 6h/day', () => {
+    const s = sched({ priority: true });
+    expect(s.hoursPerDay).toBe(6);
+    expect(s.workingDays).toBe(4); // ceil(20 / 6)
+  });
+
+  it('rounds part-days up — you cannot deliver in 3.3 days', () => {
+    expect(sched({ priority: true }).workingDays).toBe(4);
+  });
+
+  it('counts revisions and travel time, not just the deliverables', () => {
+    const withExtras = priceQuote(
+      [line({ id: 'x', name: 'X', rate: 'shoot', baseHours: 10, onLocation: true })],
+      opts({ travel: 'away', extraRevisions: 1 }),
+      cfg,
+    ).schedule;
+    // 10 item + 4 revision + 5 travel = 19h at 2h/day
+    expect(withExtras.totalHours).toBe(19);
+    expect(withExtras.workingDays).toBe(10);
+  });
+
+  it('needs no start date to estimate a duration', () => {
+    const s = sched();
+    expect(s.workingDays).toBe(10);
+    expect(s.start).toBeNull();
+    expect(s.end).toBeNull();
+    expect(s.calendarDays).toBe(0);
+  });
+
+  it('skips weekends — 10 working days from a Wednesday lands two weeks later', () => {
+    const s = sched({ startDate: '2026-07-22' });
+    expect(s.start).toBe('2026-07-22');
+    // Wed 22 is day 1; day 10 is Tue 4 August.
+    expect(s.end).toBe('2026-08-04');
+    expect(s.calendarDays).toBe(14);
+  });
+
+  it('rolls a weekend start forward to the Monday', () => {
+    const s = sched({ startDate: '2026-07-25' }); // Saturday
+    expect(s.start).toBe('2026-07-27');
+  });
+
+  it('a one-day job starts and ends the same day', () => {
+    const oneHour: CatalogItem = { id: 'q', name: 'Q', rate: 'design', baseHours: 1 };
+    const s = priceQuote([line(oneHour)], opts({ startDate: '2026-07-22' }), cfg).schedule;
+    expect(s.workingDays).toBe(1);
+    expect(s.start).toBe('2026-07-22');
+    expect(s.end).toBe('2026-07-22');
+    expect(s.calendarDays).toBe(1);
+  });
+
+  it('an empty quote has no schedule at all', () => {
+    const s = priceQuote([], opts({ startDate: '2026-07-22' }), cfg).schedule;
+    expect(s.workingDays).toBe(0);
+    expect(s.end).toBeNull();
+  });
+
+  it('ignores a malformed or impossible start date rather than throwing', () => {
+    expect(sched({ startDate: 'tomorrow' }).start).toBeNull();
+    expect(sched({ startDate: '2026-02-31' }).start).toBeNull();
+    expect(sched({ startDate: '' }).start).toBeNull();
+  });
+
+  it('earliestStart clears the notice period and lands on a working day', () => {
+    // Wed 22 July + 7 days = Wed 29 July.
+    expect(toISODate(earliestStart(parseISODate('2026-07-22')!, 7))).toBe('2026-07-29');
+    // Fri 24 July + 7 = Fri 31 July.
+    expect(toISODate(earliestStart(parseISODate('2026-07-24')!, 7))).toBe('2026-07-31');
+    // Sat 18 July + 7 = Sat 25 → rolls to Mon 27.
+    expect(toISODate(earliestStart(parseISODate('2026-07-18')!, 7))).toBe('2026-07-27');
+  });
+
+  it('parses dates in UTC so the day cannot slide by timezone', () => {
+    const d = parseISODate('2026-07-22')!;
+    expect(d.getUTCFullYear()).toBe(2026);
+    expect(d.getUTCMonth()).toBe(6);
+    expect(d.getUTCDate()).toBe(22);
+    expect(toISODate(d)).toBe('2026-07-22');
+  });
+
+  it('priority is priced as well as faster', () => {
+    const std = priceQuote([line(twentyHours)], opts(), cfg);
+    const pri = priceQuote([line(twentyHours)], opts({ priority: true }), cfg);
+    expect(pri.priorityUplift).toBe(0.5); // test config; production is 0.35
+    expect(pri.total).toBeCloseTo(std.total * 1.5);
+    expect(pri.schedule.workingDays).toBeLessThan(std.schedule.workingDays);
   });
 });
 

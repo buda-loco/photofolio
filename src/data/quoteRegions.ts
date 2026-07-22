@@ -7,13 +7,13 @@
 // To change Argentine pricing, change AR_PRICE_FACTOR below. Nothing else.
 
 import {
-  DISCIPLINES, RATES, RATE_LABELS, TURNAROUND, TRAVEL, LICENCES, PRICING,
+  DISCIPLINES, RATES, RATE_LABELS, TRAVEL, LICENCES, PRICING,
   BUSINESS, CONTACT_EMAIL, CONTACT_PHONE, CURRENCY, QUOTE_VALID_DAYS,
 } from './quoteCatalogue';
 import { ES_CATALOGUE, ES_COPY } from './quoteCopy.es';
 import { EN_COPY, type QuoteCopy, type CatalogueCopy } from './quoteCopy';
 import type {
-  CatalogItem, Discipline, LicenceTier, Param, PricingConfig, RateId, TravelZone, TurnaroundTier,
+  CatalogItem, Discipline, LicenceTier, Param, PricingConfig, RateId, TravelZone,
 } from '@/lib/quotePricing';
 
 /* ═══════════════════ The adjustable variables ═══════════════════ */
@@ -163,7 +163,6 @@ export interface QuoteBundle {
   allItems: Record<string, { item: CatalogItem; discipline: Discipline }>;
   rates: Record<RateId, number>;
   rateLabels: Record<RateId, string>;
-  turnaround: TurnaroundTier[];
   travel: TravelZone[];
   licences: LicenceTier[];
   pricing: PricingConfig;
@@ -204,12 +203,9 @@ function build(regionId: 'au' | 'ar'): QuoteBundle {
   const licences: LicenceTier[] = translateTier(LICENCES, cat?.licences)
     .map((l) => ({ ...l, fee: scale(l.fee, f, 50) ?? 0 }));
 
-  const turnaround = translateTier(TURNAROUND, cat?.turnaround);
-
   const pricing: PricingConfig = {
     ...PRICING,
     rates,
-    turnaround,
     travel,
     licences,
     sourceFiles: {
@@ -228,7 +224,6 @@ function build(regionId: 'au' | 'ar'): QuoteBundle {
     allItems,
     rates,
     rateLabels,
-    turnaround,
     travel,
     licences,
     pricing,

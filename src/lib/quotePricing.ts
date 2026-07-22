@@ -105,7 +105,14 @@ export type ParamValues = Record<string, number | string | boolean>;
 export type Selection = Record<string, ParamValues>;
 
 export interface ProjectOptions {
-  turnaround: string;
+  /**
+   * Sole focus of the day rather than one of several jobs in progress. Costs
+   * more and finishes sooner — the only speed lever there is, deliberately, so
+   * a quote can't promise a deadline its own hours contradict.
+   */
+  priority: boolean;
+  /** 'YYYY-MM-DD', or '' before the client has picked one. */
+  startDate: string;
   travel: string;
   licence: string;
   extraRevisions: number;
@@ -228,11 +235,15 @@ export function priceItem(item: CatalogItem, values: ParamValues, rates: Record<
 
 /* ─────────────────── Project-level modifiers ─────────────────── */
 
-export interface TurnaroundTier {
-  id: string;
-  label: string;
-  desc: string;
-  mult: number;
+export interface ScheduleConfig {
+  /** Hours a day a normal job gets, sharing the week with other work. */
+  hoursPerDay: number;
+  /** Hours a day when it's the only project on the desk. */
+  priorityHoursPerDay: number;
+  /** Price uplift for that exclusivity, as a fraction. */
+  priorityUplift: number;
+  /** Days of notice before work can start. */
+  leadDays: number;
 }
 
 export interface TravelZone {
@@ -282,8 +293,9 @@ export interface QuoteTotals {
   itemFees: number;
   revisionsHours: number;
   revisionsCost: number;
-  rushMult: number;
-  rushAmount: number;
+  /** Uplift charged for sole focus, as a fraction (0 when not priority). */
+  priorityUplift: number;
+  priorityAmount: number;
   travelHours: number;
   travelLabour: number;
   travelExpenses: number;
@@ -296,11 +308,26 @@ export interface QuoteTotals {
   deposit: number;
   /** True when some part of the price can't be fixed without a conversation. */
   hasPoa: boolean;
+  schedule: Schedule;
+}
+
+export interface Schedule {
+  /** Hours a day this job gets — the standard pace, or the priority pace. */
+  hoursPerDay: number;
+  /** Every hour that has to be worked, including revisions and travel. */
+  totalHours: number;
+  /** Working days needed, Mon–Fri. 0 when nothing is selected yet. */
+  workingDays: number;
+  /** 'YYYY-MM-DD', or null until a start date is chosen. */
+  start: string | null;
+  end: string | null;
+  /** Elapsed calendar days from start to delivery, weekends included. */
+  calendarDays: number;
 }
 
 export interface PricingConfig {
   rates: Record<RateId, number>;
-  turnaround: TurnaroundTier[];
+  schedule: ScheduleConfig;
   travel: TravelZone[];
   licences: LicenceTier[];
   revisionsIncluded: number;
@@ -314,11 +341,93 @@ export interface PricingConfig {
 const pick = <T extends { id: string }>(list: T[], id: string): T | undefined =>
   list.find((o) => o.id === id) ?? list[0];
 
+/* ──────────────────────── Delivery calendar ──────────────────────── */
+
+// All date maths runs at midday UTC. Parsing 'YYYY-MM-DD' as local midnight
+// shifts the day backwards for anyone west of Greenwich; midday is far enough
+// from either boundary that no timezone or DST shift can move the date.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+export const parseISODate = (value: string | null | undefined): Date | null => {
+  if (!value || !ISO_DATE.test(value)) return null;
+  const [y, m, d] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d, 12));
+  // Rejects impossible dates like 2026-02-31, which Date would roll over.
+  if (date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return null;
+  return date;
+};
+
+export const toISODate = (d: Date): string => d.toISOString().slice(0, 10);
+
+const isWeekend = (d: Date) => d.getUTCDay() === 0 || d.getUTCDay() === 6;
+
+/** The given day, or the next Monday if it lands on a weekend. */
+export const nextWorkingDay = (d: Date): Date => {
+  const out = new Date(d.getTime());
+  while (isWeekend(out)) out.setUTCDate(out.getUTCDate() + 1);
+  return out;
+};
+
+/** The last day of a run of `days` working days, counting the start as day 1. */
+export const addWorkingDays = (start: Date, days: number): Date => {
+  const out = nextWorkingDay(start);
+  let remaining = Math.max(1, Math.floor(days)) - 1;
+  while (remaining > 0) {
+    out.setUTCDate(out.getUTCDate() + 1);
+    if (!isWeekend(out)) remaining -= 1;
+  }
+  return out;
+};
+
+/** The earliest date work can begin, given the notice period. */
+export const earliestStart = (today: Date, leadDays: number): Date => {
+  const out = new Date(today.getTime());
+  out.setUTCDate(out.getUTCDate() + Math.max(0, Math.floor(num(leadDays))));
+  return nextWorkingDay(out);
+};
+
+/**
+ * Turn a pile of hours into a delivery estimate.
+ *
+ * Deliberately coarse: hours ÷ hours-per-day, rounded up, spread over working
+ * days. It is an indication of when work finishes, not a commitment — the UI
+ * and the quote document both say so.
+ */
+export function computeSchedule(
+  totalHours: number,
+  options: ProjectOptions,
+  cfg: PricingConfig,
+): Schedule {
+  const hoursPerDay = Math.max(
+    0.5,
+    num(options.priority ? cfg.schedule?.priorityHoursPerDay : cfg.schedule?.hoursPerDay, 2),
+  );
+  const hours = Math.max(0, num(totalHours));
+  const workingDays = hours > 0 ? Math.max(1, Math.ceil(hours / hoursPerDay)) : 0;
+
+  const parsed = parseISODate(options.startDate);
+  const start = parsed ? nextWorkingDay(parsed) : null;
+  const end = start && workingDays > 0 ? addWorkingDays(start, workingDays) : null;
+
+  const calendarDays = start && end
+    ? Math.round((end.getTime() - start.getTime()) / 86_400_000) + 1
+    : 0;
+
+  return {
+    hoursPerDay,
+    totalHours: hours,
+    workingDays,
+    start: start ? toISODate(start) : null,
+    end: end ? toISODate(end) : null,
+    calendarDays,
+  };
+}
+
 /**
  * Price the whole quote.
  *
- * Rush multiplies production labour only — not travel time (you can't drive to
- * Toowoomba faster because the deadline moved), not hard costs, and not the
+ * Priority multiplies production labour only — not travel time (you can't drive
+ * to Toowoomba faster because the deadline moved), not hard costs, and not the
  * licence fee, which is about usage rather than effort.
  */
 export function priceQuote(
@@ -341,10 +450,9 @@ export function priceQuote(
   const revisionsHours = extra * Math.max(0, num(cfg.revisionHours));
   const revisionsCost = revisionsHours * Math.max(0, num(cfg.rates[cfg.revisionRate]));
 
-  const tier = pick(cfg.turnaround, options.turnaround);
-  const rushMult = Math.max(0, num(tier?.mult, 1));
-  const rushable = labour + revisionsCost;
-  const rushAmount = rushable * (rushMult - 1);
+  const productionLabour = labour + revisionsCost;
+  const priorityUplift = options.priority ? Math.max(0, num(cfg.schedule?.priorityUplift)) : 0;
+  const priorityAmount = productionLabour * priorityUplift;
 
   // Travel is only chargeable when something actually puts me on location —
   // an edit or a logo doesn't care where the client is.
@@ -367,11 +475,13 @@ export function priceQuote(
     : 0;
 
   const subtotal =
-    rushable + rushAmount + travelLabour + travelExpenses + itemFees + licenceFee + sourceFilesFee;
+    productionLabour + priorityAmount + travelLabour + travelExpenses + itemFees + licenceFee + sourceFilesFee;
   const total = Math.max(0, subtotal);
 
   const travelPoa = !!zone?.poa;
   const licencePoa = !!lic?.poa;
+
+  const schedule = computeSchedule(hours + revisionsHours + travelHours, options, cfg);
 
   return {
     lines,
@@ -386,8 +496,8 @@ export function priceQuote(
     itemFees,
     revisionsHours,
     revisionsCost,
-    rushMult,
-    rushAmount,
+    priorityUplift,
+    priorityAmount,
     travelHours,
     travelLabour,
     travelExpenses,
@@ -399,6 +509,7 @@ export function priceQuote(
     total,
     deposit: total * clamp(num(cfg.depositPercent), 0, 1),
     hasPoa: travelPoa || licencePoa,
+    schedule,
   };
 }
 

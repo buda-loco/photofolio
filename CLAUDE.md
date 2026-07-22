@@ -392,7 +392,7 @@ steps: disciplines → scope → project conditions → details → **quote docu
   first, then multipliers scale the whole line. Fixed `fee`s are hard costs
   only — gear, hire, travel, licensing — never labour.
 - **Project modifiers**, applied in `priceQuote()`:
-  - *Rush* multiplies **production labour only** — never travel, expenses,
+  - *Priority* multiplies **production labour only** — never travel, expenses,
     licensing or working-files fees.
   - *Travel* bills time at the shoot rate plus an estimated expense line, and is
     only charged when a selected item is flagged `onLocation`.
@@ -401,6 +401,24 @@ steps: disciplines → scope → project conditions → details → **quote docu
   - *Working files* (source/project files) are priced off production labour
     (20%, min $250) — a value transfer, not extra effort.
   - Extra revision rounds are labour (2 rounds included).
+- **Delivery calendar & priority — the only speed lever.** There are
+  deliberately no "1 week / 2 week" rush tiers: a tier promises a duration the
+  job's own hours can contradict, whereas a date derived from those hours
+  cannot. `SCHEDULE` in `quoteCatalogue.ts` holds the whole model —
+  `hoursPerDay: 2` (standard, sharing the week with other work),
+  `priorityHoursPerDay: 6` (sole focus), `priorityUplift: 0.35`, `leadDays: 7`.
+  - Working days ÷ Mon–Fri, weekends skipped, part-days rounded up. The hours
+    counted are items + extra revisions + travel time.
+  - ⚠️ **All date maths runs at midday UTC** (`parseISODate`). Parsing
+    `YYYY-MM-DD` as local midnight shifts the day backwards for anyone west of
+    Greenwich; the document formats with `timeZone: 'UTC'` for the same reason.
+  - The start date default and its `min` are set in a `useEffect`, never during
+    render — "today" computed on the server disagrees with the client.
+  - Everything time-related lives in **one block at the end of the Project
+    step**: the priority toggle, the date picker, the duration, the delivery
+    date and the caveat. Don't scatter it.
+  - ⚠️ The estimate is **an indication, not a commitment**, and says so in the
+    UI and on the document. Keep that wording.
 - **Hours dial — buying less than recommended.** The params compute what the
   scope *needs* (`recommendedHours`); the client can then buy a share of it,
   stored per item under the reserved `HOURS_FACTOR_KEY` (`__hoursFactor`) in the

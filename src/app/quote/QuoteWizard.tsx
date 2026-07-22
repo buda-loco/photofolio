@@ -19,6 +19,7 @@ import { whatsappLink } from '@/data/quoteCatalogue';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, clamp, plural,
   hoursFactorOf, HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, HOURS_FACTOR_MAX,
+  earliestStart, parseISODate, toISODate,
   type CatalogItem, type Param, type ParamValues, type ProjectOptions, type QuoteLine, type Selection,
 } from '@/lib/quotePricing';
 
@@ -33,7 +34,8 @@ const HOURS_STEP = 0.05;
 const pct = (factor: number) => Math.round(factor * 100);
 
 const DEFAULT_OPTIONS: ProjectOptions = {
-  turnaround: 'standard',
+  priority: false,
+  startDate: '',
   travel: 'local',
   licence: 'organic',
   extraRevisions: 0,
@@ -50,7 +52,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const bundle = useMemo(() => getQuoteBundle(regionId), [regionId]);
 
   const { region, disciplines: DISCIPLINES, allItems: ALL_ITEMS, rates: RATES, rateLabels: RATE_LABELS,
-    pricing: PRICING, turnaround: TURNAROUND, travel: TRAVEL, licences: LICENCES, validDays, copy: T } = bundle;
+    pricing: PRICING, travel: TRAVEL, licences: LICENCES, validDays, copy: T } = bundle;
 
   const money = useCallback(
     (n: number) => `${region.currencySymbol}${Math.round(n).toLocaleString(region.locale)}`,
@@ -59,6 +61,15 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const hrs = (n: number) => `${Math.round(n * 10) / 10}h`;
   const dateFmt = useCallback(
     (d: Date) => d.toLocaleDateString(region.locale, { day: 'numeric', month: 'long', year: 'numeric' }),
+    [region.locale],
+  );
+  const longDate = useCallback(
+    (iso: string) => {
+      const d = parseISODate(iso);
+      return d
+        ? d.toLocaleDateString(region.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+        : iso;
+    },
     [region.locale],
   );
 
@@ -72,6 +83,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const [errorMsg, setErrorMsg] = useState('');
   const [meta, setMeta] = useState<QuoteMeta | null>(null);
   const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
+  const [minStartDate, setMinStartDate] = useState('');
 
   /* ── Restore from a share link, once, after mount ──
      Deliberately client-only: reading location during render would desync
@@ -110,7 +122,12 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     const suffix = Math.floor(1000 + Math.random() * 9000);
     const prefix = region.id === 'ar' ? 'BA-AR' : 'BA';
     setMeta({ number: `${prefix}-${stamp}-${suffix}`, issued: dateFmt(now), validUntil: dateFmt(until) });
-  }, [validDays, dateFmt, region.id]);
+
+    // Earliest bookable start, and the default the picker opens on.
+    const soonest = toISODate(earliestStart(now, PRICING.schedule.leadDays));
+    setMinStartDate(soonest);
+    setOptions((o) => (o.startDate ? o : { ...o, startDate: soonest }));
+  }, [validDays, dateFmt, region.id, PRICING.schedule.leadDays]);
 
   /* ── Derived pricing ── */
   const itemOrder = useMemo(() => Object.keys(ALL_ITEMS), [ALL_ITEMS]);
@@ -224,11 +241,15 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     hours: totals.hours + totals.revisionsHours + totals.travelHours,
     hasPoa: totals.hasPoa,
     options: {
-      turnaround: TURNAROUND.find((t) => t.id === options.turnaround)?.label ?? '',
+      priority: options.priority,
       travel: offersTravel ? TRAVEL.find((t) => t.id === options.travel)?.label ?? '' : 'n/a',
       licence: anyLicensable ? LICENCES.find((l) => l.id === options.licence)?.label ?? '' : 'n/a',
       extraRevisions: options.extraRevisions,
       sourceFiles: options.sourceFiles,
+      startDate: totals.schedule.start ?? '',
+      deliveryDate: totals.schedule.end ?? '',
+      workingDays: totals.schedule.workingDays,
+      hoursPerDay: totals.schedule.hoursPerDay,
     },
     lines: lines.map((l) => ({
       discipline: l.discipline.label,
@@ -240,7 +261,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     charges: {
       itemFees: totals.itemFees,
       revisions: totals.revisionsCost,
-      rush: totals.rushAmount,
+      priority: totals.priorityAmount,
       travelLabour: totals.travelLabour,
       travelExpenses: totals.travelExpenses,
       licence: totals.licenceFee,
@@ -587,20 +608,6 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   <span className="qw-param-help">{T.project.hoursHelp(pct(HOURS_FACTOR_MIN))}</span>
                 </div>
 
-                <div className="qw-param">
-                  <span className="qw-param-label">{T.project.turnaround}</span>
-                  <div className="qw-choice-row">
-                    {TURNAROUND.map((t) => (
-                      <button key={t.id} type="button" className="qw-choice" data-active={options.turnaround === t.id} onClick={() => setOptions({ ...options, turnaround: t.id })}>
-                        <span className="qw-choice-label">{t.label}</span>
-                        <span className="qw-choice-desc">{t.desc}</span>
-                        {t.mult > 1 && <span className="qw-choice-tag">+{Math.round((t.mult - 1) * 100)}%</span>}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="qw-param-help">{T.project.turnaroundHelp}</span>
-                </div>
-
                 {/* Only asked when something actually puts me on location. */}
                 {offersTravel && (
                 <div className="qw-param">
@@ -659,6 +666,70 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   </span>
                   {totals.sourceFilesFee > 0 && <span className="qw-toggle-price">+{money(totals.sourceFilesFee)}</span>}
                 </label>
+
+                {/* ── Delivery — everything time-related, in one place, last ── */}
+                <div className="qw-delivery">
+                  <h3 className="qw-delivery-head">{T.delivery.title}</h3>
+                  <p className="quote-section-sub">{T.delivery.sub}</p>
+
+                  <label className="qw-toggle" data-active={options.priority}>
+                    <input
+                      type="checkbox"
+                      checked={options.priority}
+                      onChange={(e) => setOptions({ ...options, priority: e.target.checked })}
+                    />
+                    <span className="qw-toggle-box" aria-hidden />
+                    <span className="qw-toggle-text">
+                      <span className="qw-toggle-label">{T.delivery.priority}</span>
+                      <span className="qw-choice-desc">
+                        {T.delivery.priorityDesc(
+                          PRICING.schedule.hoursPerDay,
+                          PRICING.schedule.priorityHoursPerDay,
+                          Math.round(PRICING.schedule.priorityUplift * 100),
+                        )}
+                      </span>
+                    </span>
+                    {totals.priorityAmount > 0 && <span className="qw-toggle-price">+{money(totals.priorityAmount)}</span>}
+                  </label>
+
+                  <div className="qw-delivery-grid">
+                    <label className="qw-field">
+                      <span>{T.delivery.startLabel}</span>
+                      <input
+                        type="date"
+                        className="qw-input"
+                        value={options.startDate}
+                        min={minStartDate}
+                        onChange={(e) => setOptions({ ...options, startDate: e.target.value })}
+                      />
+                    </label>
+
+                    <div className="qw-delivery-result">
+                      {totals.schedule.workingDays > 0 ? (
+                        <>
+                          <span className="qw-delivery-days">
+                            {T.delivery.duration(totals.schedule.workingDays)}
+                          </span>
+                          <span className="qw-delivery-pace">
+                            {T.delivery.pace(totals.schedule.hoursPerDay)}
+                          </span>
+                          {totals.schedule.end ? (
+                            <span className="qw-delivery-date">
+                              {T.delivery.deliveryLabel}: <b>{longDate(totals.schedule.end)}</b>
+                            </span>
+                          ) : (
+                            <span className="qw-delivery-pace">{T.delivery.pickDate}</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="qw-delivery-pace">{T.delivery.pickDate}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="qw-param-help">{T.delivery.startHelp(PRICING.schedule.leadDays)}</p>
+                  <p className="qw-delivery-note">{T.delivery.note}</p>
+                </div>
               </div>
             )}
 
@@ -760,17 +831,20 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                 </ul>
               )}
 
-              {(totals.rushAmount > 0 || totals.travelLabour + totals.travelExpenses > 0
+              {(totals.priorityAmount > 0 || totals.travelLabour + totals.travelExpenses > 0
                 || totals.licenceFee > 0 || totals.sourceFilesFee > 0 || totals.revisionsCost > 0) && (
                 <ul className="qw-rail-items qw-rail-extras">
                   {totals.revisionsCost > 0 && <li><span>{T.rail.revisions}</span><b>+{money(totals.revisionsCost)}</b></li>}
-                  {totals.rushAmount > 0 && <li><span>{T.rail.rush}</span><b>+{money(totals.rushAmount)}</b></li>}
+                  {totals.priorityAmount > 0 && <li><span>{T.rail.priority}</span><b>+{money(totals.priorityAmount)}</b></li>}
                   {totals.travelLabour + totals.travelExpenses > 0 && <li><span>{T.rail.travel}</span><b>+{money(totals.travelLabour + totals.travelExpenses)}</b></li>}
                   {totals.licenceFee > 0 && <li><span>{T.rail.licence}</span><b>+{money(totals.licenceFee)}</b></li>}
                   {totals.sourceFilesFee > 0 && <li><span>{T.rail.sourceFiles}</span><b>+{money(totals.sourceFilesFee)}</b></li>}
                 </ul>
               )}
 
+              {totals.schedule.workingDays > 0 && (
+                <span className="qw-rail-line">{T.rail.delivery(totals.schedule.workingDays)}</span>
+              )}
               {totals.reduced && (
                 <span className="qw-rail-line qw-warn">
                   {T.rail.reduced(pct(totals.hoursFactor), hrs(totals.recommendedHours))}
