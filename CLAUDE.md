@@ -26,6 +26,29 @@ npm run start    # serve production build
 
 ---
 
+## Design system
+
+The brand's generative rulebook lives in **`Working Files/Design-system.pen`** (Pencil) —
+tokens, colour, type, components, motion, page templates, deck masters and accessibility
+rules, all mirrored from this codebase. Use it to produce new pages, decks and documents.
+
+**Full reference: [`Working Files/CLAUDE.md`](Working%20Files/CLAUDE.md)** — board map,
+tokens, logo geometry, the contrast matrix, and how to extend it.
+
+⚠️ It also records **three unfixed contrast defects in this codebase** (measured, not
+estimated). They are documented but the code is unchanged:
+
+1. `src/css/grid.css` — the grid-card hover tint paints above the scrim and below the
+   hardcoded white title. Any project **without** a `backgroundColor` falls back to accent
+   yellow and lands at **3.16:1** (`music-act`); `wonderful-world` `#FACC40` is **4.08:1**.
+   Fix by deriving the title colour through `accessibleText()` in `lib/colors.ts`.
+2. `src/content/design.json` — `colors.textMuted: "#767676"` is **4.62:1** on black and
+   **fails (4.36:1)** on the `#141414` surfaces. `tokens.css` already defaults to
+   `#999999` (7.37:1); design.json overrides the good value with the marginal one.
+3. `src/css/project.css` — `.project-next-label { opacity: 0.6 }` is **3.99:1**. Needs `0.75`.
+
+---
+
 ## Project structure
 
 ```
@@ -350,10 +373,54 @@ Editable collections:
 - **Design** — site-wide colours including `labelColor` (supports gradients)
 - **Quotes** — per-client interactive scope & pricing tools (see below)
 
-### Quote builder (`/quote/<client>`)
-Reusable, config-driven client quote tool. One JSON doc per client in
-`src/content/quotes/<slug>.json` → rendered at `/quote/<slug>` (statically
-generated, `noindex`). `/quote` redirects to the first available client.
+### Self-serve quote builder (`/quote`)
+
+Public, parametrised quote builder covering all eight services on offer. Five
+steps: disciplines → scope → project conditions → details → **quote document**.
+
+- **Catalogue:** `src/data/quoteCatalogue.ts` — eight disciplines (graphic
+  design, branding, photography, videography, post-production, animated
+  graphics, web design, design consultancy, event visuals), the hourly `RATES`
+  by craft, and the project-level `TURNAROUND` / `TRAVEL` / `LICENCES` tables.
+  This is the only place rates and prices are defined.
+- **Engine:** `src/lib/quotePricing.ts` — pure and total (never returns `NaN`).
+  Tests: `npm test` (`src/lib/quotePricing.test.ts`).
+- **Everything is hours-driven.** Each item has `baseHours`, plus `params` that
+  move those hours: `qty` (steppers — pages, images, shoot hours, runtime),
+  `choice` (crew size, retouch level, edit complexity — usually `hoursMult`),
+  and `toggle` (add-ons, usually a flat `feeAdd` for gear). Additive effects sum
+  first, then multipliers scale the whole line. Fixed `fee`s are hard costs
+  only — gear, hire, travel, licensing — never labour.
+- **Project modifiers**, applied in `priceQuote()`:
+  - *Rush* multiplies **production labour only** — never travel, expenses,
+    licensing or working-files fees.
+  - *Travel* bills time at the shoot rate plus an estimated expense line, and is
+    only charged when a selected item is flagged `onLocation`.
+  - *Usage licence* is a flat fee line, only charged when a selected item is
+    flagged `licensable`.
+  - *Working files* (source/project files) are priced off production labour
+    (20%, min $250) — a value transfer, not extra effort.
+  - Extra revision rounds are labour (2 rounds included).
+- **Output:** `QuoteDocument.tsx` renders a real quote — number, issue date,
+  30-day validity, scope grouped by discipline with each item's parameters spelt
+  out, project costs, total, 50% deposit and terms. "Save as PDF" is
+  `window.print()`; the `@media print` block in `quote.css` strips all site
+  chrome so the document prints as a standalone sheet. No PDF dependency.
+- **Share links:** the whole configuration is encoded into `?q=` (base64url) and
+  restored on mount. Malformed links are ignored rather than throwing.
+- **Submission:** `/api/quote-submit` (Resend) emails the itemised quote to
+  Benjamin *and* a copy to the client. The client copy failing never fails the
+  request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
+- **Quote number and dates are generated in a `useEffect`**, never during
+  render — otherwise SSR and client disagree and hydration breaks.
+- No GST line (not registered). `CONTACT_PHONE` in the catalogue is an empty
+  placeholder.
+
+### Per-client quote builder (`/quote/<client>`)
+A separate, older tool: budget-slider scope calculator. One JSON doc per client
+in `src/content/quotes/<slug>.json` → rendered at `/quote/<slug>` (statically
+generated, `noindex`). Logic in `src/lib/quote.ts` — unrelated to the engine
+above, though both share `src/css/quote.css`.
 
 - **Edit in Tina:** "Quotes" collection. Each doc holds the work types
   (hourly rates), budget slider bounds, focus options, and deliverables.
