@@ -615,6 +615,7 @@ export const ES_COPY: QuoteCopy = {
     copyPrompt: 'Copiá el enlace de tu presupuesto:',
     sendError: (msg) => `No se pudo enviar (${msg}).`,
     emailDirectly: 'Mandámelo por email →',
+    needDetails: 'Agregá tu nombre y email para enviarlo →',
   },
 
   nav: {

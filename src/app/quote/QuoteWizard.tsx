@@ -93,7 +93,11 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     setSelection(valid);
     setSelectedDisciplines(new Set(Object.keys(valid).map((id) => ALL_ITEMS[id].discipline.id)));
     setOptions({ ...DEFAULT_OPTIONS, ...(decoded.o ?? {}) });
-    setStep(1);
+    // Straight to the finished quote — a shared link exists to be read, not
+    // rebuilt. Contact details aren't encoded (they don't belong in a URL that
+    // gets forwarded), so the document falls back to a generic "Prepared for"
+    // and sending is gated until the recipient fills them in.
+    setStep(4);
   }, [ALL_ITEMS]);
 
   /* ── Quote identity — generated on the client so SSR stays deterministic ── */
@@ -203,7 +207,10 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
 
   /* ── Submit ── */
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
-  const canAdvance = [selectedDisciplines.size > 0, selectedCount > 0, true, form.name.trim() !== '' && emailOk, true][step];
+  // Step 4 is reachable directly from a share link, so this is now a real gate
+  // rather than a formality — without it the API just returns a 400.
+  const detailsComplete = form.name.trim() !== '' && emailOk;
+  const canAdvance = [selectedDisciplines.size > 0, selectedCount > 0, true, detailsComplete, true][step];
 
   const payload = () => ({
     ...form,
@@ -714,9 +721,21 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   {step === 3 ? T.nav.seeQuote : T.nav.continue}
                 </button>
               ) : (
-                <button className="quote-cta" onClick={submit} disabled={status === 'sending'}>
-                  {status === 'sending' ? T.nav.sending : T.nav.send}
-                </button>
+                <div className="qw-send">
+                  {!detailsComplete && (
+                    <button className="qw-send-hint" onClick={() => setStep(3)}>
+                      {T.quote.needDetails}
+                    </button>
+                  )}
+                  <button
+                    className="quote-cta"
+                    onClick={submit}
+                    disabled={status === 'sending' || !detailsComplete}
+                    data-disabled={!detailsComplete}
+                  >
+                    {status === 'sending' ? T.nav.sending : T.nav.send}
+                  </button>
+                </div>
               )}
             </div>
           </div>

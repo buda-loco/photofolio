@@ -1535,3 +1535,27 @@ textarea.qw-input { resize: vertical; }
 @media print {
   .qd-link { text-decoration: none; }
 }
+
+/* Send group — the details gate sits next to the button that's blocked by it. */
+.qw-send {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.qw-send-hint {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-align: right;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.qw-send-hint:hover { opacity: 0.8; }

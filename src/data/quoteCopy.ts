@@ -99,6 +99,7 @@ export interface QuoteCopy {
     copyPrompt: string;
     sendError: (msg: string) => string;
     emailDirectly: string;
+    needDetails: string;
   };
 
   nav: { back: string; continue: string; seeQuote: string; send: string; sending: string };
@@ -262,6 +263,7 @@ export const EN_COPY: QuoteCopy = {
     copyPrompt: 'Copy your quote link:',
     sendError: (msg) => `Couldn’t send (${msg}).`,
     emailDirectly: 'Email it to me directly →',
+    needDetails: 'Add your name and email to send this →',
   },
 
   nav: {

@@ -427,7 +427,14 @@ steps: disciplines → scope → project conditions → details → **quote docu
   `window.print()`; the `@media print` block in `quote.css` strips all site
   chrome so the document prints as a standalone sheet. No PDF dependency.
 - **Share links:** the whole configuration is encoded into `?q=` (base64url) and
-  restored on mount. Malformed links are ignored rather than throwing.
+  restored on mount, landing straight on the **finished quote** (step 4) — a
+  shared link exists to be read, not rebuilt. Malformed links are ignored rather
+  than throwing, and items absent from the region are dropped, not priced.
+  Contact details are deliberately NOT encoded (they don't belong in a URL that
+  gets forwarded), so the document shows a generic "Prepared for" and the send
+  button is gated on name + email, with a link back to the Details step.
+  ⚠️ Because step 4 is now reachable directly, that gate is load-bearing —
+  without it the API just returns a 400.
 - **Submission:** `/api/quote-submit` (Resend) emails the itemised quote to
   Benjamin *and* a copy to the client. The client copy failing never fails the
   request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
