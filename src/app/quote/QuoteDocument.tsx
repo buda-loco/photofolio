@@ -3,12 +3,12 @@
 // The quote document — the thing a client can print, save as PDF, and take to
 // whoever holds the budget. Also the last step of the wizard, so it has to read
 // well on screen and on A4. Print rules live in quote.css under @media print.
+//
+// Everything regional (currency, prices, language) arrives via `bundle`; this
+// component holds no locale-specific strings of its own.
 
-import { RATE_LABELS, BUSINESS, CURRENCY, PRICING, QUOTE_VALID_DAYS, TURNAROUND, TRAVEL, LICENCES, CONTACT_PHONE } from '@/data/quoteCatalogue';
+import type { QuoteBundle } from '@/data/quoteRegions';
 import type { ProjectOptions, QuoteTotals } from '@/lib/quotePricing';
-
-const money = (n: number) => `$${Math.round(n).toLocaleString()}`;
-const hrs = (n: number) => `${Math.round(n * 10) / 10}h`;
 
 export interface QuoteMeta {
   number: string;
@@ -24,16 +24,22 @@ export interface QuoteClient {
 }
 
 interface Props {
+  bundle: QuoteBundle;
   totals: QuoteTotals;
   options: ProjectOptions;
   client: QuoteClient;
   meta: QuoteMeta;
 }
 
-const find = <T extends { id: string; label: string }>(list: T[], id: string) =>
+const find = <T extends { id: string; label: string; desc: string }>(list: T[], id: string) =>
   list.find((o) => o.id === id) ?? list[0];
 
-export default function QuoteDocument({ totals, options, client, meta }: Props) {
+export default function QuoteDocument({ bundle, totals, options, client, meta }: Props) {
+  const { region, rateLabels, pricing, business, validDays, copy } = bundle;
+  const t = copy.doc;
+  const money = (n: number) => `${region.currencySymbol}${Math.round(n).toLocaleString(region.locale)}`;
+  const hrs = (n: number) => `${Math.round(n * 10) / 10}h`;
+
   const { lines } = totals;
 
   // Group lines under their discipline so the document reads like a scope of
@@ -45,49 +51,57 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
     return acc;
   }, []);
 
-  const turnaround = find(TURNAROUND, options.turnaround);
-  const travel = find(TRAVEL, options.travel);
-  const licence = find(LICENCES, options.licence);
+  const turnaround = find(bundle.turnaround, options.turnaround);
+  const licence = find(bundle.licences, options.licence);
+  const travel = bundle.travel.length ? find(bundle.travel, options.travel) : null;
   const licensable = lines.some((l) => l.item.licensable);
 
   // Every non-line-item charge, as rows — only the ones that actually apply.
   const adjustments: { label: string; note?: string; amount: number; poa?: boolean }[] = [];
-  if (totals.itemFees > 0) adjustments.push({ label: 'Equipment & hire', note: 'Hard costs attached to the items above', amount: totals.itemFees });
-  if (totals.revisionsCost > 0) adjustments.push({ label: `Additional revision rounds (${options.extraRevisions})`, note: `${hrs(totals.revisionsHours)} beyond the ${PRICING.revisionsIncluded} included`, amount: totals.revisionsCost });
-  if (totals.rushAmount > 0) adjustments.push({ label: `Rush fee — ${turnaround.label}`, note: `+${Math.round((totals.rushMult - 1) * 100)}% on production time`, amount: totals.rushAmount });
-  if (totals.travelLabour > 0) adjustments.push({ label: `Travel time — ${travel.label}`, note: `${hrs(totals.travelHours)} billed at the shoot rate`, amount: totals.travelLabour });
-  if (totals.travelExpenses > 0 || totals.travelPoa) adjustments.push({ label: 'Travel expenses', note: totals.travelPoa ? 'Confirmed once the destination is known' : 'Estimated — billed at cost', amount: totals.travelExpenses, poa: totals.travelPoa });
-  if (licensable && (totals.licenceFee > 0 || totals.licencePoa)) adjustments.push({ label: `Usage licence — ${licence.label}`, note: licence.desc, amount: totals.licenceFee, poa: totals.licencePoa });
-  if (totals.sourceFilesFee > 0) adjustments.push({ label: 'Working files released', note: 'Layered source and project files handed over', amount: totals.sourceFilesFee });
+  if (totals.itemFees > 0) adjustments.push({ label: t.equipment, note: t.equipmentNote, amount: totals.itemFees });
+  if (totals.revisionsCost > 0) adjustments.push({ label: t.revisions(options.extraRevisions), note: t.revisionsNote(hrs(totals.revisionsHours), pricing.revisionsIncluded), amount: totals.revisionsCost });
+  if (totals.rushAmount > 0) adjustments.push({ label: t.rush(turnaround.label), note: t.rushNote(Math.round((totals.rushMult - 1) * 100)), amount: totals.rushAmount });
+  if (totals.travelLabour > 0 && travel) adjustments.push({ label: t.travelTime(travel.label), note: t.travelTimeNote(hrs(totals.travelHours)), amount: totals.travelLabour });
+  if (totals.travelExpenses > 0 || totals.travelPoa) adjustments.push({ label: t.travelExpenses, note: totals.travelPoa ? t.travelExpensesPoa : t.travelExpensesEstimated, amount: totals.travelExpenses, poa: totals.travelPoa });
+  if (licensable && (totals.licenceFee > 0 || totals.licencePoa)) adjustments.push({ label: t.licence(licence.label), note: licence.desc, amount: totals.licenceFee, poa: totals.licencePoa });
+  if (totals.sourceFilesFee > 0) adjustments.push({ label: t.sourceFiles, note: t.sourceFilesNote, amount: totals.sourceFilesFee });
+
+  // Only advertise rates this region can actually book — the remote-only page
+  // has no shoot items, so quoting a shoot rate there would be misleading.
+  const availableRates = new Set(Object.values(bundle.allItems).map((e) => e.item.rate));
+  const rateSummary = Object.entries(pricing.rates)
+    .filter(([k]) => availableRates.has(k as keyof typeof pricing.rates))
+    .map(([k, v]) => `${rateLabels[k as keyof typeof rateLabels]} ${region.currencySymbol}${v}/h`)
+    .join(' · ');
 
   return (
-    <article className="qd-doc">
+    <article className="qd-doc" lang={region.locale}>
       {/* ── Letterhead ── */}
       <header className="qd-head">
         <div className="qd-from">
-          <p className="qd-from-name">{BUSINESS.name}</p>
+          <p className="qd-from-name">{business.name}</p>
           <p className="qd-from-meta">
-            {BUSINESS.role}<br />
-            {BUSINESS.location}<br />
-            {BUSINESS.email}
-            {CONTACT_PHONE && <><br />{CONTACT_PHONE}</>}<br />
-            {BUSINESS.site}
+            {copy.role}<br />
+            {business.location}<br />
+            {business.email}
+            {business.phone && <><br />{business.phone}</>}<br />
+            {business.site}
           </p>
         </div>
         <div className="qd-stamp">
-          <p className="qd-stamp-title">Quote</p>
+          <p className="qd-stamp-title">{t.stamp}</p>
           <dl className="qd-stamp-list">
-            <div><dt>Number</dt><dd>{meta.number}</dd></div>
-            <div><dt>Issued</dt><dd>{meta.issued}</dd></div>
-            <div><dt>Valid until</dt><dd>{meta.validUntil}</dd></div>
+            <div><dt>{t.number}</dt><dd>{meta.number}</dd></div>
+            <div><dt>{t.issued}</dt><dd>{meta.issued}</dd></div>
+            <div><dt>{t.validUntil}</dt><dd>{meta.validUntil}</dd></div>
           </dl>
         </div>
       </header>
 
       {/* ── Who it's for ── */}
       <section className="qd-for">
-        <span className="qd-label">Prepared for</span>
-        <p className="qd-for-name">{client.company || client.name || 'Your project'}</p>
+        <span className="qd-label">{t.preparedFor}</span>
+        <p className="qd-for-name">{client.company || client.name || t.fallbackClient}</p>
         <p className="qd-for-meta">
           {client.company && client.name ? `${client.name} · ` : ''}
           {client.email}
@@ -97,13 +111,13 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
 
       {/* ── Scope ── */}
       <section className="qd-scope">
-        <span className="qd-label">Scope of work</span>
+        <span className="qd-label">{t.scopeOfWork}</span>
         <table className="qd-table">
           <thead>
             <tr>
-              <th scope="col">Item</th>
-              <th scope="col" className="qd-num">Time</th>
-              <th scope="col" className="qd-num">Amount</th>
+              <th scope="col">{t.colItem}</th>
+              <th scope="col" className="qd-num">{t.colTime}</th>
+              <th scope="col" className="qd-num">{t.colAmount}</th>
             </tr>
           </thead>
           {groups.map((g) => (
@@ -121,7 +135,7 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
                   </td>
                   <td className="qd-num qd-muted">
                     {hrs(l.breakdown.hours)}
-                    <span className="qd-rate">{RATE_LABELS[l.item.rate]}</span>
+                    <span className="qd-rate">{rateLabels[l.item.rate]}</span>
                   </td>
                   <td className="qd-num">{money(l.breakdown.total)}</td>
                 </tr>
@@ -131,7 +145,7 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
 
           {adjustments.length > 0 && (
             <tbody>
-              <tr className="qd-group"><th scope="rowgroup" colSpan={3}>Project costs</th></tr>
+              <tr className="qd-group"><th scope="rowgroup" colSpan={3}>{t.projectCosts}</th></tr>
               {adjustments.map((a) => (
                 <tr key={a.label}>
                   <td>
@@ -139,7 +153,7 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
                     {a.note && <span className="qd-item-spec">{a.note}</span>}
                   </td>
                   <td className="qd-num qd-muted">—</td>
-                  <td className="qd-num">{a.poa ? 'POA' : money(a.amount)}</td>
+                  <td className="qd-num">{a.poa ? copy.project.poa : money(a.amount)}</td>
                 </tr>
               ))}
             </tbody>
@@ -147,12 +161,12 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
 
           <tfoot>
             <tr className="qd-total-row">
-              <th scope="row" colSpan={2}>Total</th>
-              <td className="qd-num qd-total">{money(totals.total)} <small>{CURRENCY}</small></td>
+              <th scope="row" colSpan={2}>{t.total}</th>
+              <td className="qd-num qd-total">{money(totals.total)} <small>{region.currency}</small></td>
             </tr>
             <tr>
               <th scope="row" colSpan={2} className="qd-muted">
-                Deposit to book — {Math.round(PRICING.depositPercent * 100)}%
+                {t.deposit(Math.round(pricing.depositPercent * 100))}
               </th>
               <td className="qd-num qd-muted">{money(totals.deposit)}</td>
             </tr>
@@ -160,43 +174,33 @@ export default function QuoteDocument({ totals, options, client, meta }: Props) 
         </table>
 
         <p className="qd-hours-note">
-          {hrs(totals.hours + totals.revisionsHours + totals.travelHours)} of work in total.
-          {' '}Rates: {Object.entries(PRICING.rates).map(([k, v]) => `${RATE_LABELS[k as keyof typeof RATE_LABELS]} $${v}/h`).join(' · ')}.
+          {t.hoursNote(hrs(totals.hours + totals.revisionsHours + totals.travelHours), rateSummary)}
         </p>
 
-        {totals.hasPoa && (
-          <p className="qd-poa">
-            Some items are marked POA — they can’t be fixed until we’ve confirmed the details.
-            Everything else in this quote is firm.
-          </p>
-        )}
+        {totals.hasPoa && <p className="qd-poa">{t.poaNote}</p>}
       </section>
 
       {/* ── Terms ── */}
       <section className="qd-terms">
-        <span className="qd-label">Terms</span>
+        <span className="qd-label">{t.terms}</span>
         <ul>
-          <li>Valid for {QUOTE_VALID_DAYS} days from the issue date above.</li>
-          <li>{Math.round(PRICING.depositPercent * 100)}% deposit confirms the booking; the balance is due on delivery.</li>
-          <li>{PRICING.revisionsIncluded} rounds of revisions are included. Further rounds are billed at the applicable hourly rate.</li>
-          <li>
-            {options.sourceFiles
-              ? 'Working files (layered source and project files) are included and released on final payment.'
-              : 'Final deliverables are supplied in the agreed formats. Working files are not included; they can be released for an additional fee.'}
-          </li>
-          <li>
-            {licensable
-              ? `Usage is licensed as: ${licence.label.toLowerCase()} — ${licence.desc.toLowerCase()}`
-              : 'Deliverables are licensed for the agreed purpose.'}
-          </li>
-          <li>Copyright remains with {BUSINESS.name} until final payment is received.</li>
-          <li>Prices are in {CURRENCY}. This is a quote, not an invoice.</li>
+          {t.termsList({
+            validDays,
+            depositPercent: Math.round(pricing.depositPercent * 100),
+            revisionsIncluded: pricing.revisionsIncluded,
+            sourceFiles: options.sourceFiles,
+            licensable,
+            licenceLabel: licence.label,
+            licenceDesc: licence.desc,
+            businessName: business.name,
+            currency: region.currency,
+          }).map((line) => <li key={line}>{line}</li>)}
         </ul>
       </section>
 
       <footer className="qd-foot">
-        <p>{BUSINESS.name} · {BUSINESS.email} · {BUSINESS.site}</p>
-        <p>Quote {meta.number} · issued {meta.issued}</p>
+        <p>{business.name} · {business.email} · {business.site}</p>
+        <p>{t.footerQuote(meta.number, meta.issued)}</p>
       </footer>
     </article>
   );

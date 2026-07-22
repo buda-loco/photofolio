@@ -1,13 +1,20 @@
 import type { Metadata } from 'next';
 import QuoteWizard from './QuoteWizard';
+import { getQuoteBundle } from '@/data/quoteRegions';
+
+const bundle = getQuoteBundle('au');
 
 export const metadata: Metadata = {
-  title: 'Build your quote',
-  description: 'Build a transparent, itemised quote for any kind of design work and send it over.',
-  alternates: { canonical: 'https://benjaminarnedo.com/quote' },
+  title: bundle.copy.meta.title,
+  description: bundle.copy.meta.description,
+  alternates: {
+    canonical: 'https://benjaminarnedo.com/quote',
+    languages: { 'en-AU': 'https://benjaminarnedo.com/quote', 'es-AR': 'https://benjaminarnedo.com/cotizacion' },
+  },
 };
 
-// Self-serve quote builder. Per-client quotes still live at /quote/<slug>.
+// Self-serve quote builder, Australian rate card in AUD.
+// The Spanish/USD variant lives at /cotizacion. Per-client quotes are at /quote/<slug>.
 export default function QuotePage() {
-  return <QuoteWizard />;
+  return <QuoteWizard regionId="au" />;
 }

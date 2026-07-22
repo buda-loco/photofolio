@@ -373,7 +373,7 @@ Editable collections:
 - **Design** — site-wide colours including `labelColor` (supports gradients)
 - **Quotes** — per-client interactive scope & pricing tools (see below)
 
-### Self-serve quote builder (`/quote`)
+### Self-serve quote builder (`/quote` EN/AUD · `/cotizacion` ES/USD)
 
 Public, parametrised quote builder covering all eight services on offer. Five
 steps: disciplines → scope → project conditions → details → **quote document**.
@@ -415,6 +415,53 @@ steps: disciplines → scope → project conditions → details → **quote docu
   render — otherwise SSR and client disagree and hydration breaks.
 - No GST line (not registered). `CONTACT_PHONE` in the catalogue is an empty
   placeholder.
+
+#### Regions — the two language/price variants
+
+One catalogue, one engine, two fronts. `src/data/quoteRegions.ts` builds a
+**bundle** per region: the catalogue scaled by a price factor, translated, and
+filtered. `getQuoteBundle('au' | 'ar')` is memoized per region.
+
+| | `/quote` | `/cotizacion` |
+|---|---|---|
+| Language | English | Spanish, **es-AR voseo** |
+| Currency | AUD, `$` | USD, **`US$`** (a bare `$` reads as pesos in Argentina) |
+| Prices | catalogue as authored | `AR_PRICE_FACTOR` = **0.75** |
+| Travel | offered | none — remote only |
+| On-location items | all | removed |
+
+**The adjustable levers**, all at the top of `quoteRegions.ts`:
+
+- **`AR_PRICE_FACTOR`** — the single number controlling Argentine pricing.
+  Change it and every rate, equipment fee, licence tier and the working-files
+  minimum move together. Nothing downstream hardcodes a price.
+  Scaled values are rounded to clean increments (rates to $5, fees to $10,
+  licences to $50), so a 25% cut reads "US$75/h", not "US$75.375/h" — which
+  shifts the effective discount by a fraction of a percent, deliberately.
+- **`LICENSING_ENABLED`** — currently **`false`**. Switching it off clears the
+  `licensable` flag on every item, which is all it takes: the engine only
+  charges the licence fee when a licensable item is selected, and the UI asks
+  the question on the same condition. The tiers stay defined, so flipping it
+  back to `true` restores licensing in both regions at once.
+- **`REGIONS[x].remoteOnly`** — drops every `onLocation` item. Because the
+  engine also gates travel on those items, this removes the travel question and
+  any travel charge automatically; no separate travel flag needed.
+
+**Copy** lives in `quoteCopy.ts` (types + `EN_COPY`) and `quoteCopy.es.ts`
+(`ES_COPY` + `ES_CATALOGUE`). Catalogue translations are keyed by the ids in
+`quoteCatalogue.ts` and fall back to English when a key is missing —
+`quoteRegions.test.ts` fails the build if any item, param or option on the
+Spanish page still matches its English source (bar an allowlist of words that
+are identical in both languages: Simple, Wireframes, WooCommerce).
+
+⚠️ **`QuoteWizard` takes a `regionId`, not the bundle.** The copy object holds
+formatting functions, and functions cannot be serialised across the
+server→client boundary — passing the bundle as a prop throws
+"Functions cannot be passed directly to Client Components". The page stays a
+server component (so it can export metadata) and the client resolves the bundle
+itself.
+
+Both language bundles ship to both routes (~8 kB). Not worth code-splitting yet.
 
 ### Per-client quote builder (`/quote/<client>`)
 A separate, older tool: budget-slider scope calculator. One JSON doc per client
