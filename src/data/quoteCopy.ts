@@ -94,6 +94,8 @@ export interface QuoteCopy {
     copyLink: string;
     copied: string;
     savePdf: string;
+    whatsapp: string;
+    whatsappMessage: (quoteNumber: string, total: string, currency: string) => string;
     copyPrompt: string;
     sendError: (msg: string) => string;
     emailDirectly: string;
@@ -120,6 +122,7 @@ export interface QuoteCopy {
     body: (total: string, currency: string, items: number, email: string) => string;
     savePdf: string;
     backToSite: string;
+    whatsapp: string;
   };
 
   doc: {
@@ -127,6 +130,7 @@ export interface QuoteCopy {
     number: string;
     issued: string;
     validUntil: string;
+    whatsapp: string;
     preparedFor: string;
     fallbackClient: string;
     scopeOfWork: string;
@@ -252,6 +256,9 @@ export const EN_COPY: QuoteCopy = {
     copyLink: 'Copy link',
     copied: '✓ Link copied',
     savePdf: 'Save as PDF',
+    whatsapp: 'WhatsApp',
+    whatsappMessage: (number, total, currency) =>
+      `Hi Benjamin — I built quote ${number} on your site (${total} ${currency}). Can we talk it through?`,
     copyPrompt: 'Copy your quote link:',
     sendError: (msg) => `Couldn’t send (${msg}).`,
     emailDirectly: 'Email it to me directly →',
@@ -285,10 +292,12 @@ export const EN_COPY: QuoteCopy = {
       `I’ve got your ${total} ${currency} quote (${items} item${items === 1 ? '' : 's'}) and sent a copy to ${email}. I’ll be in touch shortly.`,
     savePdf: 'Save as PDF',
     backToSite: 'Back to site',
+    whatsapp: 'Message on WhatsApp',
   },
 
   doc: {
     stamp: 'Quote',
+    whatsapp: 'WhatsApp',
     number: 'Number',
     issued: 'Issued',
     validUntil: 'Valid until',

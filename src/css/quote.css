@@ -1505,3 +1505,33 @@ textarea.qw-input { resize: vertical; }
   line-height: 1.6;
   color: #333;
 }
+
+/* ═══════════════════════════════════════════
+   WHATSAPP
+   ═══════════════════════════════════════════ */
+
+.qw-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  text-decoration: none;
+}
+
+.qw-wa-btn:hover {
+  border-color: #25d366;
+  color: #25d366;
+}
+
+.qw-wa-btn svg { flex-shrink: 0; }
+
+/* On the document the number must stay legible as plain text once printed —
+   underline it on screen, but don't colour it away from the body copy. */
+.qd-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media print {
+  .qd-link { text-decoration: none; }
+}

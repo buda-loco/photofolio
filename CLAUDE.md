@@ -433,8 +433,13 @@ steps: disciplines → scope → project conditions → details → **quote docu
   request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
 - **Quote number and dates are generated in a `useEffect`**, never during
   render — otherwise SSR and client disagree and hydration breaks.
-- No GST line (not registered). `CONTACT_PHONE` in the catalogue is an empty
-  placeholder.
+- No GST line (not registered).
+- **WhatsApp is the phone channel.** `quoteCatalogue.ts` holds `CONTACT_PHONE`
+  (display form) and `WHATSAPP_NUMBER` (digits only — wa.me rejects `+`, spaces
+  or dashes), plus `whatsappLink(message?)` which builds the deep link with the
+  message pre-filled. Used in three places: the document letterhead, a button
+  beside Copy link / Save as PDF on the quote step, and the sent screen. The
+  pre-filled message is per-language and carries the quote number and total.
 
 #### Regions — the two language/price variants
 

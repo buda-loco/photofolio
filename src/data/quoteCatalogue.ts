@@ -13,8 +13,16 @@ import type {
 
 export const CURRENCY = 'AUD';
 export const CONTACT_EMAIL = 'hello@benjaminarnedo.com';
-// TODO: real number — placeholder until confirmed.
-export const CONTACT_PHONE = '';
+
+/** Display form, human-readable. */
+export const CONTACT_PHONE = '+61 416 865 550';
+
+/** wa.me wants digits only — no +, spaces or dashes. */
+export const WHATSAPP_NUMBER = '61416865550';
+
+/** A WhatsApp deep link, optionally with the message pre-filled. */
+export const whatsappLink = (message?: string) =>
+  `https://wa.me/${WHATSAPP_NUMBER}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 export const BUSINESS = {
   name: 'Benjamin Arnedo',
   role: 'Design · Photography · Motion',

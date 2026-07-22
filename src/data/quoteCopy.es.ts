@@ -609,6 +609,9 @@ export const ES_COPY: QuoteCopy = {
     copyLink: 'Copiar enlace',
     copied: '✓ Enlace copiado',
     savePdf: 'Guardar en PDF',
+    whatsapp: 'WhatsApp',
+    whatsappMessage: (number, total, currency) =>
+      `Hola Benjamin — armé el presupuesto ${number} en tu sitio (${total} ${currency}). ¿Lo charlamos?`,
     copyPrompt: 'Copiá el enlace de tu presupuesto:',
     sendError: (msg) => `No se pudo enviar (${msg}).`,
     emailDirectly: 'Mandámelo por email →',
@@ -642,10 +645,12 @@ export const ES_COPY: QuoteCopy = {
       `Recibí tu presupuesto de ${total} ${currency} (${items} ítem${items === 1 ? '' : 's'}) y te mandé una copia a ${email}. Te escribo en breve.`,
     savePdf: 'Guardar en PDF',
     backToSite: 'Volver al sitio',
+    whatsapp: 'Escribime por WhatsApp',
   },
 
   doc: {
     stamp: 'Presupuesto',
+    whatsapp: 'WhatsApp',
     number: 'Número',
     issued: 'Emitido',
     validUntil: 'Válido hasta',

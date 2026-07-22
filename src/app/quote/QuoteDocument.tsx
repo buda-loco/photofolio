@@ -7,6 +7,7 @@
 // Everything regional (currency, prices, language) arrives via `bundle`; this
 // component holds no locale-specific strings of its own.
 
+import { whatsappLink } from '@/data/quoteCatalogue';
 import type { QuoteBundle } from '@/data/quoteRegions';
 import type { ProjectOptions, QuoteTotals } from '@/lib/quotePricing';
 
@@ -84,7 +85,14 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
             {copy.role}<br />
             {business.location}<br />
             {business.email}
-            {business.phone && <><br />{business.phone}</>}<br />
+            {/* Tappable on a phone, and the number still reads as plain text
+                once the document is printed. */}
+            {business.phone && (
+              <>
+                <br />
+                <a className="qd-link" href={whatsappLink()}>{business.phone} · {t.whatsapp}</a>
+              </>
+            )}<br />
             {business.site}
           </p>
         </div>
@@ -212,7 +220,7 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
       </section>
 
       <footer className="qd-foot">
-        <p>{business.name} · {business.email} · {business.site}</p>
+        <p>{business.name} · {business.email}{business.phone ? ` · ${business.phone}` : ''} · {business.site}</p>
         <p>{t.footerQuote(meta.number, meta.issued)}</p>
       </footer>
     </article>
