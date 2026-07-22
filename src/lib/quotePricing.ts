@@ -82,6 +82,23 @@ export interface Discipline {
   items: CatalogItem[];
 }
 
+/**
+ * How much of an item's recommended time the client is actually buying, stored
+ * alongside the params under a reserved key so it rides share links for free.
+ * 1 = the full recommended time. Below that, the deliverable is proportionally
+ * shallower — fewer concepts, fewer passes, less polish — and the quote says so.
+ */
+export const HOURS_FACTOR_KEY = '__hoursFactor';
+
+/**
+ * The floor. Below 60% of recommended the work stops being deliverable, so the
+ * builder refuses to quote a number and asks for a conversation instead.
+ */
+export const HOURS_FACTOR_MIN = 0.6;
+
+/** Buying MORE than recommended isn't a thing — the estimate is the estimate. */
+export const HOURS_FACTOR_MAX = 1;
+
 /** User-chosen values for one item, keyed by param id. */
 export type ParamValues = Record<string, number | string | boolean>;
 /** The whole selection: item id → its param values. Presence = selected. */
@@ -122,7 +139,12 @@ export const defaultValues = (item: CatalogItem): ParamValues =>
 /* ─────────────────────── Per-item pricing ─────────────────────── */
 
 export interface ItemBreakdown {
+  /** Hours actually being bought — recommendedHours × hoursFactor. */
   hours: number;
+  /** What the configured scope really needs, before any budget reduction. */
+  recommendedHours: number;
+  hoursFactor: number;
+  reduced: boolean;
   /** Hard costs that are not labour (gear, per-unit fees). */
   fees: number;
   labour: number;
@@ -130,6 +152,12 @@ export interface ItemBreakdown {
   /** Human-readable summary of the chosen params, for the quote document. */
   spec: string[];
 }
+
+/** The stored hours factor for an item, coerced into the allowed range. */
+export const hoursFactorOf = (values: ParamValues | undefined): number => {
+  const raw = values?.[HOURS_FACTOR_KEY];
+  return clamp(num(raw, HOURS_FACTOR_MAX), HOURS_FACTOR_MIN, HOURS_FACTOR_MAX);
+};
 
 /**
  * Price one item under a set of param values.
@@ -175,12 +203,27 @@ export function priceItem(item: CatalogItem, values: ParamValues, rates: Record<
     }
   }
 
-  hours = Math.max(0, hours * mult);
+  const recommendedHours = Math.max(0, hours * mult);
+
+  // Buying less time scales the labour only. Gear hire and studio time are hard
+  // costs — they don't get cheaper because the client bought fewer hours.
+  const hoursFactor = hoursFactorOf(values);
+  const finalHours = recommendedHours * hoursFactor;
+
   fees = Math.max(0, fees);
   const rate = Math.max(0, num(rates[item.rate]));
-  const labour = hours * rate;
+  const labour = finalHours * rate;
 
-  return { hours, fees, labour, total: labour + fees, spec };
+  return {
+    hours: finalHours,
+    recommendedHours,
+    hoursFactor,
+    reduced: hoursFactor < HOURS_FACTOR_MAX,
+    fees,
+    labour,
+    total: labour + fees,
+    spec,
+  };
 }
 
 /* ─────────────────── Project-level modifiers ─────────────────── */
@@ -226,6 +269,15 @@ export interface QuoteTotals {
   /** Production labour before the rush multiplier. */
   labour: number;
   hours: number;
+  /** Hours the configured scope needs at full depth. */
+  recommendedHours: number;
+  /** Labour those hours would cost — the yardstick for "you're buying X of Y". */
+  recommendedLabour: number;
+  /** Share of the recommended time being bought, across the whole quote. */
+  hoursFactor: number;
+  /** True when any line has been dialled below its recommendation. */
+  reduced: boolean;
+  reducedCount: number;
   /** Hard costs attached to individual line items. */
   itemFees: number;
   revisionsHours: number;
@@ -278,6 +330,13 @@ export function priceQuote(
   const hours = lines.reduce((s, l) => s + l.breakdown.hours, 0);
   const itemFees = lines.reduce((s, l) => s + l.breakdown.fees, 0);
 
+  const recommendedHours = lines.reduce((s, l) => s + l.breakdown.recommendedHours, 0);
+  const recommendedLabour = lines.reduce(
+    (s, l) => s + l.breakdown.recommendedHours * Math.max(0, num(cfg.rates[l.item.rate])),
+    0,
+  );
+  const reducedCount = lines.filter((l) => l.breakdown.reduced).length;
+
   const extra = Math.max(0, Math.round(num(options.extraRevisions)));
   const revisionsHours = extra * Math.max(0, num(cfg.revisionHours));
   const revisionsCost = revisionsHours * Math.max(0, num(cfg.rates[cfg.revisionRate]));
@@ -318,6 +377,12 @@ export function priceQuote(
     lines,
     labour,
     hours,
+    recommendedHours,
+    recommendedLabour,
+    // No lines means nothing has been reduced — report a full quote, not 0%.
+    hoursFactor: recommendedHours > 0 ? hours / recommendedHours : HOURS_FACTOR_MAX,
+    reduced: reducedCount > 0,
+    reducedCount,
     itemFees,
     revisionsHours,
     revisionsCost,

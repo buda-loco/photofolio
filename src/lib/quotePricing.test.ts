@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, num, clamp,
+  HOURS_FACTOR_KEY, HOURS_FACTOR_MIN,
   type CatalogItem, type Discipline, type PricingConfig, type ProjectOptions, type QuoteLine,
 } from './quotePricing';
 
@@ -238,6 +239,113 @@ describe('priceQuote', () => {
     const t = priceQuote([line(tenHourDesign)], opts({ turnaround: 'nope', travel: 'nope', licence: 'nope' }), cfg);
     expect(Number.isNaN(t.total)).toBe(false);
     expect(t.rushMult).toBe(1);
+  });
+});
+
+describe('buying fewer hours', () => {
+  const tenHours: CatalogItem = { id: 'a', name: 'A', rate: 'design', baseHours: 10 }; // $1000
+
+  it('defaults to the full recommended time', () => {
+    const b = priceItem(tenHours, {}, rates);
+    expect(b.hoursFactor).toBe(1);
+    expect(b.hours).toBe(10);
+    expect(b.recommendedHours).toBe(10);
+    expect(b.reduced).toBe(false);
+  });
+
+  it('scales labour proportionally', () => {
+    const b = priceItem(tenHours, { [HOURS_FACTOR_KEY]: 0.7 }, rates);
+    expect(b.hours).toBeCloseTo(7);
+    expect(b.recommendedHours).toBe(10);
+    expect(b.total).toBeCloseTo(700);
+    expect(b.reduced).toBe(true);
+  });
+
+  it('never discounts hard costs — gear hire costs what it costs', () => {
+    const withKit: CatalogItem = {
+      id: 'k', name: 'K', rate: 'shoot', baseHours: 10,
+      params: [{ kind: 'toggle', id: 'kit', label: 'Kit', feeAdd: 250 }],
+    };
+    const full = priceItem(withKit, { kit: true }, rates);
+    const cut = priceItem(withKit, { kit: true, [HOURS_FACTOR_KEY]: 0.6 }, rates);
+    expect(cut.fees).toBe(250);
+    expect(full.fees).toBe(250);
+    expect(cut.total).toBeCloseTo(10 * 0.6 * 120 + 250);
+  });
+
+  it('clamps to the 60% floor', () => {
+    expect(priceItem(tenHours, { [HOURS_FACTOR_KEY]: 0.1 }, rates).hoursFactor).toBe(HOURS_FACTOR_MIN);
+    expect(priceItem(tenHours, { [HOURS_FACTOR_KEY]: 0 }, rates).hoursFactor).toBe(HOURS_FACTOR_MIN);
+    expect(priceItem(tenHours, { [HOURS_FACTOR_KEY]: -5 }, rates).hoursFactor).toBe(HOURS_FACTOR_MIN);
+  });
+
+  it('refuses to sell more than the estimate', () => {
+    expect(priceItem(tenHours, { [HOURS_FACTOR_KEY]: 3 }, rates).hoursFactor).toBe(1);
+  });
+
+  it('treats garbage as the full recommendation, never NaN', () => {
+    const b = priceItem(tenHours, { [HOURS_FACTOR_KEY]: 'banana' as never }, rates);
+    expect(b.hoursFactor).toBe(1);
+    expect(Number.isNaN(b.total)).toBe(false);
+  });
+
+  it('applies after the param multipliers, not before', () => {
+    const item: CatalogItem = {
+      id: 'm', name: 'M', rate: 'design', baseHours: 10,
+      params: [{ kind: 'choice', id: 'c', label: 'C', default: 'x', options: [{ id: 'x', label: 'X', hoursMult: 2 }] }],
+    };
+    const b = priceItem(item, { c: 'x', [HOURS_FACTOR_KEY]: 0.75 }, rates);
+    expect(b.recommendedHours).toBe(20);
+    expect(b.hours).toBe(15);
+  });
+
+  it('reports the shortfall across the whole quote', () => {
+    const half = (over: Partial<CatalogItem>): QuoteLine => {
+      const item = { id: 'x', name: 'X', rate: 'design' as const, baseHours: 10, ...over };
+      const values = { [HOURS_FACTOR_KEY]: 0.8 };
+      return { item, discipline: disc, values, breakdown: priceItem(item, values, rates) };
+    };
+    const t = priceQuote([half({ id: 'a' }), half({ id: 'b' })], opts(), cfg);
+    expect(t.recommendedHours).toBe(20);
+    expect(t.hours).toBeCloseTo(16);
+    expect(t.recommendedLabour).toBe(2000);
+    expect(t.total).toBeCloseTo(1600);
+    expect(t.hoursFactor).toBeCloseTo(0.8);
+    expect(t.reduced).toBe(true);
+    expect(t.reducedCount).toBe(2);
+  });
+
+  it('counts only the lines actually reduced when they differ', () => {
+    const mk = (id: string, factor: number): QuoteLine => {
+      const item = { id, name: id, rate: 'design' as const, baseHours: 10 };
+      const values = { [HOURS_FACTOR_KEY]: factor };
+      return { item, discipline: disc, values, breakdown: priceItem(item, values, rates) };
+    };
+    const t = priceQuote([mk('a', 1), mk('b', 0.6)], opts(), cfg);
+    expect(t.reducedCount).toBe(1);
+    expect(t.hoursFactor).toBeCloseTo(0.8); // 16h bought of 20h recommended
+  });
+
+  it('an empty quote reads as a full quote, not a 0% one', () => {
+    const t = priceQuote([], opts(), cfg);
+    expect(t.hoursFactor).toBe(1);
+    expect(t.reduced).toBe(false);
+    expect(Number.isNaN(t.hoursFactor)).toBe(false);
+  });
+
+  it('a reduced quote still gets rushed on what was bought, not what was recommended', () => {
+    const item: CatalogItem = { id: 'a', name: 'A', rate: 'design', baseHours: 10 };
+    const values = { [HOURS_FACTOR_KEY]: 0.6 };
+    const lines = [{ item, discipline: disc, values, breakdown: priceItem(item, values, rates) }];
+    const t = priceQuote(lines, opts({ turnaround: 'rush' }), cfg);
+    expect(t.labour).toBeCloseTo(600);
+    expect(t.rushAmount).toBeCloseTo(300);
+    expect(t.total).toBeCloseTo(900);
+  });
+
+  it('rides share links without extra plumbing', () => {
+    const sel = { 'ph-shoot': { hours: 6, [HOURS_FACTOR_KEY]: 0.7 } };
+    expect(decodeState(encodeState(sel, opts()))?.s).toEqual(sel);
   });
 });
 

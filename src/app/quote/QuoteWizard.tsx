@@ -17,8 +17,13 @@ import QuoteDocument, { type QuoteMeta } from './QuoteDocument';
 import { getQuoteBundle, type QuoteRegion } from '@/data/quoteRegions';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, clamp, plural,
+  hoursFactorOf, HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, HOURS_FACTOR_MAX,
   type CatalogItem, type Param, type ParamValues, type ProjectOptions, type QuoteLine, type Selection,
 } from '@/lib/quotePricing';
+
+/** The hours dial moves in 5% steps — finer than that is false precision. */
+const HOURS_STEP = 0.05;
+const pct = (factor: number) => Math.round(factor * 100);
 
 const DEFAULT_OPTIONS: ProjectOptions = {
   turnaround: 'standard',
@@ -162,6 +167,18 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
 
   const setParam = (itemId: string, paramId: string, value: number | string | boolean) =>
     setSelection((sel) => (sel[itemId] ? { ...sel, [itemId]: { ...sel[itemId], [paramId]: value } } : sel));
+
+  /**
+   * The global hours dial. Flattens every selected item to the same share of
+   * its recommended time — that's what "distributes down to the items" means.
+   * Individual items can then be nudged again on the Scope step.
+   */
+  const setGlobalHoursFactor = (factor: number) => {
+    const f = clamp(factor, HOURS_FACTOR_MIN, HOURS_FACTOR_MAX);
+    setSelection((sel) =>
+      Object.fromEntries(Object.entries(sel).map(([id, values]) => [id, { ...values, [HOURS_FACTOR_KEY]: f }])),
+    );
+  };
 
   /* ── Share link ── */
   const share = useCallback(async () => {
@@ -455,10 +472,39 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                                 </button>
                               )}
                             </div>
-                            {open && values && (
+                            {open && values && b && (
                               <div className="qw-params">
                                 {item.params!.map((p) => renderParam(item.id, p, values))}
-                                {b && b.fees > 0 && (
+
+                                {/* Per-item time dial. The recommendation comes
+                                    from the params above; this only lets the
+                                    client buy less of it. */}
+                                <div className="qw-param qw-hours">
+                                  <div className="qw-param-head">
+                                    <span className="qw-param-label">{T.scope.hours}</span>
+                                    <span className="qw-hours-readout" data-reduced={b.reduced}>
+                                      {b.reduced
+                                        ? T.scope.hoursOf(hrs(b.hours), hrs(b.recommendedHours))
+                                        : T.scope.hoursFull}
+                                    </span>
+                                  </div>
+                                  <input
+                                    type="range"
+                                    className="quote-slider qw-param-range"
+                                    min={HOURS_FACTOR_MIN}
+                                    max={HOURS_FACTOR_MAX}
+                                    step={HOURS_STEP}
+                                    value={b.hoursFactor}
+                                    onChange={(e) => setParam(item.id, HOURS_FACTOR_KEY, Number(e.target.value))}
+                                    aria-label={T.scope.hours}
+                                    aria-valuetext={T.scope.hoursOf(hrs(b.hours), hrs(b.recommendedHours))}
+                                  />
+                                  {b.reduced && (
+                                    <span className="qw-param-help qw-warn">{T.scope.hoursReduced(pct(b.hoursFactor))}</span>
+                                  )}
+                                </div>
+
+                                {b.fees > 0 && (
                                   <p className="qw-param-note">{T.scope.includesFees(money(b.fees))}</p>
                                 )}
                               </div>
@@ -477,6 +523,46 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
               <div className="qw-step">
                 <h2 className="display-md">{T.project.title}</h2>
                 <p className="quote-section-sub">{T.project.sub}</p>
+
+                {/* Hours dial — the budget lever. Sits first because it's the
+                    decision that reshapes everything below it. */}
+                <div className="qw-param qw-hours qw-hours-global">
+                  <div className="qw-param-head">
+                    <span className="qw-param-label">{T.project.hours}</span>
+                    <span className="qw-hours-total" data-reduced={totals.reduced}>
+                      {hrs(totals.hours)}
+                    </span>
+                  </div>
+
+                  <input
+                    type="range"
+                    className="quote-slider"
+                    min={HOURS_FACTOR_MIN}
+                    max={HOURS_FACTOR_MAX}
+                    step={HOURS_STEP}
+                    value={totals.hoursFactor}
+                    onChange={(e) => setGlobalHoursFactor(Number(e.target.value))}
+                    aria-label={T.project.hours}
+                    aria-valuetext={T.project.hoursBuying(hrs(totals.hours), pct(totals.hoursFactor))}
+                  />
+
+                  <div className="qw-hours-scale">
+                    <span>{pct(HOURS_FACTOR_MIN)}%</span>
+                    <span>{pct(HOURS_FACTOR_MAX)}%</span>
+                  </div>
+
+                  <p className="qw-hours-compare" data-reduced={totals.reduced}>
+                    {totals.reduced
+                      ? T.project.hoursBuying(hrs(totals.hours), pct(totals.hoursFactor))
+                      : T.project.hoursRecommended(hrs(totals.recommendedHours), money(totals.recommendedLabour))}
+                  </p>
+
+                  {totals.hoursFactor <= HOURS_FACTOR_MIN && (
+                    <p className="qw-param-help qw-warn">{T.project.hoursAtFloor}</p>
+                  )}
+
+                  <span className="qw-param-help">{T.project.hoursHelp(pct(HOURS_FACTOR_MIN))}</span>
+                </div>
 
                 <div className="qw-param">
                   <span className="qw-param-label">{T.project.turnaround}</span>
@@ -641,6 +727,11 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                 </ul>
               )}
 
+              {totals.reduced && (
+                <span className="qw-rail-line qw-warn">
+                  {T.rail.reduced(pct(totals.hoursFactor), hrs(totals.recommendedHours))}
+                </span>
+              )}
               <span className="qw-rail-deposit">{T.rail.deposit(money(totals.deposit))}</span>
               {totals.hasPoa && <span className="qw-rail-line">{T.rail.poa}</span>}
             </aside>

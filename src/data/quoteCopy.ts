@@ -44,6 +44,12 @@ export interface QuoteCopy {
     includesFees: (amount: string) => string;
     fewer: (unit: string) => string;
     more: (unit: string) => string;
+    hours: string;
+    hoursFull: string;
+    hoursOf: (bought: string, recommended: string) => string;
+    hoursReduced: (percent: number) => string;
+    lessTime: string;
+    moreTime: string;
   };
 
   project: {
@@ -63,6 +69,11 @@ export interface QuoteCopy {
     moreRounds: string;
     sourceFiles: string;
     sourceFilesDesc: (percent: number, min: string) => string;
+    hours: string;
+    hoursHelp: (floor: number) => string;
+    hoursRecommended: (hours: string, amount: string) => string;
+    hoursBuying: (hours: string, percent: number) => string;
+    hoursAtFloor: string;
   };
 
   details: {
@@ -100,6 +111,7 @@ export interface QuoteCopy {
     sourceFiles: string;
     deposit: (amount: string) => string;
     poa: string;
+    reduced: (percent: number, recommended: string) => string;
   };
 
   sent: {
@@ -136,6 +148,9 @@ export interface QuoteCopy {
     licence: (label: string) => string;
     sourceFiles: string;
     sourceFilesNote: string;
+    reducedSpec: (bought: string, recommended: string) => string;
+    reducedNote: (percent: number, bought: string, recommended: string) => string;
+    reducedTerm: (percent: number) => string;
     total: string;
     deposit: (percent: number) => string;
     hoursNote: (hours: string, rates: string) => string;
@@ -184,6 +199,12 @@ export const EN_COPY: QuoteCopy = {
     includesFees: (amount) => `Includes ${amount} in equipment and hire costs.`,
     fewer: (unit) => `Fewer ${unit}s`,
     more: (unit) => `More ${unit}s`,
+    hours: 'Time on this',
+    hoursFull: 'Full recommended time',
+    hoursOf: (bought, recommended) => `${bought} of ${recommended} recommended`,
+    hoursReduced: (percent) => `${percent}% of the recommended time — reduced depth`,
+    lessTime: 'Less time',
+    moreTime: 'More time',
   },
 
   project: {
@@ -205,6 +226,12 @@ export const EN_COPY: QuoteCopy = {
     sourceFiles: 'Keep the working files',
     sourceFilesDesc: (percent, min) =>
       `Layered source files and project files, not just the final exports — so another designer can pick the work up. ${percent}% of production time, minimum ${min}.`,
+    hours: 'How many hours are you buying?',
+    hoursHelp: (floor) =>
+      `The recommendation is what the scope you built actually needs. If the budget won’t stretch, buy fewer hours — every deliverable gets proportionally less time, so expect fewer concepts, fewer passes and less polish. You can fine-tune individual items back on the Scope step. ${floor}% is the floor; below that the work stops being deliverable and we should talk instead.`,
+    hoursRecommended: (hours, amount) => `Recommended: ${hours} · ${amount}`,
+    hoursBuying: (hours, percent) => `Buying ${hours} — ${percent}% of the recommendation`,
+    hoursAtFloor: 'This is the least I can deliver this scope on. Less than that, let’s talk about cutting deliverables instead.',
   },
 
   details: {
@@ -248,6 +275,7 @@ export const EN_COPY: QuoteCopy = {
     sourceFiles: 'Working files',
     deposit: (amount) => `${amount} deposit to book`,
     poa: 'Some items are POA',
+    reduced: (percent, recommended) => `${percent}% of the recommended ${recommended}`,
   },
 
   sent: {
@@ -285,6 +313,11 @@ export const EN_COPY: QuoteCopy = {
     licence: (label) => `Usage licence — ${label}`,
     sourceFiles: 'Working files released',
     sourceFilesNote: 'Layered source and project files handed over',
+    reducedSpec: (bought, recommended) => `${bought} of ${recommended} recommended`,
+    reducedNote: (percent, bought, recommended) =>
+      `This quote is scoped to ${bought} of the ${recommended} recommended — ${percent}% of the time the work really needs. The deliverables are the same list, but each gets proportionally less time: fewer concepts, fewer passes, less polish.`,
+    reducedTerm: (percent) =>
+      `Scoped at ${percent}% of the recommended time. Deliverables are reduced in depth accordingly, not in number.`,
     total: 'Total',
     deposit: (percent) => `Deposit to book — ${percent}%`,
     hoursNote: (hours, rates) => `${hours} of work in total. Rates: ${rates}.`,

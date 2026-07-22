@@ -401,6 +401,26 @@ steps: disciplines → scope → project conditions → details → **quote docu
   - *Working files* (source/project files) are priced off production labour
     (20%, min $250) — a value transfer, not extra effort.
   - Extra revision rounds are labour (2 rounds included).
+- **Hours dial — buying less than recommended.** The params compute what the
+  scope *needs* (`recommendedHours`); the client can then buy a share of it,
+  stored per item under the reserved `HOURS_FACTOR_KEY` (`__hoursFactor`) in the
+  same values object, so it rides share links with no extra plumbing.
+  - **Global dial** on the Project step flattens every selected item to the same
+    share. **Per-item dial** in each item's detail panel nudges one line; the
+    global readout then shows the weighted mix (e.g. 83%).
+  - `HOURS_FACTOR_MIN` = **0.6** is the floor — below that the work isn't
+    deliverable and the UI says so instead of quoting. `HOURS_FACTOR_MAX` = 1:
+    you cannot buy *more* than the estimate.
+  - It scales **labour only**. Gear hire and studio time are hard costs and
+    don't get cheaper because fewer hours were bought.
+  - It applies **after** the param multipliers, so a ×2 crew line reduces from
+    its multiplied total, not its base.
+  - ⚠️ **Reducing hours must never read as the same work for less.** The
+    deliverable list is unchanged but each gets proportionally less depth, and
+    the quote says so in three places: `bought of recommended` on every reduced
+    line, a `.qd-reduced` note under the table, and an extra term. Keep all
+    three if editing — dropping them turns an honest trade-off into a promise
+    that can't be met.
 - **Output:** `QuoteDocument.tsx` renders a real quote — number, issue date,
   30-day validity, scope grouped by discipline with each item's parameters spelt
   out, project costs, total, 50% deposit and terms. "Save as PDF" is

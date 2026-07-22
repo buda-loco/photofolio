@@ -134,7 +134,9 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
                     )}
                   </td>
                   <td className="qd-num qd-muted">
-                    {hrs(l.breakdown.hours)}
+                    {l.breakdown.reduced
+                      ? t.reducedSpec(hrs(l.breakdown.hours), hrs(l.breakdown.recommendedHours))
+                      : hrs(l.breakdown.hours)}
                     <span className="qd-rate">{rateLabels[l.item.rate]}</span>
                   </td>
                   <td className="qd-num">{money(l.breakdown.total)}</td>
@@ -177,6 +179,16 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
           {t.hoursNote(hrs(totals.hours + totals.revisionsHours + totals.travelHours), rateSummary)}
         </p>
 
+        {totals.reduced && (
+          <p className="qd-reduced">
+            {t.reducedNote(
+              Math.round(totals.hoursFactor * 100),
+              hrs(totals.hours),
+              hrs(totals.recommendedHours),
+            )}
+          </p>
+        )}
+
         {totals.hasPoa && <p className="qd-poa">{t.poaNote}</p>}
       </section>
 
@@ -195,6 +207,7 @@ export default function QuoteDocument({ bundle, totals, options, client, meta }:
             businessName: business.name,
             currency: region.currency,
           }).map((line) => <li key={line}>{line}</li>)}
+          {totals.reduced && <li>{t.reducedTerm(Math.round(totals.hoursFactor * 100))}</li>}
         </ul>
       </section>
 

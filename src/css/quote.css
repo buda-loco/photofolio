@@ -1432,3 +1432,76 @@ textarea.qw-input { resize: vertical; }
 
   @page { margin: 16mm; }
 }
+
+/* ═══════════════════════════════════════════
+   HOURS DIAL — buying less than recommended
+   ═══════════════════════════════════════════ */
+
+.qw-hours {
+  padding: var(--sp-3);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+}
+
+/* The budget lever leads the step, so it gets a panel of its own and clear air
+   before the conditions that follow. */
+.qw-hours-global {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-surface));
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+
+.qw-hours-readout {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.qw-hours-readout[data-reduced='true'] { color: var(--color-accent); }
+
+.qw-hours-total {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.qw-hours-total[data-reduced='true'] { color: var(--color-accent); }
+
+.qw-hours-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4em;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.qw-hours-compare {
+  margin-top: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.qw-hours-compare[data-reduced='true'] { color: var(--color-accent); }
+
+/* Reduced scope is a trade-off the client is making knowingly — say so in the
+   accent colour rather than burying it in muted grey. */
+.qw-warn { color: var(--color-accent); }
+
+/* Document: the reduced-scope disclosure sits with the same weight as the POA
+   note, because it changes what's actually being delivered. */
+.qd-reduced {
+  margin-top: 0.8em;
+  padding: 0.6em 0.8em;
+  border-left: 2px solid #111;
+  background: #f6f6f4;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #333;
+}

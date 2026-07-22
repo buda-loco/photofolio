@@ -556,6 +556,12 @@ export const ES_COPY: QuoteCopy = {
     includesFees: (amount) => `Incluye ${amount} en equipamiento y alquileres.`,
     fewer: (unit) => `Menos ${unit}`,
     more: (unit) => `Más ${unit}`,
+    hours: 'Tiempo dedicado',
+    hoursFull: 'Tiempo recomendado completo',
+    hoursOf: (bought, recommended) => `${bought} de ${recommended} recomendadas`,
+    hoursReduced: (percent) => `${percent}% del tiempo recomendado — menos profundidad`,
+    lessTime: 'Menos tiempo',
+    moreTime: 'Más tiempo',
   },
 
   project: {
@@ -577,6 +583,12 @@ export const ES_COPY: QuoteCopy = {
     sourceFiles: 'Quedarte con los archivos editables',
     sourceFilesDesc: (percent, min) =>
       `Archivos fuente en capas y de proyecto, no sólo las exportaciones finales — para que otro diseñador pueda retomar el trabajo. ${percent}% del tiempo de producción, mínimo ${min}.`,
+    hours: '¿Cuántas horas vas a contratar?',
+    hoursHelp: (floor) =>
+      `La recomendación es lo que realmente necesita el alcance que armaste. Si el presupuesto no da, contratá menos horas: cada entregable recibe proporcionalmente menos tiempo, así que esperá menos propuestas, menos pasadas y menos terminación. Podés ajustar ítem por ítem volviendo al paso Alcance. El ${floor}% es el piso; por debajo de eso el trabajo deja de ser entregable y conviene que lo hablemos.`,
+    hoursRecommended: (hours, amount) => `Recomendado: ${hours} · ${amount}`,
+    hoursBuying: (hours, percent) => `Contratás ${hours} — ${percent}% de lo recomendado`,
+    hoursAtFloor: 'Es lo mínimo con lo que puedo entregar este alcance. Por debajo, mejor hablamos de recortar entregables.',
   },
 
   details: {
@@ -620,6 +632,7 @@ export const ES_COPY: QuoteCopy = {
     sourceFiles: 'Archivos editables',
     deposit: (amount) => `${amount} de anticipo para reservar`,
     poa: 'Algunos ítems son a consultar',
+    reduced: (percent, recommended) => `${percent}% de las ${recommended} recomendadas`,
   },
 
   sent: {
@@ -657,6 +670,11 @@ export const ES_COPY: QuoteCopy = {
     licence: (label) => `Licencia de uso — ${label}`,
     sourceFiles: 'Entrega de archivos editables',
     sourceFilesNote: 'Archivos fuente en capas y de proyecto entregados',
+    reducedSpec: (bought, recommended) => `${bought} de ${recommended} recomendadas`,
+    reducedNote: (percent, bought, recommended) =>
+      `Este presupuesto está calculado sobre ${bought} de las ${recommended} recomendadas — el ${percent}% del tiempo que el trabajo realmente necesita. La lista de entregables es la misma, pero cada uno recibe proporcionalmente menos tiempo: menos propuestas, menos pasadas y menos terminación.`,
+    reducedTerm: (percent) =>
+      `Calculado sobre el ${percent}% del tiempo recomendado. Los entregables se reducen en profundidad, no en cantidad.`,
     total: 'Total',
     deposit: (percent) => `Anticipo para reservar — ${percent}%`,
     hoursNote: (hours, rates) => `${hours} de trabajo en total. Tarifas: ${rates}.`,
