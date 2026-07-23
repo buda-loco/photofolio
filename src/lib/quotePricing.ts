@@ -618,6 +618,33 @@ export function priceQuote(
   };
 }
 
+/* ─────────────────────── Quote reference ─────────────────────── */
+
+/**
+ * Turn a client's name into the identifying part of a quote reference.
+ *
+ * Accents are folded rather than stripped so "García Posse" reads GARCIAPOSSE
+ * instead of GARCAPOSSE, and anything non-alphanumeric goes — a reference ends
+ * up in filenames, subject lines and spoken over the phone.
+ */
+export const quoteSlug = (value: string, maxLength = 14): string =>
+  (value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, maxLength);
+
+/**
+ * The reference a quote is known by. Named after the client, because
+ * "NORTHLIGHT-260723" is something both of us can find again — a random suffix
+ * is only ever a lookup key for one of us.
+ */
+export const quoteReference = (prefix: string, client: string, stamp: string): string => {
+  const slug = quoteSlug(client);
+  return slug ? `${prefix}-${slug}-${stamp}` : `${prefix}-${stamp}`;
+};
+
 /* ──────────────── Share-link state encoding ──────────────── */
 
 interface ShareState {

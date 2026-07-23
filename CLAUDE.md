@@ -532,8 +532,21 @@ steps: disciplines → scope → project conditions → details → **quote docu
 - **Submission:** `/api/quote-submit` (Resend) emails the itemised quote to
   Benjamin *and* a copy to the client. The client copy failing never fails the
   request. Falls back to a `mailto:` if `RESEND_API_KEY` is unset.
-- **Quote number and dates are generated in a `useEffect`**, never during
-  render — otherwise SSR and client disagree and hydration breaks.
+- **The quote is named after the client**, not after a random number:
+  `BA-NORTHLIGHTSTUD-260723`, or `BA-AR-…` on the Spanish page. Built by
+  `quoteReference()` from company name (preferred) or personal name, folding
+  accents so "García" reads GARCIA rather than GARCA, stripping everything
+  non-alphanumeric and capping at 14 characters so it stays speakable. Falls
+  back to `BA-260723` when there's no name yet — a shared link opens the quote
+  before the recipient has identified themselves.
+  - It is **derived, not stored**, so it follows the name as it's typed. Only
+    the dates live in state.
+  - `printQuote()` swaps `document.title` to the reference before printing and
+    restores it on `afterprint`. Browsers use the title as the suggested
+    filename, so without this every saved PDF is called "Build your quote" and
+    a folder of them is indistinguishable.
+- **Dates are generated in a `useEffect`**, never during render — otherwise SSR
+  and client disagree and hydration breaks.
 - No GST line (not registered).
 - **WhatsApp is the phone channel.** `quoteCatalogue.ts` holds `CONTACT_PHONE`
   (display form) and `WHATSAPP_NUMBER` (digits only — wa.me rejects `+`, spaces

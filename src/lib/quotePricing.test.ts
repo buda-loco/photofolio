@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, num, clamp,
   HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, earliestStart, parseISODate, toISODate,
-  presetValues, itemMatchesPreset, PRESETS,
+  presetValues, itemMatchesPreset, PRESETS, quoteSlug, quoteReference,
   type CatalogItem, type Discipline, type PricingConfig, type ProjectOptions, type QuoteLine,
 } from './quotePricing';
 
@@ -638,6 +638,53 @@ describe('delivery calendar', () => {
     expect(pri.priorityUplift).toBe(0.5); // test config; production is 0.35
     expect(pri.total).toBeCloseTo(std.total * 1.5);
     expect(pri.schedule.workingDays).toBeLessThan(std.schedule.workingDays);
+  });
+});
+
+describe('quote reference', () => {
+  it('is named after the client', () => {
+    expect(quoteReference('BA', 'Northlight Studio', '260723')).toBe('BA-NORTHLIGHTSTUD-260723');
+  });
+
+  it('folds accents rather than dropping the letters', () => {
+    // "GARCAPOSSE" would be the result of stripping rather than folding.
+    expect(quoteSlug('García Posse')).toBe('GARCIAPOSSE');
+    expect(quoteSlug('Estudio Ñandú')).toBe('ESTUDIONANDU');
+  });
+
+  it('drops punctuation, spaces and symbols', () => {
+    // Truncated at 14: OLMOSSA + BUENOSA
+    expect(quoteSlug('Olmos S.A. / Buenos Aires')).toBe('OLMOSSABUENOSA');
+    expect(quoteSlug('A&B — Co.')).toBe('ABCO');
+  });
+
+  it('keeps digits', () => {
+    expect(quoteSlug('Studio 54')).toBe('STUDIO54');
+  });
+
+  it('truncates so the reference stays speakable', () => {
+    expect(quoteSlug('A'.repeat(50)).length).toBe(14);
+  });
+
+  it('falls back to prefix + date when there is no name yet', () => {
+    // A shared link opens the quote before the recipient has identified themselves.
+    expect(quoteReference('BA', '', '260723')).toBe('BA-260723');
+    expect(quoteReference('BA', '   ', '260723')).toBe('BA-260723');
+    expect(quoteReference('BA', '!!!', '260723')).toBe('BA-260723');
+  });
+
+  it('carries the region prefix', () => {
+    expect(quoteReference('BA-AR', 'Olmos', '260723')).toBe('BA-AR-OLMOS-260723');
+  });
+
+  it('is stable for the same client and day', () => {
+    expect(quoteReference('BA', 'Northlight', '260723'))
+      .toBe(quoteReference('BA', 'northlight', '260723'));
+  });
+
+  it('handles null-ish input without throwing', () => {
+    expect(quoteSlug(undefined as never)).toBe('');
+    expect(quoteReference('BA', null as never, '260723')).toBe('BA-260723');
   });
 });
 

@@ -19,7 +19,7 @@ import { whatsappLink } from '@/data/quoteCatalogue';
 import {
   priceItem, priceQuote, defaultValues, encodeState, decodeState, clamp, plural,
   hoursFactorOf, HOURS_FACTOR_KEY, HOURS_FACTOR_MIN, HOURS_FACTOR_MAX,
-  earliestStart, parseISODate, toISODate,
+  earliestStart, parseISODate, toISODate, quoteReference,
   presetValues, itemMatchesPreset, PRESETS, type PresetId,
   type CatalogItem, type Param, type ParamValues, type ProjectOptions, type QuoteLine, type Selection,
 } from '@/lib/quotePricing';
@@ -101,7 +101,8 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '', website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const [meta, setMeta] = useState<QuoteMeta | null>(null);
+  /** Dates only — the reference is derived, so it can follow the client's name. */
+  const [dates, setDates] = useState<{ stamp: string; issued: string; validUntil: string } | null>(null);
   const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
   const [minStartDate, setMinStartDate] = useState('');
   /** Blocks the URL sync until the incoming ?q= has been read. */
@@ -171,15 +172,44 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
     const stamp = `${now.getFullYear()}`.slice(2)
       + `${now.getMonth() + 1}`.padStart(2, '0')
       + `${now.getDate()}`.padStart(2, '0');
-    const suffix = Math.floor(1000 + Math.random() * 9000);
-    const prefix = region.id === 'ar' ? 'BA-AR' : 'BA';
-    setMeta({ number: `${prefix}-${stamp}-${suffix}`, issued: dateFmt(now), validUntil: dateFmt(until) });
+    setDates({ stamp, issued: dateFmt(now), validUntil: dateFmt(until) });
 
     // Earliest bookable start, and the default the picker opens on.
     const soonest = toISODate(earliestStart(now, PRICING.schedule.leadDays));
     setMinStartDate(soonest);
     setOptions((o) => (o.startDate ? o : { ...o, startDate: soonest }));
-  }, [validDays, dateFmt, region.id, PRICING.schedule.leadDays]);
+  }, [validDays, dateFmt, PRICING.schedule.leadDays]);
+
+  /* ── Quote reference ──
+     Named after the client, so a quote is findable by who it's for rather than
+     by a random number only one of us can look up. Derived rather than stored,
+     so it follows the name as it's typed. */
+  const clientLabel = form.company.trim() || form.name.trim();
+  const meta: QuoteMeta | null = useMemo(() => {
+    if (!dates) return null;
+    const prefix = region.id === 'ar' ? 'BA-AR' : 'BA';
+    return {
+      number: quoteReference(prefix, clientLabel, dates.stamp),
+      issued: dates.issued,
+      validUntil: dates.validUntil,
+    };
+  }, [dates, clientLabel, region.id]);
+
+  /**
+   * Print with the client's name on it. Browsers use the document title as the
+   * suggested filename for "Save as PDF", so without this every quote saves as
+   * "Build your quote" and a folder of them is indistinguishable.
+   */
+  const printQuote = useCallback(() => {
+    const original = document.title;
+    if (meta) document.title = `${T.doc.stamp} ${meta.number}`;
+    const restore = () => {
+      document.title = original;
+      window.removeEventListener('afterprint', restore);
+    };
+    window.addEventListener('afterprint', restore);
+    window.print();
+  }, [meta, T.doc.stamp]);
 
   /* ── Derived pricing ── */
   const itemOrder = useMemo(() => Object.keys(ALL_ITEMS), [ALL_ITEMS]);
@@ -500,7 +530,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                 {T.sent.body(money(totals.total), region.currency, selectedCount, form.email)}
               </p>
               <div className="qw-done-actions">
-                <button className="quote-cta" onClick={() => window.print()}>{T.sent.savePdf}</button>
+                <button className="quote-cta" onClick={printQuote}>{T.sent.savePdf}</button>
                 <a
                   className="qw-ghost-btn qw-wa-btn"
                   href={whatsappLink(T.quote.whatsappMessage(meta?.number ?? '', money(totals.total), region.currency))}
@@ -967,7 +997,7 @@ export default function QuoteWizard({ regionId }: { regionId: QuoteRegion['id'] 
                   </div>
                   <div className="qw-quote-buttons">
                     <button className="qw-ghost-btn" onClick={share}>{shareState === 'copied' ? T.quote.copied : T.quote.copyLink}</button>
-                    <button className="qw-ghost-btn" onClick={() => window.print()}>{T.quote.savePdf}</button>
+                    <button className="qw-ghost-btn" onClick={printQuote}>{T.quote.savePdf}</button>
                     <a
                       className="qw-ghost-btn qw-wa-btn"
                       href={whatsappLink(T.quote.whatsappMessage(meta.number, money(totals.total), region.currency))}
