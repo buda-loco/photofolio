@@ -561,6 +561,8 @@ export type About = Node & Document & {
   email?: Maybe<Scalars['String']['output']>;
   instagram?: Maybe<Scalars['String']['output']>;
   vimeo?: Maybe<Scalars['String']['output']>;
+  linkedin?: Maybe<Scalars['String']['output']>;
+  seek?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
@@ -575,6 +577,8 @@ export type AboutFilter = {
   email?: InputMaybe<StringFilter>;
   instagram?: InputMaybe<StringFilter>;
   vimeo?: InputMaybe<StringFilter>;
+  linkedin?: InputMaybe<StringFilter>;
+  seek?: InputMaybe<StringFilter>;
 };
 
 export type AboutConnectionEdges = {
@@ -1239,6 +1243,8 @@ export type AboutMutation = {
   email?: InputMaybe<Scalars['String']['input']>;
   instagram?: InputMaybe<Scalars['String']['input']>;
   vimeo?: InputMaybe<Scalars['String']['input']>;
+  linkedin?: InputMaybe<Scalars['String']['input']>;
+  seek?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type HowIWorkStepsMutation = {
@@ -1390,7 +1396,7 @@ export type QuotesMutation = {
 
 export type ProjectsPartsFragment = { __typename: 'Projects', slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null };
 
-export type AboutPartsFragment = { __typename: 'About', name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null };
+export type AboutPartsFragment = { __typename: 'About', name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null, linkedin?: string | null, seek?: string | null };
 
 export type HowIWorkPartsFragment = { __typename: 'HowIWork', title?: string | null, intro?: any | null, steps?: Array<{ __typename: 'HowIWorkSteps', number?: string | null, title?: string | null, body?: any | null } | null> | null, cta?: { __typename: 'HowIWorkCta', text?: string | null, link?: string | null, label?: string | null } | null };
 
@@ -1424,7 +1430,7 @@ export type AboutQueryVariables = Exact<{
 }>;
 
 
-export type AboutQuery = { __typename?: 'Query', about: { __typename: 'About', id: string, name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type AboutQuery = { __typename?: 'Query', about: { __typename: 'About', id: string, name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null, linkedin?: string | null, seek?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type AboutConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -1436,7 +1442,7 @@ export type AboutConnectionQueryVariables = Exact<{
 }>;
 
 
-export type AboutConnectionQuery = { __typename?: 'Query', aboutConnection: { __typename?: 'AboutConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'AboutConnectionEdges', cursor: string, node?: { __typename: 'About', id: string, name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type AboutConnectionQuery = { __typename?: 'Query', aboutConnection: { __typename?: 'AboutConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'AboutConnectionEdges', cursor: string, node?: { __typename: 'About', id: string, name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null, linkedin?: string | null, seek?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type HowIWorkQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -1627,6 +1633,8 @@ export const AboutPartsFragmentDoc = gql`
   email
   instagram
   vimeo
+  linkedin
+  seek
 }
     `;
 export const HowIWorkPartsFragmentDoc = gql`
@@ -2193,7 +2201,7 @@ export const ExperimentalGetTinaClient = () =>
   getSdk(
     generateRequester(
       createClient({
-        url: "http://localhost:4001/graphql",
+        url: "https://content.tinajs.io/2.2/content/92038ec2-d613-46af-82d5-a0a8deca27a6/github/main",
         queries,
       })
     )

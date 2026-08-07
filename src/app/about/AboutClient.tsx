@@ -15,44 +15,45 @@ gsap.registerPlugin(ScrollTrigger)
 const CHUNKS = [
   {
     num: '01',
-    ticker: 'creative director, videographer, designer',
+    ticker: 'creative director',
     lines: [
-      "I\u2019m Benjamin Arnedo \u2014 creative director, videographer, designer, developer, and a few other things depending on the week.",
-      "I\u2019ve been making things professionally for over 26 years, and I haven\u2019t stopped learning how to make them better.",
+      "I\u2019m Benjamin Arnedo. Creative director. Twenty-six years, three countries, two languages.",
+      "I came up making the work, not managing it. That turns out to be the whole difference.",
     ],
   },
   {
     num: '02',
-    ticker: 'Brand identities, advertising campaigns, editorial design',
+    ticker: 'brand, film, web, and everything under them',
     lines: [
-      "Over the years the work has taken me everywhere. Brand identities, advertising campaigns, editorial design, packaging, apparel, digital platforms, native apps, websites, motion graphics, sound design, video editing, cinematography, photography, 3D.",
+      "Brand identities, advertising campaigns, editorial design, packaging, apparel, digital platforms, native apps, websites, motion graphics, sound design, video editing, cinematography, photography, 3D.",
       "Sometimes all inside the same project.",
     ],
   },
   {
     num: '03',
-    ticker: 'I change disciplines on purpose',
+    ticker: 'I\u2019ve run every seat on that list',
     lines: [
-      "That range isn\u2019t an accident. I change disciplines on purpose. Not because I can\u2019t commit to one thing \u2014 because staying sharp means staying hungry.",
+      "I\u2019ve run every seat on that list. So when I brief a job I know exactly what I\u2019m asking for \u2014 what it costs, how long it really takes, and which corners cannot be cut.",
       "A cinematographer solves problems differently than a web developer. A brand strategist sees angles a photographer can\u2019t. I collect those perspectives.",
-      "Every new medium teaches me something the previous one couldn\u2019t. The result is a way of thinking that crosses a lot of lines at once.",
+      "Every medium teaches something the last one couldn\u2019t. The result is that very little in a production surprises me.",
     ],
   },
   {
     num: '04',
-    ticker: 'how I\u2019m wired.',
+    ticker: 'work you can go and check',
     lines: [
-      "I\u2019ve led studios, taught at universities, managed clients across continents, and built teams from the ground up.",
-      "I\u2019m bilingual in Spanish and English, bicultural, and I\u2019ve worked from Brisbane to Tucum\u00e1n to Canberra \u2014 on projects ranging from one-person startups to government campaigns.",
-      "I\u2019m the kind of creative who can sit in a strategy meeting, direct a shoot, and push code on the same day. That\u2019s not showing off. It\u2019s just how I\u2019m wired.",
+      "I\u2019ve led studios, taught design at university level for five years, and built teams from nothing.",
+      "Photography and creative direction for the City Renewal Authority\u2019s Winter in the City \u2014 a two-week event that drove $2.72M in local economic activity, 30,000 people through Glebe Park. Four straight years on Canberra\u2019s Lunar New Year festival for the same client, which is either loyalty or good work.",
+      "Australian citizen, bilingual, bicultural. Brisbane to Tucum\u00e1n to Canberra, on everything from one-person startups to government campaigns.",
     ],
   },
   {
     num: '05',
-    ticker: 'end-to-end creative',
+    ticker: 'rebuilding how the work gets made',
     lines: [
-      "I co-run Bold & Groovy with my partner Guadalupe \u2014 a studio built for clients who want end-to-end creative, from brand through to production, digital, and campaign.",
-      "We work with people who have something worth making. Bring us a brief worth caring about.",
+      "Right now I\u2019m rebuilding how I produce \u2014 AI tooling, automated design systems, 3D pipelines. That sounds like a buzzword until you watch it take three days off a schedule.",
+      "I’m also building Bold & Groovy with my partner Guadalupe — our joint practice, brand through production, digital and campaign. It opens in a couple of months.",
+      "Bring us a brief worth caring about.",
     ],
   },
 ]
