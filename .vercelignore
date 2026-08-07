@@ -1,0 +1,10 @@
+# Local-only job hunt control panel. Never deploys.
+#
+# Two independent layers keep this off the public site:
+#   1. This file — excludes the route from CLI deploys entirely.
+#   2. src/app/dashboard/page.tsx calls notFound() unless NODE_ENV is
+#      'development', so even a Git-connected build serves a 404.
+#
+# Note: .vercelignore applies to Vercel CLI deploys. For Git-connected
+# projects the whole repo is cloned, so layer 2 is the one that always holds.
+src/app/dashboard

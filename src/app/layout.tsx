@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: 'Benjamin Arnedo',
     template: '%s — Benjamin Arnedo',
   },
-  description: 'Photographer & Cinematographer based in Brisbane',
+  description: 'Creative Director · Brisbane, working remote',
   authors: [{ name: 'Benjamin Arnedo' }],
   alternates: { canonical: 'https://benjaminarnedo.com' },
   openGraph: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: 'en_AU',
     url: 'https://benjaminarnedo.com',
     title: 'Benjamin Arnedo',
-    description: 'Photographer & Cinematographer based in Brisbane',
+    description: 'Creative Director · Brisbane, working remote',
     images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     creator: '@buda_loco',
     site: '@buda_loco',
     title: 'Benjamin Arnedo',
-    description: 'Photographer & Cinematographer based in Brisbane',
+    description: 'Creative Director · Brisbane, working remote',
     images: ['/social-media.jpg'],
   },
   robots: {
@@ -71,13 +71,15 @@ export default async function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Benjamin Arnedo',
-    jobTitle: 'Photographer & Cinematographer',
+    jobTitle: 'Creative Director',
     url: 'https://benjaminarnedo.com',
     email: 'hello@benjaminarnedo.com',
     address: { '@type': 'PostalAddress', addressLocality: 'Brisbane', addressCountry: 'AU' },
     sameAs: [
       'https://instagram.com/benarnedo',
       'https://vimeo.com/benjaminarnedo',
+      'https://www.linkedin.com/in/benjaminarnedo/',
+      'https://au.seek.com/profiles/benjamin-arnedo-BLjv3KQBSG',
     ],
   }
 

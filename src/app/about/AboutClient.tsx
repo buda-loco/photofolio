@@ -18,7 +18,7 @@ const CHUNKS = [
     ticker: 'creative director, videographer, designer',
     lines: [
       "I\u2019m Benjamin Arnedo \u2014 creative director, videographer, designer, developer, and a few other things depending on the week.",
-      "I\u2019ve been making things professionally for over 23 years, and I haven\u2019t stopped learning how to make them better.",
+      "I\u2019ve been making things professionally for over 26 years, and I haven\u2019t stopped learning how to make them better.",
     ],
   },
   {

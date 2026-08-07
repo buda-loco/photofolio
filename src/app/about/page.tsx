@@ -5,17 +5,17 @@ import AboutClient from './AboutClient'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+  description: 'Creative director based in Brisbane — about Benjamin Arnedo.',
   alternates: { canonical: 'https://benjaminarnedo.com/about' },
   openGraph: {
     title: 'About — Benjamin Arnedo',
-    description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+    description: 'Creative director based in Brisbane — about Benjamin Arnedo.',
     url: 'https://benjaminarnedo.com/about',
     images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'About — Benjamin Arnedo',
-    description: 'Photographer & Cinematographer based in Brisbane — about Benjamin Arnedo.',
+    description: 'Creative director based in Brisbane — about Benjamin Arnedo.',
     images: ['/social-media.jpg'],
   },
 }

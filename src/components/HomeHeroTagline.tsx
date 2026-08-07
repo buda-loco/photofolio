@@ -95,7 +95,7 @@ export default function HomeHeroTagline() {
   return (
     <h1 className="hero-tagline" ref={containerRef} data-animate="fade-up">
       {/* Screen-reader accessible text */}
-      <span className="sr-only">Photographer, Cinematographer, Director</span>
+      <span className="sr-only">Creative Director &middot; Brand, Film, Web</span>
       <span className="hero-cubes-row" aria-hidden="true">
         {SLOTS.map((faces, slotIndex) => (
           <span key={slotIndex} className="hero-cube-viewport">

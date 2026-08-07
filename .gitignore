@@ -14,3 +14,9 @@ tsconfig.tsbuildinfo
 
 # editor swap files
 *.swp
+
+# Local-only job hunt control panel. This repo is PUBLIC — the dashboard holds
+# salary targets, market analysis and personal job-search strategy, so it must
+# never be committed. The notFound() gate in page.tsx keeps it off the built
+# site; this keeps the source off GitHub.
+src/app/dashboard/
