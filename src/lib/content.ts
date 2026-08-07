@@ -139,8 +139,6 @@ export interface About {
   email: string
   instagram?: string
   vimeo?: string
-  linkedin?: string
-  seek?: string
 }
 
 export interface HowIWorkStep {

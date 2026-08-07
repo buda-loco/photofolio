@@ -3,6 +3,14 @@ import { getAbout } from '@/lib/content'
 import TransitionLink from '@/components/TransitionLink'
 import AnimationsInit from '@/components/AnimationsInit'
 
+// Kept out of the Tina schema deliberately. Adding fields to tina/config.ts
+// requires the schema to be re-indexed in Tina Cloud, and until that happens
+// the production build fails on the unknown field. These two rarely change.
+const PROFILE_LINKS = {
+  linkedin: 'https://www.linkedin.com/in/benjaminarnedo/',
+  seek: 'https://au.seek.com/profiles/benjamin-arnedo-BLjv3KQBSG',
+}
+
 export const metadata: Metadata = {
   title: 'Contact',
   description: "Let's work together — get in touch with Benjamin Arnedo.",
@@ -93,9 +101,9 @@ export default function ContactPage() {
             </TransitionLink>
           )}
 
-          {about.linkedin && (
+          {PROFILE_LINKS.linkedin && (
             <TransitionLink
-              href={about.linkedin}
+              href={PROFILE_LINKS.linkedin}
               className="nav-link"
               target="_blank"
               rel="noopener noreferrer"
@@ -132,9 +140,9 @@ export default function ContactPage() {
             </TransitionLink>
           )}
 
-          {about.seek && (
+          {PROFILE_LINKS.seek && (
             <TransitionLink
-              href={about.seek}
+              href={PROFILE_LINKS.seek}
               className="nav-link"
               target="_blank"
               rel="noopener noreferrer"

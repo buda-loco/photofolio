@@ -295,8 +295,6 @@ export default defineConfig({
           { name: 'email', label: 'Email', type: 'string' },
           { name: 'instagram', label: 'Instagram URL', type: 'string' },
           { name: 'vimeo', label: 'Vimeo URL', type: 'string' },
-          { name: 'linkedin', label: 'LinkedIn URL', type: 'string' },
-          { name: 'seek', label: 'SEEK profile URL', type: 'string' },
         ],
       },
 
