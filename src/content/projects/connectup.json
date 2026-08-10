@@ -101,6 +101,11 @@
       "_template": "hero"
     },
     {
+      "src": "/images/projects/connectup/connect-up-screens.webp",
+      "alt": "Connectup",
+      "_template": "hero"
+    },
+    {
       "src": "/videos/connectup-about.mp4",
       "poster": "/images/projects/connectup/about-film-poster.jpg",
       "caption": "The programme film, embedded on the About page.",
@@ -114,11 +119,6 @@
     {
       "src": "/images/projects/connectup/join-us.webp",
       "aspectRatio": "16/9",
-      "_template": "hero"
-    },
-    {
-      "src": "/images/projects/connectup/connect-up-screens.webp",
-      "alt": "Connectup",
       "_template": "hero"
     }
   ]
