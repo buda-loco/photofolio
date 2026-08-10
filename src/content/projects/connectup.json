@@ -115,6 +115,11 @@
       "src": "/images/projects/connectup/join-us.webp",
       "aspectRatio": "16/9",
       "_template": "hero"
+    },
+    {
+      "src": "/images/projects/connectup/connect-up-screens.webp",
+      "alt": "Connectup",
+      "_template": "hero"
     }
   ]
 }
