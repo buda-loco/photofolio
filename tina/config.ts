@@ -74,14 +74,15 @@ export default defineConfig({
             ],
           },
           { name: 'gridOffset', label: 'Grid column offset', type: 'number' },
-          {
-            name: 'heroFor',
-            label: 'Headline these service filters',
-            description:
-              'Service names this project should lead on /work. The big bento slot goes to whatever is first, so listing a service here makes this the big card under that filter. No effect on All.',
-            type: 'string',
-            list: true,
-          },
+          // NOTE: `heroFor` is deliberately NOT declared here. Adding it made the local
+          // GraphQL schema diverge from the one Tina Cloud has indexed, and `tinacms
+          // build` hard-fails on that mismatch ("[NON_BREAKING - FIELD_ADDED] Field
+          // 'heroFor' was added to object type 'Projects'"). Since vercel.json runs
+          // `tinacms build && next build`, that took the whole production deploy down.
+          // Tina will not re-index until a build succeeds, so it cannot self-resolve.
+          // The field is only ever read from local JSON by getAllProjects() -> WorkGrid,
+          // never through Tina, so it works without being declared. Re-adding it here
+          // will break deploys again unless Tina Cloud's schema is re-indexed first.
           { name: 'featured', label: 'Feature in homepage', type: 'boolean' },
           { name: 'backgroundColor', label: 'Background colour', type: 'string' },
           { name: 'backgroundColorSecondary', label: 'Background colour (secondary)', type: 'string' },
