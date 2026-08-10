@@ -26,6 +26,25 @@ const PATTERN = [
   { col: 6, row: 1 },  // medium ─┘
 ]
 
+// Size in the bento grid is positional — PATTERN[0] is the big slot, so whatever lands
+// at index 0 is the big card. A project's own gridSize can't express "big", because
+// .grid-item sits inside .bento-item and its grid-column never resolves. So a project
+// that should headline a given filter declares it in heroFor, and gets hoisted to the
+// front of that filtered list. Only reorders the filter it names; All is untouched.
+function withHeroFirst(list: Project[], service: string): Project[] {
+  if (service === 'All') return list
+  const i = list.findIndex(p => p.heroFor?.includes(service))
+  if (i <= 0) return list
+  const reordered = [...list]
+  reordered.unshift(reordered.splice(i, 1)[0])
+  return reordered
+}
+
+function forService(projects: Project[], service: string): Project[] {
+  if (service === 'All') return projects
+  return withHeroFirst(projects.filter(p => p.services?.includes(service)), service)
+}
+
 export default function WorkGrid({ projects, services }: WorkGridProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -39,7 +58,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     const param = searchParams.get('service') ?? 'All'
     const svc = param === 'All' || services.includes(param) ? param : 'All'
     setActive(svc)
-    setVisible(svc === 'All' ? projects : projects.filter(p => p.services?.includes(svc)))
+    setVisible(forService(projects, svc))
   }, [pathname, searchParams, services, projects])
 
   // Cleanup tweens on unmount
@@ -69,9 +88,7 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     isFiltering.current = true
 
     const items = gridRef.current?.querySelectorAll<HTMLElement>('.bento-item')
-    const next = service === 'All'
-      ? projects
-      : projects.filter(p => p.services?.includes(service))
+    const next = forService(projects, service)
 
     if (!items?.length) {
       setActive(service)

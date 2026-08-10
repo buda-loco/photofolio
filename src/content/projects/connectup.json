@@ -1,0 +1,120 @@
+{
+  "slug": "connectup",
+  "title": "ConnectUp",
+  "category": "Website",
+  "year": 2024,
+  "cover": "/images/projects/connectup/whats-on-desktop.webp",
+  "coverAspect": "2400/1340",
+  "gridSize": "",
+  "gridOffset": 0,
+  "backgroundColor": "#3c5a80",
+  "textColor": "White",
+  "primaryColor": "#e8a33d",
+  "secondaryColor": "#3c5a80",
+  "services": [
+    "Web Design",
+    "Web Development",
+    "Art Direction"
+  ],
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "id": "cu-1",
+          "children": [
+            {
+              "text": "Connect Up is a program for 18 to 30 year olds who live, work or study in the Belconnen region, run out of the University of Canberra with Capital Region Community Services. It exists because people that age move to a new region and struggle to meet anyone. I designed and built the site."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "cu-2",
+          "children": [
+            {
+              "text": "Research projects usually get websites that read like grant applications. This one had to work for the people it was trying to reach, which meant answering two questions fast: what is on, and how do I turn up. Everything else is secondary and the layout says so."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "cu-3",
+          "children": [
+            {
+              "text": "The identity was already there when I arrived — coloured pills holding single words, so a headline gets assembled out of parts rather than set as a block. I didn't design it. What I did was build a site that keeps it working once I'm gone, which mostly meant making sure it still holds up when the person updating the page next has never read the style guide."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "cu-4",
+          "children": [
+            {
+              "text": "Live at "
+            },
+            {
+              "type": "a",
+              "url": "https://connectup.au",
+              "id": "cu-link",
+              "children": [
+                {
+                  "text": "connectup.au"
+                }
+              ]
+            },
+            {
+              "text": "."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2024",
+    "place": "Belconnen, ACT",
+    "client": "University of Canberra"
+  },
+  "blocks": [
+    {
+      "src": "/images/projects/connectup/home-desktop.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/connectup/home-mobile.webp",
+          "aspectRatio": "1920/2400"
+        },
+        {
+          "src": "/images/projects/connectup/whats-on-mobile.webp",
+          "aspectRatio": "1920/2400"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/connectup/program-overview.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "src": "/videos/connectup-about.mp4",
+      "poster": "/images/projects/connectup/about-film-poster.jpg",
+      "caption": "The programme film, embedded on the About page.",
+      "_template": "video"
+    },
+    {
+      "src": "/images/projects/connectup/welcome-to-belco.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "src": "/images/projects/connectup/join-us.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    }
+  ]
+}

@@ -14,8 +14,16 @@ interface GridItemProps {
 
 function splitTitle(title: string): [string[], string[]] {
   const words = title.split(' ')
-  if (words.length <= 2) return [words, []]
   const total = title.replace(/ /g, '').length
+  // .title-line is white-space: nowrap over an overflow: hidden card, so a line that
+  // doesn't fit is clipped mid-word rather than wrapped. Two-word titles used to be
+  // returned as a single line on the assumption they were short enough; they aren't.
+  // "National Triangle" rendered as "National Trian", and measuring the grid caught
+  // "Wonderful World" (60px over) and "Angus Comyns" (27px over) doing the same. Card
+  // width varies with gridSize, so a length threshold can't decide this — stack every
+  // multi-word title, exactly as 3+ word titles already are.
+  if (words.length < 2) return [words, []]
+  if (words.length === 2) return [[words[0]], [words[1]]]
   let best = 1
   let bestDiff = Infinity
   let running = 0

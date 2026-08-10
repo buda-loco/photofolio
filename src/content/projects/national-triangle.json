@@ -1,0 +1,172 @@
+{
+  "slug": "national-triangle",
+  "title": "National Triangle",
+  "category": "Branding",
+  "year": 2021,
+  "cover": "/images/projects/national-triangle/site-mockup.jpg",
+  "coverAspect": "3/2",
+  "gridSize": "",
+  "gridOffset": 0,
+  "backgroundColor": "#1c1c1c",
+  "textColor": "White",
+  "primaryColor": "#f4ff26",
+  "secondaryColor": "#1c1c1c",
+  "services": [
+    "Brand Identity",
+    "Logo Design",
+    "Brand Guidelines",
+    "Signage & Environmental",
+    "Merchandise"
+  ],
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "id": "nt-1",
+          "children": [
+            {
+              "text": "The National Triangle is the precinct at the centre of Canberra, the one you can see the shape of from the air. Parliament House, the National Gallery, the National Library, Questacon, Old Parliament House. The National Triangle board commissioned a destination brand for it, and I designed the original identity."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "nt-2",
+          "children": [
+            {
+              "text": "The brief was flexibility. It had to become the signature on everything the precinct touched, and it had to survive being applied by people I would never meet, to things nobody had thought of yet. So it was built to grow rather than to be policed: a system that adapts across mediums instead of a mark with a rulebook stapled to it."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "nt-3",
+          "children": [
+            {
+              "text": "It went on tourism films, posters, wayfinding signage, postcards, merchandise, a mural, and a paddleboat on the lake."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "nt-4",
+          "children": [
+            {
+              "text": "The identity ran for five years, and that is the part worth stating. Brands that do not work get replaced quietly inside a year or two. Five years in service for a federal precinct means the system held up under budgets, staff and priorities that had nothing to do with me. It has since been replaced with a version I did not make."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "nt-5",
+          "children": [
+            {
+              "text": "Delivered through Oddjobs."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2021",
+    "place": "Canberra, Australia",
+    "client": "National Capital Authority"
+  },
+  "blocks": [
+    {
+      "src": "/images/projects/national-triangle/mural.jpg",
+      "aspectRatio": "21/9",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/national-triangle/guide-cover-front.webp",
+          "aspectRatio": "2400/1610"
+        },
+        {
+          "src": "/images/projects/national-triangle/guide-cover-back.webp",
+          "aspectRatio": "2400/1610"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-contents.webp",
+      "aspectRatio": "2400/1018",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/national-triangle/logo.jpg",
+          "aspectRatio": "3/2"
+        },
+        {
+          "src": "/images/projects/national-triangle/postcard.jpg",
+          "aspectRatio": "3/2"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-logo-variations.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-colour.webp",
+      "aspectRatio": "2400/1018",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/national-triangle/paddleboat.jpg",
+          "aspectRatio": "2560/1440"
+        },
+        {
+          "src": "/images/projects/national-triangle/tote-bag.jpg",
+          "aspectRatio": "2560/1706"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-typography.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-type-treatment.webp",
+      "aspectRatio": "2400/1018",
+      "_template": "hero"
+    },
+    {
+      "src": "/images/projects/national-triangle/guide-visual-language.webp",
+      "aspectRatio": "2400/1340",
+      "_template": "hero"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/national-triangle/guide-cover-angle.webp",
+          "aspectRatio": "2400/1610"
+        },
+        {
+          "src": "/images/projects/national-triangle/guide-spine.webp",
+          "aspectRatio": "2400/1610"
+        }
+      ],
+      "_template": "gallery"
+    }
+  ],
+  "heroFor": [
+    "Brand Identity"
+  ]
+}

@@ -74,6 +74,14 @@ export default defineConfig({
             ],
           },
           { name: 'gridOffset', label: 'Grid column offset', type: 'number' },
+          {
+            name: 'heroFor',
+            label: 'Headline these service filters',
+            description:
+              'Service names this project should lead on /work. The big bento slot goes to whatever is first, so listing a service here makes this the big card under that filter. No effect on All.',
+            type: 'string',
+            list: true,
+          },
           { name: 'featured', label: 'Feature in homepage', type: 'boolean' },
           { name: 'backgroundColor', label: 'Background colour', type: 'string' },
           { name: 'backgroundColorSecondary', label: 'Background colour (secondary)', type: 'string' },

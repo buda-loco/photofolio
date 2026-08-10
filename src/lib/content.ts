@@ -116,6 +116,10 @@ export interface Project {
   coverAspect?: string
   gridSize?: 'large' | 'medium' | 'small'
   gridOffset?: number
+  /** Service filters this project should headline. The /work bento grid gives its big
+   *  slot to whatever sits at index 0, so naming a service here hoists this project to
+   *  the front of that filter. Does not affect the All view. */
+  heroFor?: string[]
   featured?: boolean
   ctaLabel?: string
   ctaUrl?: string
