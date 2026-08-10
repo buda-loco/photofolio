@@ -4,7 +4,7 @@
   "category": "Website",
   "year": 2024,
   "cover": "/images/projects/connectup/whats-on-desktop.webp",
-  "coverAspect": "2400/1340",
+  "coverAspect": "16/9",
   "gridSize": "",
   "gridOffset": 0,
   "backgroundColor": "#3c5a80",
@@ -78,7 +78,7 @@
   "blocks": [
     {
       "src": "/images/projects/connectup/home-desktop.webp",
-      "aspectRatio": "2400/1340",
+      "aspectRatio": "16/9",
       "_template": "hero"
     },
     {
@@ -97,7 +97,7 @@
     },
     {
       "src": "/images/projects/connectup/program-overview.webp",
-      "aspectRatio": "2400/1340",
+      "aspectRatio": "16/9",
       "_template": "hero"
     },
     {
@@ -108,12 +108,12 @@
     },
     {
       "src": "/images/projects/connectup/welcome-to-belco.webp",
-      "aspectRatio": "2400/1340",
+      "aspectRatio": "16/9",
       "_template": "hero"
     },
     {
       "src": "/images/projects/connectup/join-us.webp",
-      "aspectRatio": "2400/1340",
+      "aspectRatio": "16/9",
       "_template": "hero"
     }
   ]
