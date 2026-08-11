@@ -290,13 +290,18 @@
 
 .about-hero-name {
   font-family: 'Adrianna Extended', var(--font-display);
-  /* Measured: "Benjamin" renders 4.93x the font-size in Adrianna Extended, so 19vw
-     spans ~94% of the viewport at any width. Deliberately no upper clamp — a max
-     would shrink the fill ratio on large monitors, which is the opposite of the
-     point. The min only engages below ~220px wide. */
-  font-size: max(2.6rem, 19vw);
+  /* Measured in the browser: uppercase "BENJAMIN" renders 6.08x the font-size in
+     Adrianna Extended (lowercase was 4.93x — caps are 23% wider), so 15.4vw spans
+     ~94% of the viewport at any width. Deliberately no upper clamp: a max would
+     shrink the fill ratio on large monitors, which is the opposite of the point.
+     The min only engages below ~270px wide. Retune this if the name or face
+     changes — the two numbers are tied together. */
+  font-size: max(2.6rem, 15.4vw);
+  text-transform: uppercase;
   font-weight: 700;
-  line-height: 0.86;
+  /* 0.86 was set for mixed case. In caps the only descender left is the J, and at
+     this size its tail cut straight through ARNEDO on the line below. */
+  line-height: 0.95;
   letter-spacing: -0.035em;
   /* the scroll exit scales this up; transform-box keeps it centred while it grows */
   transform-origin: center center;
