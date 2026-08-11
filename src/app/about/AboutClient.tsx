@@ -214,6 +214,19 @@ export default function AboutClient(props: AboutClientProps) {
             off)
         }
 
+        // The text block carries the readability scrim as its ::before. Panels are all
+        // position: absolute; inset: 0 and stacked, so a scrim left on permanently sits
+        // over the previous panel's number and copy and greys the whole scene. Fade the
+        // block on the same envelope as its lines and each scrim only lives while its
+        // own panel is up.
+        const textBlock = panel.querySelector('.about-chunk-text')
+        if (textBlock) {
+          masterTl.fromTo(textBlock,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: CHUNK_ENTER * 0.5 },
+            off)
+        }
+
         // Lines stagger in slowly — line by line
         if (lines.length) {
           masterTl.fromTo(lines,
@@ -230,6 +243,14 @@ export default function AboutClient(props: AboutClientProps) {
             autoAlpha: 0, y: -20, duration: CHUNK_EXIT,
             stagger: CHUNK_EXIT / (lines.length + 1),
           }, off + CHUNK_ENTER + CHUNK_HOLD)
+        }
+
+        // …and the block with its scrim goes with them, a touch later so the copy is
+        // never left sitting on a scrim that has already gone.
+        if (textBlock) {
+          masterTl.to(textBlock, {
+            autoAlpha: 0, duration: CHUNK_EXIT * 0.6,
+          }, off + CHUNK_ENTER + CHUNK_HOLD + CHUNK_EXIT * 0.4)
         }
 
         // Number + ticker fade out

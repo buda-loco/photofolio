@@ -419,6 +419,32 @@
   gap: 0.7em;
 }
 
+/* Scrim behind the copy. The number sits at z-index 0 and the text at 1, so this
+   pseudo-element (z-index -1 inside the text's own stacking context) lands between
+   them: it hides the number where the two overlap and fades out to the left so the
+   digits still read. Solid under the text, gone by the time it clears the column.
+   Matters most on narrow screens, where the number runs straight under the copy. */
+.about-chunk-text::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -2.5rem;
+  bottom: -2.5rem;
+  right: -3rem;
+  /* The fade must be a fixed distance, not a percentage. As a percentage of this box
+     the ramp scaled with the text column and pushed left across the whole number,
+     wiping out the 4. Anchoring both the extension and the ramp to the same 12rem
+     means the column is solidly backed and the fade happens only in the strip to its
+     left, so the number keeps its shape and just loses contrast where the copy sits. */
+  left: -12rem;
+  background: linear-gradient(
+    to left,
+    rgb(0 0 0 / 0.86) calc(100% - 12rem),
+    rgb(0 0 0 / 0) 100%
+  );
+  pointer-events: none;
+}
+
 .about-chunk-line {
   font-family: var(--font-sans);
   font-size: clamp(1.1rem, 1.8vw, 1.4rem);
