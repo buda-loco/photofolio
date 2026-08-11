@@ -23,7 +23,15 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const latest = getAllProjects().slice(0, 2)
+  // The CMS labels this field "Feature in homepage", so it selects what shows here.
+  // It previously did not: this was slice(0, 2), the two most recent by year, and
+  // `featured` was only ever read as an exclusion inside getAllProjects (featured ===
+  // false hides a project everywhere). Ticking the box therefore changed nothing, which
+  // is not what the label promises. Falls back to the two most recent when none are
+  // flagged, so the section is never empty.
+  const all = getAllProjects()
+  const picked = all.filter(p => p.featured === true)
+  const latest = picked.length ? picked : all.slice(0, 2)
 
   return (
     <div className="page">
