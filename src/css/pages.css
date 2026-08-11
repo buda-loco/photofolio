@@ -279,27 +279,31 @@
   gap: var(--sp-4);
 }
 
-.about-hero-portrait {
-  pointer-events: none;
-}
-
-.about-hero-portrait img {
-  display: block;
-  max-height: 55vh;
-  width: auto;
-}
-
+/* The illustrated portrait is gone — the name is the hero. Sized off the viewport so
+   it spans edge to edge, one word per line. Adrianna Extended is very wide, so the vw
+   value is far lower than it looks: "Benjamin" is 8 characters of an extended face. */
 .about-hero-text {
   text-align: center;
-  margin-top: var(--sp-4);
+  width: 100%;
+  padding: 0 var(--sp-3);
 }
 
 .about-hero-name {
   font-family: 'Adrianna Extended', var(--font-display);
-  font-size: clamp(2rem, 5vw, 4rem);
+  /* Measured: "Benjamin" renders 4.93x the font-size in Adrianna Extended, so 19vw
+     spans ~94% of the viewport at any width. Deliberately no upper clamp — a max
+     would shrink the fill ratio on large monitors, which is the opposite of the
+     point. The min only engages below ~220px wide. */
+  font-size: max(2.6rem, 19vw);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  /* the scroll exit scales this up; transform-box keeps it centred while it grows */
+  transform-origin: center center;
+}
+
+.about-hero-word {
+  display: block;
 }
 
 .about-hero-sub {
@@ -553,9 +557,8 @@
     min-height: 80vh;
   }
 
-  .about-hero-portrait img {
-    max-height: 40vh;
-  }
+  /* .about-hero-name needs no mobile override: max(2.6rem, 19vw) already holds the
+     same 94% fill ratio at every viewport width. */
 
   .about-chunk-num {
     position: relative;

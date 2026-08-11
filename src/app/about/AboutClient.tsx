@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTina, tinaField } from 'tinacms/dist/react'
@@ -176,17 +175,18 @@ export default function AboutClient(props: AboutClientProps) {
       }, 0)
 
       // ── HERO ──
-      masterTl.fromTo('.about-hero-name',
-        { autoAlpha: 0, y: 30 },
-        { autoAlpha: 1, y: 0, duration: HERO_IN }, HERO_START)
-      masterTl.fromTo('.about-hero-sub',
-        { autoAlpha: 0, y: 20 },
-        { autoAlpha: 1, y: 0, duration: HERO_IN }, HERO_START + 0.005)
-      // hold (nothing happens for HERO_HOLD)
-      masterTl.to('.about-hero-portrait', {
-        scale: 1.3, autoAlpha: 0, duration: HERO_OUT,
+      // No fade-in. This is a scrubbed timeline, so a fromTo starting at 0 leaves the
+      // element at autoAlpha: 0 while the page sits at the top — which was fine when the
+      // portrait opened the scene, but with the name as the hero it meant landing on a
+      // black screen. The name is simply visible at rest and scrubs away on scroll.
+      // hold (nothing happens until HERO_HOLD)
+      // The name inherits the exit the portrait used to have. Scaling full-screen type up
+      // as it fades reads as pushing past the viewer; sliding it 20px would barely register
+      // at this size.
+      masterTl.to('.about-hero-name', {
+        scale: 1.12, autoAlpha: 0, duration: HERO_OUT,
       }, HERO_START + HERO_IN + HERO_HOLD)
-      masterTl.to(['.about-hero-name', '.about-hero-sub'], {
+      masterTl.to('.about-hero-sub', {
         autoAlpha: 0, y: -20, duration: HERO_OUT,
       }, HERO_START + HERO_IN + HERO_HOLD)
 
@@ -442,22 +442,20 @@ export default function AboutClient(props: AboutClientProps) {
       {/* Single pinned stage — hero, chunks, skills all stacked */}
       <div className="about-stage">
         <section className="about-scene about-scene-hero">
-          <div className="about-hero-portrait">
-            {about.portrait && (
-              <Image
-                src={about.portrait}
-                alt={about.name ?? 'Benjamin Arnedo'}
-                width={420}
-                height={560}
-                style={{ width: 'auto', height: 'auto' }}
-                priority
-                unoptimized
-                data-tina-field={tinaField(about, 'portrait')}
-              />
-            )}
-          </div>
+          {/* The illustrated portrait is gone. The name is the hero now: set at full
+              viewport scale, one word per line, and scrubbed away on scroll by the same
+              master timeline that used to fade the portrait. `about.portrait` stays in
+              the Tina schema — removing a field there diverges the local GraphQL schema
+              from Tina Cloud's and hard-fails `tinacms build`, which takes the deploy
+              down. It is simply no longer rendered. */}
           <div className="about-hero-text">
-            <h1 className="about-hero-name">{about.name ?? 'Benjamin Arnedo'}</h1>
+            <h1 className="about-hero-name" data-tina-field={tinaField(about, 'name')}>
+              {/* String() because `about` comes back loosely typed from Tina, so the
+                  split/map params would otherwise infer as implicit any. */}
+              {String(about.name ?? 'Benjamin Arnedo').split(' ').map((word, i) => (
+                <span className="about-hero-word" key={i}>{word}</span>
+              ))}
+            </h1>
             <p className="about-hero-sub">Creative Director</p>
           </div>
           <div className="about-scroll-hint" aria-hidden="true">

@@ -240,9 +240,12 @@ export function getAllProjects(): Project[] {
   const projectsDir = path.join(CONTENT_DIR, 'projects')
   const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.json'))
   const projects = files.map(f => readJson<Project>(path.join(projectsDir, f)))
-  _projectsCache = projects
-    .filter(p => p.featured !== false)
-    .sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+  // `featured` means one thing only: show on the homepage. It used to double as a
+  // site-wide hide here (`featured !== false`), which turned the CMS checkbox into a
+  // trap — unticking "Feature in homepage" to take a project off the homepage would
+  // silently drop it from /work as well. No project ever used it that way. If a project
+  // needs hiding outright, add an explicit field rather than overloading this one.
+  _projectsCache = projects.sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
   return _projectsCache
 }
 
