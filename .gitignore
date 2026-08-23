@@ -20,3 +20,8 @@ tsconfig.tsbuildinfo
 # never be committed. The notFound() gate in page.tsx keeps it off the built
 # site; this keeps the source off GitHub.
 src/app/dashboard/
+
+# Showreel pipeline — holds the Dropbox token and generated caches
+scripts/showreel/config.sh
+scripts/showreel/.ca-bundle.pem
+scripts/showreel/.links.json

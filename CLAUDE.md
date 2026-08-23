@@ -358,6 +358,63 @@ Scroll resets to top on pathname change (deferred to next animation frame to avo
 
 ---
 
+## Showreel (`/showreel`)
+
+Video archive: 64 videos, six categories, streaming from Dropbox through
+OneLinePlayer. Filter pills reuse `/work`'s styles; cards reuse `.grid-item`
+and `initGridHovers`, so the hover is the same timeline as home and `/work`
+with the tint forced to the accent.
+
+**To add videos, use the pipeline — don't do it by hand:**
+
+```bash
+cd scripts/showreel
+cp config.example.sh config.sh   # first time; holds the Dropbox token
+source config.sh && ./showreel.py all
+```
+
+`scripts/showreel/README.md` has the full detail. It is incremental — every
+stage skips work already done, so re-running only touches new files, and
+`./showreel.py status` reports what's pending without changing anything.
+
+### Things that will bite you
+
+- **A Dropbox token keeps the scopes it was born with.** Ticking new
+  permissions does nothing for an existing token: tick, Submit, *then*
+  regenerate. Needs `files.metadata.read`, `files.content.write`,
+  `sharing.read`, `sharing.write`.
+- **This is a Business team space.** Every API call needs a
+  `Dropbox-API-Path-Root` header; without it the API sees only `/Apps` and
+  reports the account as empty.
+- **TLS interception on this machine breaks Python but not curl.** The script
+  builds a combined certifi + macOS-keychain CA bundle rather than disabling
+  verification. Any other Python script here hitting HTTPS will hit the same
+  wall.
+- **Slugs can collide.** "Winter in the City Promo" and "Winter in the city
+  Promo" differ only by case. `slug_map()` is the single source of truth and
+  appends `-2`; never call `slugify()` directly from a stage.
+- **Hand-edited titles survive a rebuild.** `manifest` preserves `title` and
+  `category` on entries that already exist.
+
+### Animation timings are bounded by total, not per item
+
+`/work` staggers per item (`stagger: 0.07`), which is fine for ~11 projects.
+At 64 cards that costs 4.5s to reveal and 1.8s to filter. ShowreelGrid uses
+`stagger: { amount: N }` for the filter fade and reveals per viewport-batch
+via IntersectionObserver. **Keep any new stagger here bounded by total time.**
+
+The reveal deliberately avoids ScrollTrigger: `AnimationsInit` kills every
+ScrollTrigger from an async import on mount, which races the component and
+leaves cards stuck invisible.
+
+### Category notes
+
+`CATEGORY_NOTES` in `ShowreelGrid.tsx` shows context above the grid for a
+given category — currently Crewcible, with a CTA to crewcible.com. Add a key
+to that map to give another category one.
+
+---
+
 ## Content management (Tina CMS — local only)
 
 ```
