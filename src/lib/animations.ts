@@ -120,8 +120,10 @@ export function initGridHovers(container?: HTMLElement | null): () => void {
   const root = container ?? document;
 
   (root.querySelectorAll<HTMLElement>('.grid-item') as NodeListOf<HTMLElement>).forEach(item => {
-    // Skip bento grid items when called globally — WorkGrid manages its own hovers
-    if (!container && item.closest('.bento-grid')) return
+    // Skip bento and showreel items when called globally — WorkGrid and
+    // ShowreelGrid re-bind their own hovers after every filter change, so a
+    // global bind here would stack a second timeline on the same element.
+    if (!container && (item.closest('.bento-grid') || item.closest('.showreel-grid'))) return
 
     const bg = item.querySelector<HTMLElement>('.grid-item-overlay-bg')
     const scrim = item.querySelector<HTMLElement>('.grid-item-scrim')

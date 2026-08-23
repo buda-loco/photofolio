@@ -1,0 +1,281 @@
+/* ── /showreel — video archive grid ────────────────────────────────────────
+   The cards reuse .grid-item and its children (.grid-item-overlay-bg,
+   .grid-item-scrim, .word-inner) so initGridHovers drives them with exactly
+   the same timeline as the home and /work cards. Only the tint colour differs:
+   these always highlight in the accent, never a per-project colour.
+
+   Layout is CSS multi-column rather than a bento grid because the set mixes
+   16:9, 9:16 and 1:1 — forcing uniform cells would centre-crop every vertical.
+   Columns keep each card at its true aspect ratio with no layout maths. */
+
+.showreel-grid {
+  column-count: 3;
+  column-gap: var(--grid-gap);
+}
+
+.showreel-item {
+  /* Cards are <button>, so the UA button styling has to be unset. */
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* Without this a card can be split across two columns mid-image. */
+  break-inside: avoid;
+  margin-bottom: var(--grid-gap);
+}
+
+.showreel-item .img-container {
+  aspect-ratio: var(--aspect, 16/9);
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+
+.showreel-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.9s var(--ease-out);
+}
+
+.showreel-item:hover .showreel-preview {
+  transform: scale(1.04);
+}
+
+/* The one deliberate difference from the home/work cards: always the accent,
+   never a per-project colour. */
+.showreel-item .grid-item-overlay-bg {
+  background: var(--color-accent, #f4ff26);
+}
+
+/* Cards sit closer together than project cards, so the title runs a step
+   smaller than the .grid-item-title clamp. */
+.showreel-item .grid-item-title {
+  font-size: clamp(1.05rem, 1.9vw, 1.9rem);
+}
+
+.showreel-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ── Category note ────────────────────────────────────────────────────── */
+
+/* Context shown above the grid for certain categories (e.g. Crewcible).
+   Keyed off `key={active}` in the component so it replays on each switch. */
+.showreel-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--color-border);
+  animation: showreel-note-in 0.5s var(--ease-out) both;
+}
+
+@keyframes showreel-note-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.showreel-note-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--color-text);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* The shared CTA reads --project-secondary/--project-primary, which are only
+   set on project pages. Pin them here so it lands accent-on-black. */
+.showreel-note .external-link-btn {
+  flex: none;
+  font-size: var(--text-sm);
+  background: var(--color-accent, #f4ff26);
+  color: #000;
+  -webkit-text-fill-color: #000;
+}
+
+@media (max-width: 640px) {
+  .showreel-note {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showreel-note { animation: none; }
+}
+
+/* ── Lightbox ─────────────────────────────────────────────────────────── */
+
+.showreel-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--page-margin);
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: showreel-lb-in 0.28s var(--ease-out) both;
+}
+
+@keyframes showreel-lb-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.showreel-lightbox-panel {
+  width: min(100%, 1200px);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: showreel-lb-panel 0.34s var(--ease-out) both;
+}
+
+@keyframes showreel-lb-panel {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+.showreel-lightbox-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.showreel-lightbox-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.showreel-lightbox-cat {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.showreel-lightbox-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.22s, background 0.22s, color 0.22s;
+}
+
+.showreel-lightbox-close:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #000;
+}
+
+.showreel-lightbox-close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.showreel-lightbox-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--lb-aspect, 16/9);
+  /* A 9:16 clip would otherwise run off a laptop screen. */
+  max-height: 78vh;
+  /* When max-height clamps the box, the browser drops aspect-ratio and the
+     frame stretches to full panel width — a vertical clip then renders as a
+     letterboxed 16:9. Capping width by the same ratio keeps the shape correct
+     in both orientations. Must NOT be gated on :has(> iframe): the no-link
+     fallback has no iframe and would lose the cap. */
+  max-width: calc(78vh * (var(--lb-aspect, 16/9)));
+  margin-inline: auto;
+  background: #000;
+}
+
+.showreel-lightbox-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.showreel-lightbox-missing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.showreel-lightbox-missing img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+}
+
+.showreel-lightbox-missing p {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .showreel-grid { column-count: 2; }
+}
+
+@media (max-width: 640px) {
+  .showreel-grid { column-count: 1; }
+  .showreel-lightbox { padding: var(--sp-4); }
+}
+
+/* Reduced motion — the poster stays, nothing loops, nothing slides in. */
+@media (prefers-reduced-motion: reduce) {
+  .showreel-preview,
+  .showreel-item:hover .showreel-preview {
+    transition: none;
+    transform: none;
+  }
+  .showreel-lightbox,
+  .showreel-lightbox-panel {
+    animation: none;
+  }
+}

@@ -16,6 +16,7 @@ interface NavProps {
 
 const navItems = [
   { href: '/work', label: 'Work' },
+  { href: '/showreel', label: 'Showreel' },
   { href: '/about', label: 'About' },
   { href: '/how-i-work', label: 'Process' },
   { href: '/cv', label: 'CV' },

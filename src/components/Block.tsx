@@ -6,43 +6,10 @@ import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import type { ContentBlock } from '@/lib/content'
 import type { RichNode as RichNodeType } from '@/lib/richText'
 import RichText from '@/components/RichText'
-
-const SITE_ORIGIN = 'https://benjaminarnedo.com'
-
-function absoluteUrl(path: string): string {
-  if (!path) return ''
-  return path.startsWith('/') ? `${SITE_ORIGIN}${path}` : path
-}
-
-function dropboxUrl(src: string): string {
-  if (!src?.includes('dropbox.com')) return src
-  const base = src.replace(/[?&]dl=\d/, '').replace(/\?$/, '')
-  return base + (src.includes('?') ? '&raw=1' : '?raw=1')
-}
+import { absoluteUrl, dropboxUrl, onelinerSrc } from '@/lib/videoEmbed'
 
 function splitWords(text: string): string[] {
   return text.split(' ')
-}
-
-function onelinerSrc(url: string, opts: Record<string, string> = {}): string {
-  const params = new URLSearchParams({
-    url,
-    autoplay: opts['autoplay'] ?? 'false',
-    autopause: 'true',
-    muted: opts['muted'] ?? 'false',
-    loop: opts['loop'] ?? 'false',
-    progressBar: 'true',
-    overlay: 'true',
-    muteButton: 'true',
-    fullscreenButton: 'true',
-    style: 'dark',
-    quality: 'auto',
-    playButton: 'true',
-    // Always pass a poster: with none, OneLinePlayer requests `onelineplayer.com/null`
-    // (harmless but a console 404). Fall back to a 1×1 black image on our origin.
-    poster: opts['poster'] || `${SITE_ORIGIN}/video-poster-fallback.png`,
-  })
-  return `https://onelineplayer.com/player.html?${params}`
 }
 
 interface BlockProps {
