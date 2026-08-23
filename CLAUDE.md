@@ -24,6 +24,12 @@ npm run build    # production build (next build only — no tinacms build)
 npm run start    # serve production build
 ```
 
+⚠️ **Never run `npm run build` while `npm run dev` is live.** They share
+`.next`, and the build overwrites manifests the dev server is holding open —
+every route then 500s with `ENOENT ... app-build-manifest.json`. It looks like
+the code broke, but nothing is wrong with it. Stop the dev server, `rm -rf
+.next`, and restart.
+
 ---
 
 ## Design system
