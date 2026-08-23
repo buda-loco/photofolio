@@ -17,7 +17,9 @@ interface CategoryNote {
 
 const CATEGORY_NOTES: Record<string, CategoryNote> = {
   Crewcible: {
-    text: 'Every video in this section was made while working for Crewcible.',
+    text: 'Everything here was made at Crewcible, and none of it alone. ' +
+          'I filmed most of these and directed some, and edited a few. ' +
+          'The rest is the work of a very talented team I was lucky to be part of.',
     ctaHref: 'https://crewcible.com/',
     ctaLabel: 'Visit Crewcible',
   },
