@@ -142,7 +142,7 @@ export interface About {
   clients: string[]
   email: string
   instagram?: string
-  vimeo?: string
+  showreel?: string
 }
 
 export interface HowIWorkStep {
