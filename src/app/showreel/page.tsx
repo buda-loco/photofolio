@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getShowreelItems, getShowreelCategories } from '@/lib/showreel'
 import ShowreelGrid from '@/components/ShowreelGrid'
@@ -36,7 +37,10 @@ export default function ShowreelPage() {
           {items.length} videos · {categories.length} categories
         </p>
       </div>
-      <ShowreelGrid items={items} categories={categories} />
+      {/* Suspense is required: ShowreelGrid reads useSearchParams for ?category= */}
+      <Suspense>
+        <ShowreelGrid items={items} categories={categories} />
+      </Suspense>
     </div>
   )
 }

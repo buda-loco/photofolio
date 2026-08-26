@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getAllProjects } from '@/lib/content'
 import WorkGrid from '@/components/WorkGrid'
@@ -33,7 +34,10 @@ export default function WorkPage() {
           Photography · Cinematography · Creative Direction
         </p>
       </div>
-      <WorkGrid projects={projects} services={services} />
+      {/* Suspense is required: WorkGrid reads useSearchParams for ?service= */}
+      <Suspense>
+        <WorkGrid projects={projects} services={services} />
+      </Suspense>
     </div>
   )
 }

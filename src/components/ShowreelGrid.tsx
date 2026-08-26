@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useLayoutEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { gsap } from 'gsap'
 import { initGridHovers } from '@/lib/animations'
 import VideoLightbox from '@/components/VideoLightbox'
@@ -56,11 +57,25 @@ function forCategory(items: ShowreelItem[], category: string): ShowreelItem[] {
 }
 
 export default function ShowreelGrid({ items, categories }: ShowreelGridProps) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [active, setActive] = useState('All')
   const [visible, setVisible] = useState<ShowreelItem[]>(items)
   const [open, setOpen] = useState<ShowreelItem | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
+
+  // Read ?category= on mount and on navigation, so /showreel?category=Crewcible
+  // deep-links a filter. filterTo writes the param via replaceState, which the
+  // Next 15 router echoes back into searchParams — the guard keeps that echo
+  // from re-applying the filter without its animation.
+  useEffect(() => {
+    const param = searchParams.get('category') ?? 'All'
+    const cat = param === 'All' || categories.includes(param) ? param : 'All'
+    if (cat === active) return
+    setActive(cat)
+    setVisible(forCategory(items, cat))
+  }, [pathname, searchParams, categories, items, active])
 
   // One observer drives both the reveal and preview playback.
   //
@@ -149,12 +164,20 @@ export default function ShowreelGrid({ items, categories }: ShowreelGridProps) {
     if (category === active) return
     isFiltering.current = true
 
+    const syncUrl = () => {
+      const url = category === 'All'
+        ? pathname
+        : `${pathname}?category=${encodeURIComponent(category)}`
+      window.history.replaceState(null, '', url)
+    }
+
     const els = gridRef.current?.querySelectorAll<HTMLElement>('.showreel-item')
     const next = forCategory(items, category)
 
     if (!els?.length) {
       setActive(category)
       setVisible(next)
+      syncUrl()
       isFiltering.current = false
       return
     }
@@ -171,10 +194,11 @@ export default function ShowreelGrid({ items, categories }: ShowreelGridProps) {
       onComplete() {
         setActive(category)
         setVisible(next)
+        syncUrl()
         isFiltering.current = false
       },
     })
-  }, [items, active])
+  }, [items, active, pathname])
 
   const tabs = ['All', ...categories]
   const note = CATEGORY_NOTES[active]

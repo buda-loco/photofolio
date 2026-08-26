@@ -53,13 +53,17 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
   const gridRef = useRef<HTMLDivElement>(null)
   const isFiltering = useRef(false)
 
-  // Read ?service= param on mount and on navigation (including query changes)
+  // Read ?service= param on mount and on navigation (including query changes).
+  // filterTo writes the param itself via replaceState, which the Next 15 router
+  // feeds back into searchParams — the guard stops that echo from re-applying
+  // the filter without its animation.
   useEffect(() => {
     const param = searchParams.get('service') ?? 'All'
     const svc = param === 'All' || services.includes(param) ? param : 'All'
+    if (svc === active) return
     setActive(svc)
     setVisible(forService(projects, svc))
-  }, [pathname, searchParams, services, projects])
+  }, [pathname, searchParams, services, projects, active])
 
   // Cleanup tweens on unmount
   useEffect(() => {
@@ -87,12 +91,21 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
     if (isFiltering.current) return
     isFiltering.current = true
 
+    // Keep the filter shareable: /work?service=Photography deep-links it.
+    const syncUrl = () => {
+      const url = service === 'All'
+        ? pathname
+        : `${pathname}?service=${encodeURIComponent(service)}`
+      window.history.replaceState(null, '', url)
+    }
+
     const items = gridRef.current?.querySelectorAll<HTMLElement>('.bento-item')
     const next = forService(projects, service)
 
     if (!items?.length) {
       setActive(service)
       setVisible(next)
+      syncUrl()
       isFiltering.current = false
       return
     }
@@ -106,10 +119,11 @@ export default function WorkGrid({ projects, services }: WorkGridProps) {
       onComplete() {
         setActive(service)
         setVisible(next)
+        syncUrl()
         isFiltering.current = false
       },
     })
-  }, [projects])
+  }, [projects, pathname])
 
   return (
     <div className="work-section">
