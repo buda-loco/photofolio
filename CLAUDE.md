@@ -395,6 +395,29 @@ Scroll resets to top on pathname change (deferred to next animation frame to avo
 
 ---
 
+## Analytics
+
+Three trackers, all in `layout.tsx`: Vercel Analytics, Vercel Speed Insights,
+and Google Analytics 4 (`G-78BBE72KHY`) via `@next/third-parties`.
+
+- `NEXT_PUBLIC_GA_ID` is set on Vercel for **Production only**, so preview
+  deployments and local dev never reach the property. The tag renders only when
+  the var is present.
+- ⚠️ **`NEXT_PUBLIC_*` is inlined at build time.** Changing it in Vercel does
+  nothing until a rebuild. `vercel redeploy` is not reliably enough — it can
+  reuse the previous build output. Push a commit to force a real build.
+- ⚠️ **Do not add manual `page_view` tracking.** GA4 counts a pageview on every
+  browser history change, which is what this site's client-side `router.push()`
+  navigations are. Verified on production: navigating `/` → `/about` sends a
+  second `page_view` with the right `dl` and `dt`. Sending our own would double
+  every figure.
+- That behaviour depends on Enhanced Measurement → "Page changes based on
+  browser history events" staying enabled in the GA property. If it is ever
+  turned off, every navigation here goes uncounted and only the first page of a
+  visit registers — because nothing on this site is a full page load.
+- `@next/third-parties` is pinned to the **15.x** line to match `next@15.5.14`;
+  `@latest` is 16.x and conflicts.
+
 ## SEO
 
 - `metadataBase: new URL('https://benjaminarnedo.com')` set in root `layout.tsx`
