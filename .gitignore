@@ -25,3 +25,4 @@ src/app/dashboard/
 scripts/showreel/config.sh
 scripts/showreel/.ca-bundle.pem
 scripts/showreel/.links.json
+.env*.local
