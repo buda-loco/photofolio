@@ -277,6 +277,28 @@ The full portfolio listing at `/work` with bento-box layout and service filters.
 
 ---
 
+## Deep-linkable filters (`?service=` / `?category=`)
+
+Both filtered grids sync the active filter to the URL, so a filtered view is
+shareable: `/work?service=Photography`, `/showreel?category=Crewcible`. An
+unknown value falls back to "All" rather than rendering an empty grid.
+
+Clicking a pill writes the param with `history.replaceState` **after** the
+fade-out completes. Replace, not push — otherwise Back steps through every pill
+you clicked instead of leaving the page. Choosing "All" removes the param.
+
+Three things will bite you here:
+
+- ⚠️ **`useSearchParams` in a statically-generated page is a build error
+  without `<Suspense>`.** Not a warning — `next build` fails the export with
+  *"useSearchParams() should be wrapped in a suspense boundary"*. Both
+  `work/page.tsx` and `showreel/page.tsx` wrap their grid for exactly this
+  reason. Any new page reading query params needs the same.
+- ⚠️ **Next 15 echoes your own `replaceState` back through `useSearchParams`.**
+  The read effect must guard `if (value === active) return`, or the echo
+  re-applies the filter a second time with no animation.
+- ⚠️ **Same-pathname navigation must not run the transition mask** — see below.
+
 ## Page transitions
 
 Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
@@ -298,6 +320,14 @@ Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 ### Key details
 
 - The `routeReady` ref/promise pattern ensures the timeline waits for React to mount the new page before revealing it through the logo holes. Safety timeout of 2s prevents deadlock.
+- ⚠️ **Same-pathname navigation skips the mask entirely.** `routeReady`
+  resolves off the pathname changing, so `/showreel` → `/showreel?category=…`
+  (or clicking the nav pill for the page you are already on) would never
+  resolve it and the mask would sit on its full 2s safety timeout with the
+  screen covered. `triggerTransition` compares `href.split(/[?#]/)[0]` against
+  the current pathname and, on a match, just pushes the URL and scrolls to
+  top. Keep that guard if you add any link to a query-param view of the
+  current page.
 - `darkenBg()` (from `colors.ts`) computes the backdrop colour at 25% brightness of the destination background
 - Backdrop uses `linear-gradient(to bottom, transparent 0%, dark 35%, dark 100%)` so the leading edge fades softly
 - `TransitionLink` wraps `<a>` tags to trigger transitions. External links bypass the transition.
