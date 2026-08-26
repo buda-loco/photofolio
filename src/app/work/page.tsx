@@ -1,8 +1,10 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getAllProjects } from '@/lib/content'
+import { getShowreelItems } from '@/lib/showreel'
 import WorkGrid from '@/components/WorkGrid'
 import AnimationsInit from '@/components/AnimationsInit'
+import ShowreelCta from '@/components/ShowreelCta'
 
 export const metadata: Metadata = {
   title: 'Work',
@@ -24,6 +26,7 @@ export const metadata: Metadata = {
 export default function WorkPage() {
   const projects = getAllProjects()
   const services = Array.from(new Set(projects.flatMap(p => p.services ?? []))).sort()
+  const clips = getShowreelItems().map(i => ({ preview: i.preview, poster: i.poster }))
 
   return (
     <div className="page">
@@ -38,6 +41,10 @@ export default function WorkPage() {
       <Suspense>
         <WorkGrid projects={projects} services={services} />
       </Suspense>
+
+      {/* No data-animate on this: the grid above changes height when filtered,
+          which would leave a ScrollTrigger'd element with stale positions. */}
+      <ShowreelCta clips={clips} />
     </div>
   )
 }

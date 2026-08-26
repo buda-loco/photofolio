@@ -11,6 +11,7 @@ interface TransitionLinkProps {
   target?: string
   rel?: string
   bgColor?: string
+  tabIndex?: number
   onClick?: () => void
   'aria-label'?: string
   'aria-current'?: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'
@@ -25,6 +26,7 @@ export default function TransitionLink({
   target,
   rel,
   bgColor,
+  tabIndex,
   onClick,
   'aria-label': ariaLabel,
   'aria-current': ariaCurrent,
@@ -62,6 +64,7 @@ export default function TransitionLink({
       style={style}
       target={target}
       rel={rel}
+      tabIndex={tabIndex}
       aria-label={ariaLabel}
       aria-current={ariaCurrent}
       {...htmlRest}
