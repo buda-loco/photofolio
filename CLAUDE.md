@@ -240,6 +240,20 @@ The homepage (`/`) shows a **hero intro** + **2 latest projects** (sorted by yea
 - The 2 latest projects render as equal 6-col cards (overriding their `data-size`)
 - `getAllProjects()` is memoized — no duplicate file reads
 
+### Latest video work strip
+
+Below the projects, three showreel clips loop like gifs and open the shared
+`VideoLightbox` on click. `HomeVideoStrip.tsx` renders them; selection is
+`getHomepageVideos()` (see the showreel section for `homepage` / `added`).
+
+- The cards are plain `.grid-item`s — deliberately **not** inside `.bento-grid`
+  or `.showreel-grid`, which `initGridHovers` skips when called globally. That
+  means `AnimationsInit` binds the hover for free; do not bind it again here.
+- Clips are `preload="none"` and play via IntersectionObserver, because the
+  strip sits below the fold and autoplaying three videos on load is wasteful.
+- Crewcible-category items carry the same `.showreel-credit` badge as
+  `/showreel`. Keep `CREDITED_CATEGORY` in step across both components.
+
 ---
 
 ## Work page (`/work`)
@@ -399,8 +413,25 @@ stage skips work already done, so re-running only touches new files, and
 - **Slugs can collide.** "Winter in the City Promo" and "Winter in the city
   Promo" differ only by case. `slug_map()` is the single source of truth and
   appends `-2`; never call `slugify()` directly from a stage.
-- **Hand-edited titles survive a rebuild.** `manifest` preserves `title` and
-  `category` on entries that already exist.
+- **Hand edits survive a rebuild.** `manifest` preserves `title`, `category`,
+  `added` and `homepage` on entries that already exist.
+
+### The two hand-set fields
+
+Everything in `showreel.json` is derived from the file except `added` and
+`homepage`.
+
+`added` is the ISO date the video entered the archive, stamped once on first
+`manifest` and preserved after. It exists because **the videos carry no date of
+their own** — not in the filename, the folder, or the Dropbox metadata — so
+without it the set can only be sorted alphabetically. It is what "latest" means
+here. The 64 original imports all carry `2026-08-23` and therefore tie;
+anything uploaded later sorts above them.
+
+`homepage: true` pins a video to the strip on `/`. `getHomepageVideos()` in
+`lib/showreel.ts` takes pinned videos in file order, falling back to the three
+most recently `added` when none are pinned — the same shape as the projects
+rule above it, so the section survives an upload untouched.
 
 ### Animation timings are bounded by total, not per item
 

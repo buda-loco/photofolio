@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import { getAllProjects } from '@/lib/content'
+import { getShowreelItems, getHomepageVideos } from '@/lib/showreel'
 import GridItem from '@/components/GridItem'
 import TransitionLink from '@/components/TransitionLink'
 import AnimationsInit from '@/components/AnimationsInit'
 import HomeHeroTagline from '@/components/HomeHeroTagline'
+import HomeVideoStrip from '@/components/HomeVideoStrip'
 
 export const metadata: Metadata = {
   title: 'Benjamin Arnedo — Creative Director',
@@ -32,6 +34,10 @@ export default async function HomePage() {
   const all = getAllProjects()
   const picked = all.filter(p => p.featured === true)
   const latest = picked.length ? picked : all.slice(0, 2)
+
+  // Pinned via "homepage": true in showreel.json, falling back to the most
+  // recently added. Same rule as the projects above it.
+  const videos = getHomepageVideos(getShowreelItems())
 
   return (
     <div className="page">
@@ -75,6 +81,18 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {videos.length > 0 && (
+        <section className="latest-work home-video" aria-label="Latest video work">
+          <div className="latest-work-header">
+            <h2 className="home-video-heading">Latest video work</h2>
+            <TransitionLink href="/showreel" className="latest-work-link">
+              Watch the showreel &rarr;
+            </TransitionLink>
+          </div>
+          <HomeVideoStrip items={videos} />
+        </section>
+      )}
     </div>
   )
 }
