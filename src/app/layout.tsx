@@ -3,6 +3,7 @@ import { getDesign, getAllProjects } from '@/lib/content'
 import { buildDesignCss } from '@/lib/colors'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import Nav from '@/components/Nav'
 import PageTransition from '@/components/PageTransition'
 import { computeBasePill } from '@/lib/colors'
@@ -59,6 +60,11 @@ export default async function RootLayout({
 
   const designCss = buildDesignCss(design)
   const basePill = computeBasePill(design)
+
+  // NEXT_PUBLIC_* is inlined at build time, so changing this in Vercel needs a
+  // redeploy to take effect. The measurement ID is not a secret — it ships in
+  // the page source of every GA site by design.
+  const gaId = process.env.NEXT_PUBLIC_GA_ID
 
   const menuProjects = projects.map(p => ({
     slug: p.slug,
@@ -144,6 +150,18 @@ export default async function RootLayout({
         <Analytics />
         <SpeedInsights />
       </body>
+      {/* Google Analytics 4, alongside Vercel's own analytics above.
+          Rendered only when NEXT_PUBLIC_GA_ID is set, so local dev and any
+          preview without the var stay out of the property's data.
+
+          Deliberately NO manual page_view code. GA4 already counts a pageview
+          on every browser history change, which is exactly what this site's
+          client-side router.push() navigations are — sending our own would
+          double every figure. This does depend on Enhanced Measurement →
+          "Page changes based on browser history events" being on in the GA
+          property (it is by default); without it, SPA navigations go
+          uncounted and only the first page of a visit registers. */}
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   )
 }
