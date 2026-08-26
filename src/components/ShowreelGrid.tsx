@@ -16,11 +16,17 @@ interface CategoryNote {
   ctaLabel?: string
 }
 
+// Work made at Crewcible, for Crewcible's clients. The category note below
+// only renders while that filter is active and most people browse "All", so
+// every card in this category also carries the credit — see .showreel-credit.
+const CREDITED_CATEGORY = 'Crewcible'
+
 const CATEGORY_NOTES: Record<string, CategoryNote> = {
-  Crewcible: {
-    text: 'Everything here was made at Crewcible, and none of it alone. ' +
-          'I filmed most of these and directed some, and edited a few. ' +
-          'The rest is the work of a very talented team I was lucky to be part of.',
+  [CREDITED_CATEGORY]: {
+    text: 'These are Crewcible productions, made while I was on the team in ' +
+          'Canberra — the clients were theirs, not mine. I filmed most of these ' +
+          'and directed some, and edited a few. The rest is the work of a very ' +
+          'talented team I was lucky to be part of.',
     ctaHref: 'https://crewcible.com/',
     ctaLabel: 'Visit Crewcible',
   },
@@ -275,6 +281,9 @@ export default function ShowreelGrid({ items, categories }: ShowreelGridProps) {
                       />
                       <div className="grid-item-overlay-bg" />
                       <div className="grid-item-scrim" />
+                      {item.category === CREDITED_CATEGORY && (
+                        <span className="showreel-credit">Made at Crewcible</span>
+                      )}
                       <div className="grid-item-overlay">
                         <p className="grid-item-title">
                           {lines.map((line, li) => (

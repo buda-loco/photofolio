@@ -68,6 +68,28 @@
   outline-offset: 3px;
 }
 
+/* ── Credit badge ─────────────────────────────────────────────────────────
+   Rides on every card made at Crewcible so the attribution survives the "All"
+   view, where the category note above the grid isn't shown. Sits above the
+   scrim (z-index 1) and stays click-through so the card still opens. */
+.showreel-credit {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 3;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.45em 0.7em;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
 /* ── Category note ────────────────────────────────────────────────────── */
 
 /* Context shown above the grid for certain categories (e.g. Crewcible).
