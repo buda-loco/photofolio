@@ -21,6 +21,7 @@ Config lives in config.sh (copy config.example.sh). See README.md.
 """
 
 import argparse
+import datetime
 import hashlib
 import json
 import os
@@ -497,6 +498,8 @@ def stage_manifest():
     links_path = os.path.join(HERE, ".links.json")
     links = json.load(open(links_path)) if os.path.exists(links_path) else {}
 
+    today = datetime.date.today().isoformat()
+
     slugs = slug_map()
     items, added = [], 0
     for name, slug in sorted(slugs.items()):
@@ -507,7 +510,7 @@ def stage_manifest():
         prev = existing.get(slug, {})
         if not prev:
             added += 1
-        items.append({
+        entry = {
             "id": slug,
             # Hand-edited title and category win over anything derived here.
             "title": prev.get("title") or re.sub(r"\s+", " ", title.replace("_", " ")).strip(),
@@ -518,8 +521,18 @@ def stage_manifest():
             "aspect": f"{info['w']}/{info['h']}",
             "orientation": orientation_of(info["w"], info["h"]),
             "duration": round(info["duration"]),
+            # The date this video first entered the archive. Stamped once and
+            # preserved forever after — the file itself carries no date, so
+            # this is the only thing that can order the set by recency. It is
+            # what the homepage strip falls back to when nothing is pinned.
+            "added": prev.get("added") or today,
             "dropboxUrl": links.get(slug) or prev.get("dropboxUrl", ""),
-        })
+        }
+        # Pins a video to the homepage strip. Hand-set, and omitted entirely
+        # when off so it stays out of the JSON for the other 60-odd entries.
+        if prev.get("homepage"):
+            entry["homepage"] = True
+        items.append(entry)
 
     items.sort(key=lambda x: (x["category"], x["title"].lower()))
     with open(MANIFEST, "w") as f:

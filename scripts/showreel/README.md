@@ -46,6 +46,30 @@ Categories come from the folder names under `SHOWREEL_SOURCE`. A file sitting
 loose gets `SHOWREEL_DEFAULT_CATEGORY`. The category is baked into the
 filename as `<title>_<Category>.mp4` and read back out from there.
 
+## The two hand-editable fields
+
+Everything in `showreel.json` is derived from the file except these, which you
+set by hand and the pipeline then leaves alone.
+
+| Field | What it does |
+|---|---|
+| `added` | ISO date the video entered the archive. Stamped once on first `manifest`, preserved forever after. |
+| `homepage` | `true` pins the video to the strip on `/`. Omit it otherwise. |
+
+`added` exists because the videos carry no date of their own — nothing in a
+filename, a folder or the Dropbox metadata says when a job was shot, so without
+this the set can only be sorted alphabetically. It is what "latest" means on
+this site. The 64 videos of the original import all carry `2026-08-23`, the day
+they landed, so they tie; anything uploaded later sorts above them on its own.
+
+`homepage` decides the three clips under the projects on the home page. Pinned
+videos win in file order; with none pinned it falls back to the three most
+recently `added`, so the section keeps working untouched after an upload. The
+logic is `getHomepageVideos()` in `src/lib/showreel.ts`.
+
+To change what the home page shows, add `"homepage": true` to three entries and
+remove it from the others. Nothing else needs touching.
+
 ## Things that will bite you
 
 **Regenerate the token after changing scopes.** A Dropbox token carries the
@@ -67,9 +91,10 @@ run rather than disabling verification. Delete that file to rebuild it.
 **Don't run `npm run build` while `npm run dev` is live.** They share `.next`
 and the dev server starts throwing 500s. `rm -rf .next` and restart.
 
-**Hand-edited titles survive a rebuild.** `manifest` preserves `title` and
-`category` on entries that already exist, so cleaning up an ugly export name in
-`showreel.json` is safe. Only genuinely new entries get a derived title.
+**Hand edits survive a rebuild.** `manifest` preserves `title`, `category`,
+`added` and `homepage` on entries that already exist, so cleaning up an ugly
+export name in `showreel.json` is safe. Only genuinely new entries get a
+derived title, and only they get today's date stamped as `added`.
 
 ## Encoding, and why
 
