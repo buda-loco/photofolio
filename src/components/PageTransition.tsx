@@ -11,6 +11,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
 import { extractHex, darkenBg } from '@/lib/colors'
+import { getLenis } from './SmoothScroll'
 
 /*
  * Logo-window page transition
@@ -132,6 +133,17 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const triggerTransition = useCallback(
     (href: string, bgColor?: string) => {
       if (isAnimating.current) return
+
+      // Same-pathname navigation (e.g. /showreel → /showreel?category=…) only
+      // changes the query, so the route never remounts, routeReady would never
+      // resolve, and the mask would sit on its 2s safety timeout. Skip the mask
+      // and let the page react to the param change in place.
+      if (href.split(/[?#]/)[0] === prevPathname.current) {
+        router.push(href)
+        getLenis()?.scrollTo(0, { duration: 0.8 })
+        return
+      }
+
       isAnimating.current = true
 
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
