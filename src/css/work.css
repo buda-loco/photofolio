@@ -164,11 +164,14 @@
 }
 
 .work-showreel-cta-sub {
-  font-size: var(--text-sm);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
   font-weight: 300;
-  color: rgba(0, 0, 0, 0.7);
+  line-height: 1.45;
+  /* Near-solid black on the yellow banner — 0.7 alpha read as washed-out grey
+     next to the pure-black title. This is 11:1 instead of 8:1. */
+  color: rgba(0, 0, 0, 0.82);
   margin-bottom: var(--sp-6);
-  max-width: 44ch;
+  max-width: 38ch;
 }
 
 .work-showreel-cta-btn {
