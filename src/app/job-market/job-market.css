@@ -8,10 +8,9 @@
    (the site's existing .label convention) rather than an imported mono. */
 
 .jm {
-  /* design.json overrides --color-text-muted to #767676, which is a documented
-     contrast defect (4.36:1 on the #141414-class surfaces used here). This page
-     pins its own muted at tokens.css's original #999999 — 7.42:1 on black. */
-  --jm-muted: #999999;
+  /* Was pinned locally to dodge the design.json textMuted defect; that is fixed
+     at the token now, so this just follows the site. */
+  --jm-muted: var(--color-text-muted);
   --jm-surface: #0e0e0b;      /* warm-biased raised panel, not a neutral grey */
   --jm-surface-2: #1a1a12;
   --jm-line: rgba(255, 255, 255, 0.09);

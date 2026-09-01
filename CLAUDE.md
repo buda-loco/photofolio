@@ -44,17 +44,9 @@ voice, illustration, data-viz and format rules) and `DECK.md` (1920×1080 slides
 `~/.claude/design-systems/benjaminarnedo` is a symlink to that folder, so the same files
 load as a brand spec from any project — one file, two paths, no copies to drift.
 
-⚠️ It also records **three unfixed contrast defects in this codebase** (measured, not
-estimated). They are documented but the code is unchanged:
-
-1. `src/css/grid.css` — the grid-card hover tint paints above the scrim and below the
-   hardcoded white title. Any project **without** a `backgroundColor` falls back to accent
-   yellow and lands at **3.16:1** (`music-act`); `wonderful-world` `#FACC40` is **4.08:1**.
-   Fix by deriving the title colour through `accessibleText()` in `lib/colors.ts`.
-2. `src/content/design.json` — `colors.textMuted: "#767676"` is **4.62:1** on black and
-   **fails (4.36:1)** on the `#141414` surfaces. `tokens.css` already defaults to
-   `#999999` (7.37:1); design.json overrides the good value with the marginal one.
-3. `src/css/project.css` — `.project-next-label { opacity: 0.6 }` is **3.99:1**. Needs `0.75`.
+The three contrast defects that spec used to record as unfixed were **fixed on
+2026-09-01** — the grid-card hover scrim, the `textMuted` token and the next-project
+label. `DESIGN.md` keeps the before/after measurements and the reasoning.
 
 ---
 

@@ -545,44 +545,55 @@ shape as `/cv`.
 
 ---
 
-## Open defects in the live site
+## Fixed defects — kept for the reasoning
 
-Found by the 2026-07-15 audit. **Documented on board 08 — the code was NOT changed.**
-Offer these when touching the relevant files.
+Found by the 2026-07-15 audit, **fixed 2026-09-01**. Kept here because the reasoning
+is the reusable part; the numbers were re-measured before and after each change.
 
-### 1. Grid card hover title washes out — `src/css/grid.css`
+### 1. Grid card hover title — `src/css/grid.css`
 
-`.grid-item-overlay-bg` (project colour @55%) paints **above** `.grid-item-scrim` and
-**below** the hardcoded `#ffffff` title — it lightens the very backdrop the title depends
-on. Measured against real content:
+The audit read the layer order as the tint painting *above* the scrim. It does not:
+`.grid-item-overlay-bg` is `z-index: auto` and `.grid-item-scrim` is `z-index: 1`, so
+the scrim already sits on top. The real cause was the **scrim ramp being too weak where
+the title's top edge lands** — exactly the trap in [The scrim floor](#the-scrim-floor).
 
-| Project | `backgroundColor` | Hover title |
-|---|---|---|
-| `music-act` | **none → falls back to accent yellow** | **3.16:1** ✗ |
-| `wonderful-world` | `#FACC40` | **4.08:1** ✗ |
-| `qldneurostimulation` | `#A0B9F2` | 4.89:1 (marginal) |
+Measured over the documented worst-case photo (`#C8CDD2`), with the 55% tint composited
+underneath, white title:
 
-The yellow fallback means **any project without a `backgroundColor` is broken by default.**
-**Fix:** derive the title colour — run the composited tint through the `accessibleText()`
-helper already in `lib/colors.ts` that powers the pills (black-on-yellow = 8.1:1). Or
-reorder so `.grid-item-scrim` sits above `.grid-item-overlay-bg`.
+| Project | `backgroundColor` | Before | After |
+|---|---|---|---|
+| `music-act` | none → accent-yellow fallback | **3.11:1** ✗ | **9.23:1** ✓ |
+| `wonderful-world` | `#FACC40` | **3.66:1** ✗ | **10.16:1** ✓ |
+| `qldneurostimulation` | `#A0B9F2` | **4.07:1** ✗ | **10.78:1** ✓ |
+| worst of all ten | — | 3.11:1 | 9.23:1 |
 
-### 2. Muted text has no headroom — `src/content/design.json`
+**Fix:** the ramp now holds 55% black at half height, which is the scrim-floor rule made
+literal — `0.85 @0 · 0.55 @50% · 0.15 @75% · transparent @92%`. The title stays white; a
+derived colour was unnecessary once the scrim was right, and white measured correct for
+every project. Verified across title-top heights of 28 / 40 / 53% (the ceiling: titles
+are capped at two lines by `splitTitle` and `.title-line` is `nowrap`).
 
-`colors.textMuted: "#767676"` = **4.62:1** on black — passes AA by 0.12 and **fails at
-4.36:1** on `#0A0A0A`/`#141414`, which is exactly what the surface tokens are. `tokens.css`
-**already declares `#999999` as the default**; design.json overrides the good value with the
-marginal one. **Fix:** set `textMuted` to `#999999` (7.37:1, AAA). No visual cost.
+### 2. Muted text token — `src/content/design.json`
 
-### 3. Next-project label fails — `src/css/project.css`
+`textMuted` was `#767676` — 4.62:1 on black, and **4.36:1** on the `#141414`-class
+surfaces. `tokens.css` already declared the good value, so design.json was overriding it
+with the marginal one.
 
-`.project-next-label { opacity: 0.6 }` → **3.99:1** at 12px bold, on a primary nav control.
-**Fix:** `0.75` (6.26:1). `0.7` is the bare minimum (5.37:1).
+**Fix:** `#999999`. Now 7.37:1 on black, 6.47:1 on `#141414`, 6.14:1 on `#1a1a12`. No
+visual cost. `/job-market` had pinned its own muted value to dodge this; that local
+override is gone and it follows the token again.
 
-### Also
+### 3. Next-project label — `src/css/project.css`
 
-The site's card scrim (`70% → 20% @40% → transparent @70%`) leaves the top of a **two-line**
-title at only ~35% scrim → fails over bright imagery. See [The scrim floor](#the-scrim-floor).
+`.project-next-label { opacity: 0.6 }`. Note this sits on the `.project-next` **pill**,
+so it fades the pill's own text toward the pill background — not white toward black.
+Worst real case is a light-background project (white text on a `#24428F` pill), which
+measured **4.47:1** at 12px bold.
+
+**Fix:** `0.75` → **6.03:1** in that same worst case.
+
+> Still open, deliberately: `.project-next-sep { opacity: 0.4 }`. It is a `·` between
+> two labels — decorative, and exempt under [Non-text contrast](#non-text-contrast).
 
 ---
 

@@ -646,7 +646,11 @@
   text-transform: uppercase;
   color: inherit;
   -webkit-text-fill-color: inherit;
-  opacity: 0.6;
+  /* This sits on the .project-next pill, so it fades the pill's own text colour
+     toward the pill background — not white toward black. At 0.6 that measured
+     4.47:1 on a light-background project (white text on a #24428F pill), under
+     AA for 12px bold. 0.75 is 6.03:1 in that same worst case. */
+  opacity: 0.75;
 }
 
 .project-next-sep {
