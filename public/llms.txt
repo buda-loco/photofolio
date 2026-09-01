@@ -1,27 +1,31 @@
 # Benjamin Arnedo
 
-> Photographer & Cinematographer based in Brisbane, Australia.
+> Creative director and designer in Brisbane, Australia. Brand, web and video.
 
-Benjamin Arnedo works at the intersection of editorial photography and narrative filmmaking. His practice spans commercial, documentary, and artistic projects, with a focus on light, motion, and the decisive moment.
+Benjamin Arnedo has worked across brand, web, UX/UI and video for more than 15 years, in Australia and Argentina. He works hands-on from brief through design, build, shoot, edit and delivery. He has run a 9-person studio, led design on 25 to 50 public events a year, and taught design at university level for five years. English and Spanish.
 
 ## Work
 
 - Portfolio: https://benjaminarnedo.com
+- All projects: https://benjaminarnedo.com/work
+- Showreel: https://benjaminarnedo.com/showreel
 - About: https://benjaminarnedo.com/about
 - Process: https://benjaminarnedo.com/how-i-work
+- CV: https://benjaminarnedo.com/cv
+- Quote builder: https://benjaminarnedo.com/quote
 - Contact: https://benjaminarnedo.com/contact
 
 ## Projects
 
-Projects are listed at https://benjaminarnedo.com with individual pages at https://benjaminarnedo.com/work/{slug}
+Individual project pages are at https://benjaminarnedo.com/work/{slug}
 
 ## Contact
 
 - Email: hello@benjaminarnedo.com
-- Instagram: https://instagram.com/benjaminarnedo
-- Vimeo: https://vimeo.com/benjaminarnedo
+- Instagram: https://instagram.com/benarnedo
+- LinkedIn: https://www.linkedin.com/in/benjaminarnedo/
 
 ## Technical
 
-- Site: Next.js 14 static export, hosted on Vercel
+- Site: Next.js 15 App Router, hosted on Vercel
 - Sitemap: https://benjaminarnedo.com/sitemap.xml

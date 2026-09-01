@@ -9,17 +9,17 @@ import HomeVideoStrip from '@/components/HomeVideoStrip'
 
 export const metadata: Metadata = {
   title: 'Benjamin Arnedo — Creative Director',
-  description: 'Creative director. Brand, film and web. Twenty-six years across Argentina and Australia. Brisbane-based, working remote.',
+  description: 'Creative director. Brand, film and web, across Argentina and Australia. Brisbane-based, working remote.',
   alternates: { canonical: 'https://benjaminarnedo.com' },
   openGraph: {
     title: 'Benjamin Arnedo — Creative Director',
-    description: 'Creative director. Brand, film and web. Twenty-six years across Argentina and Australia. Brisbane-based, working remote.',
+    description: 'Creative director. Brand, film and web, across Argentina and Australia. Brisbane-based, working remote.',
     url: 'https://benjaminarnedo.com',
     images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'Benjamin Arnedo — Creative Director',
-    description: 'Creative director. Brand, film and web. Twenty-six years across Argentina and Australia. Brisbane-based, working remote.',
+    description: 'Creative director. Brand, film and web, across Argentina and Australia. Brisbane-based, working remote.',
     images: ['/social-media.jpg'],
   },
 }
@@ -60,7 +60,7 @@ export default async function HomePage() {
             Turns out I like them all.
           </p>
           <p className="home-intro-pitch-body">
-            Twenty-six years across brand, film, web, motion, photography, 3D and sound. Bilingual. Brisbane-based, working everywhere. I&rsquo;ve run every seat in the pipeline&thinsp;&mdash;&thinsp;so nothing in it is a mystery to me.
+            Brand, film, web, motion, photography, 3D and sound. Bilingual. Brisbane-based, working everywhere. I&rsquo;ve run every seat in the pipeline&thinsp;&mdash;&thinsp;so nothing in it is a mystery to me.
           </p>
           <TransitionLink href="/work" className="home-intro-cta">
             See the work &rarr;

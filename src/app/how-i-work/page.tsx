@@ -6,17 +6,17 @@ import AnimationsInit from '@/components/AnimationsInit'
 
 export const metadata: Metadata = {
   title: 'Process',
-  description: 'A transparent look at my creative process — how Benjamin Arnedo approaches every project.',
+  description: 'What actually happens when you work with Benjamin Arnedo, step by step.',
   alternates: { canonical: 'https://benjaminarnedo.com/how-i-work' },
   openGraph: {
     title: 'Process — Benjamin Arnedo',
-    description: 'A transparent look at my creative process — how Benjamin Arnedo approaches every project.',
+    description: 'What actually happens when you work with Benjamin Arnedo, step by step.',
     url: 'https://benjaminarnedo.com/how-i-work',
     images: [{ url: '/social-media.jpg', width: 1280, height: 720 }],
   },
   twitter: {
     title: 'Process — Benjamin Arnedo',
-    description: 'A transparent look at my creative process — how Benjamin Arnedo approaches every project.',
+    description: 'What actually happens when you work with Benjamin Arnedo, step by step.',
     images: ['/social-media.jpg'],
   },
 }

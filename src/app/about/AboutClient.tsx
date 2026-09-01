@@ -16,7 +16,7 @@ const CHUNKS = [
     num: '01',
     ticker: 'creative director',
     lines: [
-      "I\u2019m Benjamin Arnedo. Creative director. Twenty-six years, three countries, two languages.",
+      "I\u2019m Benjamin Arnedo. Creative director. Three countries, two languages.",
       "I came up making the work, not managing it. That turns out to be the whole difference.",
     ],
   },
@@ -34,7 +34,7 @@ const CHUNKS = [
     lines: [
       "I\u2019ve run every seat on that list. So when I brief a job I know exactly what I\u2019m asking for \u2014 what it costs, how long it really takes, and which corners cannot be cut.",
       "A cinematographer solves problems differently than a web developer. A brand strategist sees angles a photographer can\u2019t. I collect those perspectives.",
-      "Every medium teaches something the last one couldn\u2019t. The result is that very little in a production surprises me.",
+      "Every medium teaches something the last one couldn\u2019t. Very little in a production surprises me now.",
     ],
   },
   {
