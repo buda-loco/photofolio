@@ -32,6 +32,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/job-market`,
+      lastModified: new Date('2026-09-01'),
+      changeFrequency: 'yearly',
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/contact`,
       lastModified: new Date('2026-04-01'),
       changeFrequency: 'monthly',
