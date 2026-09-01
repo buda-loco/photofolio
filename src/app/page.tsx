@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getAllProjects } from '@/lib/content'
 import { getShowreelItems, getHomepageVideos } from '@/lib/showreel'
-import GridItem from '@/components/GridItem'
+import HomeProjects from '@/components/HomeProjects'
 import TransitionLink from '@/components/TransitionLink'
 import AnimationsInit from '@/components/AnimationsInit'
 import HomeHeroTagline from '@/components/HomeHeroTagline'
@@ -31,9 +31,14 @@ export default async function HomePage() {
   // false hides a project everywhere). Ticking the box therefore changed nothing, which
   // is not what the label promises. Falls back to the two most recent when none are
   // flagged, so the section is never empty.
+  //
+  // HomeProjects then shows a random handful of this pool on each visit, so the
+  // homepage is never the same twice. The flag stays authoritative: only what is
+  // flagged can appear, and the shuffle only chooses between them. Flag more
+  // projects to get more variety.
   const all = getAllProjects()
   const picked = all.filter(p => p.featured === true)
-  const latest = picked.length ? picked : all.slice(0, 2)
+  const pool = picked.length ? picked : all.slice(0, 2)
 
   // Pinned via "homepage": true in showreel.json, falling back to the most
   // recently added. Same rule as the projects above it.
@@ -68,18 +73,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="latest-work" aria-label="Latest projects">
+      <section className="latest-work" aria-label="Selected projects">
         <div className="latest-work-header">
-          <h2 className="latest-work-title">Latest Projects</h2>
+          <h2 className="latest-work-title">Selected Projects</h2>
           <TransitionLink href="/work" className="latest-work-link">
             View all work &rarr;
           </TransitionLink>
         </div>
-        <div className="latest-work-grid">
-          {latest.map((project, i) => (
-            <GridItem key={project.slug} project={project} priority={i < 2} />
-          ))}
-        </div>
+        <HomeProjects pool={pool} />
       </section>
 
       {videos.length > 0 && (

@@ -229,11 +229,35 @@ The Work pill (`href="/work"`) is marked active on `/` (homepage), `/work`, and 
 
 ## Homepage
 
-The homepage (`/`) shows a **hero intro** + **2 latest projects** (sorted by year desc) under a "Latest Projects" label with a "View all work →" link to `/work`. It does not show all projects — use `/work` for the full portfolio.
+The homepage (`/`) shows a **hero intro** + **2 project cards under "Selected Projects"**,
+with a "View all work →" link to `/work`. It does not show all projects — use `/work` for
+the full portfolio.
 
 - Section: `.latest-work` with `.latest-work-header` (label + link) and `.latest-work-grid`
-- The 2 latest projects render as equal 6-col cards (overriding their `data-size`)
+- Cards render as equal 6-col cards (overriding their `data-size`), so 2 fills one row
 - `getAllProjects()` is memoized — no duplicate file reads
+
+### The 2 cards are drawn at random, per visit
+
+`HomeProjects.tsx` picks `SLOTS` (2) projects at random from the pool `page.tsx` hands
+it, so the homepage is not the same page twice. The pool is **only** the projects flagged
+`featured: true` — the flag stays authoritative and the shuffle just chooses between
+them. Four are flagged today, which gives 12 ordered pairs.
+
+⚠️ **`SLOTS` must stay below the pool size or nothing varies.** If you raise it to 4 with
+4 projects flagged, every visit shows all four again and only the order changes. Flag
+more projects at the same time.
+
+⚠️ **The shuffle has to run after mount.** This page is statically generated, so
+randomising at build time freezes the result until the next deploy, and randomising
+during render makes server and client markup disagree and throws a hydration error. The
+first render is deterministic — the pool's first 2, which is what the server sent — and
+the shuffle lands in a `useEffect`. Same pattern as WorkGrid's bento blueprints, and
+`useState` not `useRef` because the re-render is the point. The cost is a brief swap on
+hydration; on a static page that is tens of milliseconds.
+
+The heading is "Selected Projects", not "Latest" — the selection is no longer ordered by
+year, so the old label had stopped being true.
 
 ### Latest video work strip
 
