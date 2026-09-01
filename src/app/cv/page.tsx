@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import AnimationsInit from '@/components/AnimationsInit'
+import TransitionLink from '@/components/TransitionLink'
 import CvReel from './CvReel'
 import './cv.css'
 
 const DESC =
-  'Creative director with 26 years across agency, in-house, studio and freelance work in Argentina and Australia. Brisbane-based, working remote.'
+  'Designer and creative director. More than 15 years across brand, web, UX/UI and video, in Australia and Argentina. Brisbane-based, working remote.'
 
 export const metadata: Metadata = {
   title: 'CV',
@@ -34,45 +35,36 @@ const JOBS: Job[] = [
     when: '2020 – Present',
     tag: 'Freelance',
     points: [
-      <>Photography and creative direction for the <b>City Renewal Authority</b> (ACT Government) Winter in the City campaign — a two-week event generating <span className="cv-num">$2.72M</span> in local economic activity, with <span className="cv-num">30,000</span> attendees at Glebe Park and <span className="cv-num">12,000</span> at Garema Place. Images ran in the Authority&rsquo;s public campaign.</>,
-      <><span className="cv-num">Four consecutive years</span> documenting the <b>Lunar New Year festival</b> in Dickson for the same client.</>,
-      <>Original brand identity for <b>National Triangle</b>, the tourism and promotion brand of the <b>National Capital Authority</b> (federal government), 2021 — the identity ran for <span className="cv-num">five years</span>.</>,
-      <>Designed and built <b>connectup.au</b> for the <b>University of Canberra</b> (2024) — an academic research project activating a student hub in Belconnen, ACT.</>,
-      <>Website design and build, motion graphics and brand identity for private clients across Australia and Argentina — all remote, including an extended period working from overseas, as sole point of contact from brief to delivery.</>,
-      <><b>Build generative design systems.</b> Construct components, variables and layouts programmatically by driving Penpot, Pencil and Sketch over MCP — producing editable design files, not images. Deliver pattern and asset engines clients run themselves to grow their own libraries.</>,
-      <><b>Ship open-source tooling</b> — public at github.com/buda-loco. <b>Oxygen Skills</b>: the first Claude Code skill for Oxygen 6 / Breakdance WordPress builds. <b>WP Static Mirror</b>: serves a WordPress site as plain static files, removing the attack surface rather than hardening it. <b>Color Palette Generator</b>: an Adobe Illustrator script producing palettes with RGB, CMYK and HEX values.</>,
+      <>Directed and photographed the <b>City Renewal Authority</b>&rsquo;s Winter in the City campaign: <span className="cv-num">$2.72M</span> in local economic activity, with <span className="cv-num">30,000</span> people at Glebe Park and <span className="cv-num">12,000</span> at Garema Place.</>,
+      <>Covered the Authority&rsquo;s award-winning <b>Lunar New Year</b> festival for <span className="cv-num">four consecutive years</span>: photography and video across the 12-hour event, visuals for the giant LED screens, months of social content beforehand, and live editing on site so finished imagery reached the Authority&rsquo;s channels the same day.</>,
+      <>Ship native macOS software through <b>The Pixel Forge</b>. Build generative design systems and production tooling with <b>Claude Code</b> and MCP, driving Penpot, Pencil and Sketch over the wire to write components, variables and layouts. Clients get editable design files and asset engines they run themselves.</>,
+      <>Designed the <b>National Triangle</b> identity for the <b>National Capital Authority</b>: logo, style guide, wayfinding, murals, merchandise and tourism film.</>,
+      <>Branded a <b>40-lot land development</b> in Beechford, Tasmania — <span className="cv-num">two lots sold in the first 24 hours</span> of launch. Identity, site map, promotional PDFs, social assets, video and photography.</>,
+      <>Designed a nine-part publication suite for the <b>National Science and Technology Council</b> with This is Creative, an Aboriginal-led agency: four case studies and five fact sheets on Aboriginal and Torres Strait Islander knowledge systems, each with an accessible text-only version and editable source.</>,
+      <>Produced and cut six episodes of <b>Pacific Wayfinder</b> for the <b>Pacific Security College</b> at the <b>Australian National University</b>, marking twenty years of the Regional Assistance Mission to Solomon Islands.</>,
+      <>Designed and built <b>connectup.au</b> for the <b>University of Canberra</b> — an academic research project activating a student hub in Belconnen, ACT.</>,
+      <><b>Ship open-source tooling</b>, public at github.com/buda-loco. <b>Oxygen Skills</b>: the first Claude Code skill for Oxygen 6 / Breakdance WordPress builds. <b>WP Static Mirror</b>: serves a WordPress site as plain static files, removing the attack surface rather than hardening it. <b>Color Palette Generator</b>: an Adobe Illustrator script producing palettes with RGB, CMYK and HEX values.</>,
     ],
   },
   {
     title: 'Assistant Director / Editor',
     org: 'Crewcible · Canberra, ACT',
-    when: 'Feb 2023 – 2024',
+    when: 'Feb 2023 – Present',
     points: [
-      <>Directed and edited documentary and commercial projects, from shoot through to delivery.</>,
-      <>Contributed to the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE — integrating location footage with 3D infrastructure renders for a national transport client&rsquo;s Parramatta Road to Green Square route pitch.</>,
-      <>Managed production pipelines and worked with directors and producers on narrative and pacing.</>,
+      <>Planned, shot and cut the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE on a <b>two-day shoot</b>: co-wrote the script, ran the schedule with a team of four, and used realtime visualisation to camera-match 3D renders of the future line into the location footage.</>,
+      <>Shot on <b>The Day She Stole The Sun</b>, the studio&rsquo;s feature documentary on the Cobargo bushfires — camera operation and videography — since screened at film festivals.</>,
+      <>Wrote, storyboarded, shot, edited and finished client work end to end, coordinating talent throughout; redesigned the studio&rsquo;s website for its relaunch as a podcasting and recording facility. Still collaborating on documentary work today.</>,
     ],
   },
   {
-    title: 'Graphic Designer — Communications & Client Management',
-    org: 'Dionysus · Canberra, ACT',
-    when: 'May 2021 – Jan 2023',
+    title: 'Creative Director',
+    org: 'Dionysus · Cultural activations and public events · Canberra, ACT',
+    when: 'Apr 2021 – Jan 2023',
     points: [
-      <>Led rebranding initiatives and crisis communications for government and corporate clients.</>,
-      <>Created and executed marketing and communication strategies aligned to business goals.</>,
-      <>Moved company operations into ClickUp, improving job tracking and throughput.</>,
-      <>Managed teams and client relationships from brief to delivery.</>,
-    ],
-  },
-  {
-    title: 'Senior Graphic Designer',
-    org: 'Added Value Enterprises · Brisbane, QLD',
-    when: 'Jun 2020 – Feb 2022',
-    tag: 'Freelance',
-    points: [
-      <>Designed and implemented digital marketing strategies for Brisbane clients.</>,
-      <>Optimised social media campaigns against agreed KPIs.</>,
-      <>Managed content creation and distribution for targeted audiences.</>,
+      <>Led design on <span className="cv-num">25 to 50</span> events and projects a year at <span className="cv-num">$10,000 to $250,000</span> each, directly for the <b>ACT Government</b> (City Renewal Authority, Events ACT), <b>Molonglo</b> and the <b>University of Canberra</b>.</>,
+      <>Kept a 1976 institution with around <span className="cv-num">30,000 customers a week</span> trading through a two-year demolition and rebuild: ran communications for <b>Belconnen Fresh Food Markets</b>&rsquo; 31 traders, managed the crisis between them and the site&rsquo;s ASX-listed buyer, whose interests did not align, and created <b>the Belco Shed</b>, the interim identity that carried the market through.</>,
+      <>Held footfall with events and activations, door-to-door campaigns, social media, live radio from the site and <span className="cv-num">23 days</span> of photography; the market reopened as <b>Capital Food Market</b> in December 2023 with its long-standing traders intact.</>,
+      <>Shot photography and video across later editions of <b>LA FIESTA</b> — a multicultural festival drawing <span className="cv-num">7,000</span> people, now an official ACT Government case study in precinct activation — and made the video and animation campaign that promoted it.</>,
     ],
   },
   {
@@ -80,38 +72,45 @@ const JOBS: Job[] = [
     org: 'Cre8ive · Canberra, ACT',
     when: 'Mar 2021 – May 2021',
     points: [
-      <>Produced collateral for Australian Government and corporate clients to existing brand guidelines.</>,
-      <>Developed WCAG-compliant accessible documents for government projects.</>,
-      <>Maintained client websites and designed social media assets.</>,
+      <>Produced print and digital campaign collateral for Australian Government clients and Canberra businesses including <b>Tradies</b>, the <b>Suburban Land Agency</b> and <b>BAL Lawyers</b>.</>,
+      <>Still retained per project: branding systems for their clients, graphics tooling written for each job.</>,
+    ],
+  },
+  {
+    title: 'Senior Designer',
+    org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group · Brisbane, QLD',
+    when: 'Jan 2020 – Feb 2021',
+    points: [
+      <>Produced digital content for <span className="cv-num">200+ venues</span> across <b>Australia Venue Co</b>, <b>ALH Group</b> and Hallmark Group — hundreds of animated video assets, and videos promoting venue renovations and featured events, concerts and campaigns, including Big Gay Day, which headlined a Spice Girl.</>,
+      <>Wrote and ran the COVID-19 rapid-response content strategy that let the business pivot through lockdown. Every key contract held; every venue stayed visible.</>,
     ],
   },
   {
     title: 'Lecturer',
-    org: 'Foundry · Launceston, Tasmania',
-    when: 'Feb 2020 – Jun 2020',
+    org: 'Foundry · Creative industries school · Launceston and Hobart, Tasmania',
+    when: '2019 – Jun 2020',
     points: [
-      <>Delivered photography, video production and design curriculum.</>,
-      <>Maintained course content and assessment records; provided student feedback.</>,
+      <>Taught photography, video production, design, podcasting and new media at Tasmania&rsquo;s dedicated school for the creative industries, which ran its design programmes in partnership with the <b>University of Tasmania</b>.</>,
     ],
   },
   {
-    title: 'Co-Director & Co-Founder',
-    org: 'Zstudios · Tucumán, Argentina',
+    title: 'Creative Director',
+    org: 'Zstudios · Design, events and branding studio · Tucumán, Argentina',
     when: '2015 – 2019',
     points: [
-      <>Co-founded and ran the studio end to end: team, suppliers and client relationships.</>,
-      <>Led creative direction across branding, digital, print and video.</>,
-      <>Wound the studio down in 2019 on relocating to Australia.</>,
+      <>Rebranded the studio with its founder and repositioned it for larger clients. Ran the <span className="cv-num">9-person</span> team: <span className="cv-num">100+ projects a year</span> across brand, graphic design, fabrication, event production and photography.</>,
+      <>Commissioned by the <b>Argentine National Government</b> to lead event design and visual production for the <b>Argentine Bicentenary</b>, a ten-day national festival attended by <span className="cv-num">200,000+</span> people.</>,
+      <>Designed the participant experience across four editions of the <b>Climáctivo Forum</b>, Argentina&rsquo;s principal international climate event: spatial layout, wayfinding, credentials, merchandise, website and live coverage. <span className="cv-num">20,000+</span> attendees in total.</>,
+      <>Produced, directed and edited cinema advertising for <b>Solar Shopping Mall</b>, the region&rsquo;s largest, shot with local models and talent.</>,
+      <>Delivered exhibition, brand, web, photography and video for the Ministry of Health, provincial governments and councils, and for <b>Sheraton</b>, <b>BMW</b>, <b>Ford</b>, <b>Michelin</b> and <b>Citroën</b>.</>,
     ],
   },
   {
     title: 'Art Director',
-    org: 'Kipus · Buenos Aires, Argentina',
+    org: 'Kipus · Communications and PR agency for Latin American technology startups · Buenos Aires, Argentina',
     when: '2014 – 2016',
     points: [
-      <>Created the company&rsquo;s visual identity and brand style manual.</>,
-      <>Designed client infographics covering key weekly news topics.</>,
-      <>Ran multiple concurrent projects to deadline.</>,
+      <>Owned the agency&rsquo;s visual identity and brand manual, and condensed current-events data into infographics for decision-makers: a newsletter delivered visually.</>,
     ],
   },
   {
@@ -127,15 +126,16 @@ const JOBS: Job[] = [
 ]
 
 const SKILLS = [
-  'Creative direction and art direction',
-  'Brand strategy and identity systems',
-  'Custom generative systems — pattern engines and asset generators built per brand',
-  'Web design and development (WordPress, HTML, CSS, JavaScript, Next.js)',
-  'Photography, videography and video editing',
-  'Motion graphics and animation',
-  'UX/UI design and consultation',
-  'Adobe Creative Suite and Affinity suite',
-  'Team leadership, client and stakeholder management',
+  'Creative direction: brand strategy, art direction, campaigns, events and placemaking',
+  'Team leadership: mentoring, critique and stakeholder management',
+  'Graphic design: identity, publications, print and digital',
+  'Web: WordPress, Oxygen, HTML, CSS, JavaScript and Next.js',
+  'UX/UI: Figma, Penpot, Pencil, design systems and accessibility',
+  'Video: direction, camera, editing, colour grading and finishing',
+  'Post-production: DaVinci Resolve, Premiere Pro and Final Cut Pro',
+  'Motion: After Effects, Apple Motion and Blender',
+  'Adobe: InDesign, Photoshop, Illustrator; Affinity suite',
+  'AI tooling: agentic coding with Claude Code, image and video generation with frontier models, generative systems and workflow automation',
   'English / Spanish, native bilingual',
 ]
 
@@ -167,12 +167,16 @@ export default function CvPage() {
 
       <header className="cv-head" data-animate="fade-up">
         <h1>Benjamin Arnedo</h1>
-        <span className="cv-role">Creative Director</span>
+        <span className="cv-role">Creative Director &amp; Designer · Brand · Web · Video</span>
 
         <p className="cv-contact">
           <span>Brisbane, Queensland, Australia</span>
           <span className="cv-sep">·</span>
           <a href="mailto:hello@benjaminarnedo.com"><b>hello@benjaminarnedo.com</b></a>
+          <span className="cv-sep">·</span>
+          <a href="tel:+61416865550">0416 865 550</a>
+          <span className="cv-sep">·</span>
+          <TransitionLink href="/showreel">Showreel</TransitionLink>
           <span className="cv-sep">·</span>
           <a href="https://www.linkedin.com/in/benjaminarnedo/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <span className="cv-sep">·</span>
@@ -190,12 +194,12 @@ export default function CvPage() {
 
       <h2>Profile</h2>
       <p className="cv-intro" data-animate="fade-up">
-        Creative director with <span className="cv-num">26 years</span> across agency, in-house, studio and freelance
-        work in Argentina and Australia. I came up making the work — type, code, camera,
-        edit, motion — and taught it at university level for five years before I directed
-        anyone. I still build: generative design systems, production tooling, and shipped
-        software other designers use. Australian citizen, with government, NGO and private
-        sector clients including the ACT Government. Bilingual English/Spanish.
+        Designer and creative director. More than <span className="cv-num">15 years</span> across
+        brand, web, UX/UI and video, in Australia and Argentina. I work hands-on from brief
+        through design, build, shoot, edit and delivery. I have run a <span className="cv-num">9-person</span> studio,
+        led design on <span className="cv-num">25 to 50</span> public events a year at budgets to
+        <span className="cv-num"> $250,000</span>, and taught design at university level for five
+        years. I build production tooling with agentic AI models. Australian citizen,
         Brisbane-based, working remote.
       </p>
 
@@ -225,14 +229,14 @@ export default function CvPage() {
         (Movistar / Telefónica).
       </p>
 
-      <h2>Skills</h2>
+      <h2>Capabilities</h2>
       <ul className="cv-skills" data-animate="fade-up">
         {SKILLS.map((s) => (
           <li key={s}>{s}</li>
         ))}
       </ul>
 
-      <h2>Education</h2>
+      <h2>Education &amp; Teaching</h2>
       <div className="cv-edu-grid" data-animate="fade-up">
         <div>
           <p className="cv-edu-title">Bachelor of Graphic Design</p>
@@ -248,6 +252,14 @@ export default function CvPage() {
             Spencer College
             <br />
             Brisbane, QLD · 2020 – 2021
+          </p>
+        </div>
+        <div>
+          <p className="cv-edu-title">Teaching</p>
+          <p className="cv-edu-meta">
+            Senior Lecturer, UNSTA — five years
+            <br />
+            Lecturer, Foundry (University of Tasmania partnership)
           </p>
         </div>
       </div>
