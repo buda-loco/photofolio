@@ -26,3 +26,11 @@ scripts/showreel/config.sh
 scripts/showreel/.ca-bundle.pem
 scripts/showreel/.links.json
 .env*.local
+
+# Working Files/ — the design folder. Only the written specs and the signpost are
+# versioned; the Pencil binary (680K, rewritten on every save), 4.8MB of carousel
+# artwork and a second copy of the licensed Adrianna cuts are not. This repo is
+# PUBLIC, so the negations below are deliberately narrow — do not widen them.
+Working Files/*
+!Working Files/CLAUDE.md
+!Working Files/Design specs/

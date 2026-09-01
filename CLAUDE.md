@@ -38,8 +38,11 @@ The brand's generative rulebook lives in **`Working Files/Design-system.pen`** (
 tokens, colour, type, components, motion, page templates, deck masters and accessibility
 rules, all mirrored from this codebase. Use it to produce new pages, decks and documents.
 
-**Full reference: [`Working Files/CLAUDE.md`](Working%20Files/CLAUDE.md)** — board map,
-tokens, logo geometry, the contrast matrix, and how to extend it.
+**Full reference: [`Working Files/Design specs/`](Working%20Files/Design%20specs/)** —
+`DESIGN.md` (colour, type, spacing, logo geometry, motion, the contrast matrix, plus
+voice, illustration, data-viz and format rules) and `DECK.md` (1920×1080 slides).
+`~/.claude/design-systems/benjaminarnedo` is a symlink to that folder, so the same files
+load as a brand spec from any project — one file, two paths, no copies to drift.
 
 ⚠️ It also records **three unfixed contrast defects in this codebase** (measured, not
 estimated). They are documented but the code is unchanged:
