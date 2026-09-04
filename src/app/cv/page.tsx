@@ -68,16 +68,6 @@ const JOBS: Job[] = [
     ],
   },
   {
-    title: 'Senior Graphic Designer',
-    org: 'Cre8ive · Communications and creative agency for Australian Government and corporate clients. Campaign collateral, accessible documents and website maintenance for several accounts. · Canberra, ACT',
-    when: 'Mar 2021 – May 2021',
-    points: [
-      <>Produced print and digital campaign collateral for Australian Government clients and Canberra businesses including <b>Tradies</b>, the <b>Suburban Land Agency</b> and <b>BAL Lawyers</b>.</>,
-      <>Developed WCAG-compliant accessible documents for government projects, and maintained client websites and social assets.</>,
-      <>Still retained per project: branding systems for their clients, graphics tooling written for each job.</>,
-    ],
-  },
-  {
     title: 'Senior Designer',
     org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group, two of the country\u2019s largest hospitality groups. Digital content, motion graphics and campaign production for their venue network. · Brisbane, QLD',
     when: 'Jun 2020 – Feb 2021',
