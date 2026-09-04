@@ -56,7 +56,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Dionysus · Cultural activations and public events · Canberra, ACT',
+    org: 'Dionysus · Placemaking agency producing cultural activations and public events for the ACT Government, developers and universities · Canberra, ACT',
     when: 'Apr 2021 – Jan 2023',
     points: [
       <>Led design on <span className="cv-num">25 to 50</span> events and projects a year at <span className="cv-num">$10,000 to $250,000</span> each, directly for the <b>ACT Government</b> (City Renewal Authority, Events ACT), <b>Molonglo</b> and the <b>University of Canberra</b>.</>,
@@ -67,16 +67,17 @@ const JOBS: Job[] = [
   },
   {
     title: 'Senior Graphic Designer',
-    org: 'Cre8ive · Creative agency for Australian Government and corporate clients · Canberra, ACT',
+    org: 'Cre8ive · Communications and creative agency for Australian Government and corporate clients · Canberra, ACT',
     when: 'Mar 2021 – May 2021',
     points: [
       <>Produced print and digital campaign collateral for Australian Government clients and Canberra businesses including <b>Tradies</b>, the <b>Suburban Land Agency</b> and <b>BAL Lawyers</b>.</>,
+      <>Developed WCAG-compliant accessible documents for government projects; maintained client websites and social assets across several accounts.</>,
       <>Still retained per project: branding systems for their clients, graphics tooling written for each job.</>,
     ],
   },
   {
     title: 'Senior Designer',
-    org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group · Brisbane, QLD',
+    org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group, two of the country\u2019s largest hospitality groups · Brisbane, QLD',
     when: 'Jan 2020 – Feb 2021',
     points: [
       <>Produced digital content for <span className="cv-num">200+ venues</span> across <b>Australia Venue Co</b>, <b>ALH Group</b> and Hallmark Group: hundreds of animated video assets, and videos promoting venue renovations and featured events, concerts and campaigns, including Big Gay Day, which headlined a Spice Girl.</>,
@@ -93,19 +94,19 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Zstudios · Design, events and branding studio · Tucumán, Argentina',
+    org: 'Zstudios · Design, events and branding studio for national and provincial government and for Sheraton, BMW, Ford, Michelin and Citroën · Tucumán, Argentina',
     when: '2015 – 2019',
     points: [
       <>Rebranded the studio with its founder and repositioned it for larger clients. Ran the <span className="cv-num">9-person</span> team: <span className="cv-num">100+ projects a year</span> across brand, graphic design, fabrication, event production and photography.</>,
       <>Commissioned by the <b>Argentine National Government</b> to lead event design and visual production for the <b>Argentine Bicentenary</b>, a ten-day national festival attended by <span className="cv-num">200,000+</span> people.</>,
       <>Designed the participant experience across four editions of the <b>Climáctivo Forum</b>, Argentina&rsquo;s principal international climate event: spatial layout, wayfinding, credentials, merchandise, website and live coverage. <span className="cv-num">20,000+</span> attendees in total.</>,
       <>Produced, directed and edited cinema advertising for <b>Solar Shopping Mall</b>, the region&rsquo;s largest, shot with local models and talent.</>,
-      <>Delivered exhibition, brand, web, photography and video for the Ministry of Health, provincial governments and councils, and for <b>Sheraton</b>, <b>BMW</b>, <b>Ford</b>, <b>Michelin</b> and <b>Citroën</b>.</>,
+      <>Delivered exhibition, brand, web, photography and video for the Ministry of Health, provincial governments and councils.</>,
     ],
   },
   {
     title: 'Art Director',
-    org: 'Kipus · Communications and PR agency for Latin American technology startups · Buenos Aires, Argentina',
+    org: 'Kipus · Communications and PR agency for Latin American technology startups, fintech to e-commerce, Mexico to Argentina · Buenos Aires, Argentina',
     when: '2014 – 2016',
     points: [
       <>Owned the agency&rsquo;s visual identity and brand manual, and condensed current-events data into infographics for decision-makers: a newsletter delivered visually.</>,
