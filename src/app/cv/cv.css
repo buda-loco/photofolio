@@ -128,10 +128,23 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+/* Company line: name in ink at body size, place in light muted beside it,
+   then the one-line description of the company under it in light muted. Three
+   registers, three roles: title (bold xl), company (bold base), blurb (light sm). */
 .cv-job-org {
+  display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+  font-size: var(--text-base);
+  margin: 0;
+}
+.cv-job-co { color: var(--color-text); font-weight: 700; letter-spacing: 0.01em; }
+.cv-job-place { font-size: var(--text-sm); font-weight: 300; color: var(--color-text-muted); }
+.cv-job-blurb {
+  max-width: var(--cv-measure);
   font-size: var(--text-sm);
+  font-weight: 300;
+  line-height: 1.55;
   color: var(--color-text-muted);
-  margin: 0 0 var(--sp-2);
+  margin: 0.15rem 0 var(--sp-2);
 }
 .cv-tag {
   display: inline-block;

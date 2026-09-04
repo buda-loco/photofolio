@@ -30,8 +30,8 @@ type Job = {
 
 const JOBS: Job[] = [
   {
-    title: 'Creative Director — Independent practice',
-    org: 'Brisbane, QLD / Remote',
+    title: 'Creative Director',
+    org: 'Independent practice · Brand, campaign, film and web for government, cultural and commercial clients. · Brisbane, QLD / Remote',
     when: '2020 – Present',
     points: [
       <><b>National Capital Authority</b>, the federal agency that plans and manages the parliamentary triangle at the centre of Canberra. Designed the <b>National Triangle</b> identity for its tourism and promotion work: logo, style guide, wayfinding, murals, merchandise and tourism film. A member of the Authority&rsquo;s board championed the project, the board approved it, and it ran across public-facing communications for <span className="cv-num">five years</span>.</>,
@@ -202,23 +202,32 @@ export default function CvPage() {
       </p>
 
       <h2>Experience</h2>
-      {JOBS.map((job) => (
+      {JOBS.map((job) => {
+        // org is "Company · what the company is · Place"; the middle part is optional
+        const parts = job.org.split(' · ')
+        const company = parts[0]
+        const place = parts.length > 1 ? parts[parts.length - 1] : ''
+        const blurb = parts.slice(1, -1).join(' · ')
+        return (
         <div className="cv-job" key={job.title + job.org} data-animate="fade-up">
           <div className="cv-job-head">
             <p className="cv-job-title">{job.title}</p>
             <span className="cv-job-when">{job.when}</span>
           </div>
           <p className="cv-job-org">
-            {job.org}
+            <span className="cv-job-co">{company}</span>
+            {place && <span className="cv-job-place">{place}</span>}
             {job.tag && <span className="cv-tag">{job.tag}</span>}
           </p>
+          {blurb && <p className="cv-job-blurb">{blurb}</p>}
           <ul>
             {job.points.map((p, i) => (
               <li key={i}>{p}</li>
             ))}
           </ul>
         </div>
-      ))}
+        )
+      })}
 
       <p className="cv-earlier" data-animate="fade-up">
         <b>Earlier career · Argentina · 2000 – 2010.</b> Design, UX and project roles across
