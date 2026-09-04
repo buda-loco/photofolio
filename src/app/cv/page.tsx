@@ -89,7 +89,7 @@ const JOBS: Job[] = [
     org: 'Foundry · Creative industries school. Teaching, curriculum and assessment in photography, video, design and new media. · Launceston and Hobart, Tasmania',
     when: '2019 – Jun 2020',
     points: [
-      <>Taught photography, video production, design, podcasting and new media at Tasmania&rsquo;s dedicated school for the creative industries, which ran its design programmes in partnership with the <b>University of Tasmania</b>.</>,
+      <>Ran the studio sessions, wrote the course material and marked the work, on design programmes delivered in partnership with the <b>University of Tasmania</b>.</>,
     ],
   },
   {
