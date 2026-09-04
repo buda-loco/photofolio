@@ -30,8 +30,18 @@ type Job = {
 
 const JOBS: Job[] = [
   {
+    title: 'Assistant Director / Editor',
+    org: 'Crewcible · Documentary and commercial production studio · Canberra, ACT',
+    when: 'Feb 2023 – Present',
+    points: [
+      <>Planned, shot and cut the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE on a <b>two-day shoot</b>: co-wrote the script, ran the schedule with a team of four, and used realtime visualisation to camera-match 3D renders of the future line into the location footage.</>,
+      <>Shot on <b>The Day She Stole The Sun</b>, the studio&rsquo;s feature documentary on the Cobargo bushfires, as camera operator and videographer. Since screened at film festivals.</>,
+      <>Wrote, storyboarded, shot, edited and finished client work end to end, coordinating talent throughout; redesigned the studio&rsquo;s website for its relaunch as a podcasting and recording facility. Still collaborating on documentary work today.</>,
+    ],
+  },
+  {
     title: 'Creative Director',
-    org: 'Independent practice · Brand, campaign, film and web for government, cultural and commercial clients. · Brisbane, QLD / Remote',
+    org: 'Independent practice · Brand, campaign, film and web for government, cultural and commercial clients. · Brisbane, QLD / Canberra, ACT / Remote',
     when: '2020 – Present',
     points: [
       <><b>National Capital Authority</b>, the federal agency that plans and manages the parliamentary triangle at the centre of Canberra. Designed the <b>National Triangle</b> identity for its tourism and promotion work: logo, style guide, wayfinding, murals, merchandise and tourism film. A member of the Authority&rsquo;s board championed the project, the board approved it, and it ran across public-facing communications for <span className="cv-num">five years</span>.</>,
@@ -42,16 +52,6 @@ const JOBS: Job[] = [
       <><b>Pacific Security College</b> at the <b>Australian National University</b>. Edited the six episodes of <b>Pacific Wayfinder</b>, a vodcast marking twenty years of the Regional Assistance Mission to Solomon Islands, produced and directed by documentary maker Caitlin Welch, who brought me onto the project.</>,
       <>Branded a <b>40-lot land development</b> in Beechford, Tasmania: identity, site map, promotional PDFs, social assets, video and photography. <span className="cv-num">Two lots sold in the first 24 hours</span> of launch.</>,
       <>Build generative design systems and production tooling with <b>Claude Code</b> and MCP, driving Penpot, Pencil and Sketch to write components, variables and layouts, so clients get editable design files and asset engines they run themselves. Open-source work at github.com/buda-loco: <b>Oxygen Skills</b>, the first Claude Code skill for Oxygen 6 / Breakdance WordPress builds; <b>WP Static Mirror</b>, which serves a WordPress site as plain static files; and a <b>Color Palette Generator</b> for Illustrator. On my own time I am building <b>Invoicer</b>, an iOS invoicing app for freelancers, under my own label, The Pixel Forge.</>,
-    ],
-  },
-  {
-    title: 'Assistant Director / Editor',
-    org: 'Crewcible · Documentary and commercial production studio · Canberra, ACT',
-    when: 'Feb 2023 – Present',
-    points: [
-      <>Planned, shot and cut the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE on a <b>two-day shoot</b>: co-wrote the script, ran the schedule with a team of four, and used realtime visualisation to camera-match 3D renders of the future line into the location footage.</>,
-      <>Shot on <b>The Day She Stole The Sun</b>, the studio&rsquo;s feature documentary on the Cobargo bushfires, as camera operator and videographer. Since screened at film festivals.</>,
-      <>Wrote, storyboarded, shot, edited and finished client work end to end, coordinating talent throughout; redesigned the studio&rsquo;s website for its relaunch as a podcasting and recording facility. Still collaborating on documentary work today.</>,
     ],
   },
   {
