@@ -32,11 +32,13 @@ const JOBS: Job[] = [
   {
     title: 'Assistant Director / Editor',
     org: 'Crewcible · Documentary and commercial production studio. Directing, camera, editing, motion and post-production, from shoot to delivery. · Canberra, ACT',
-    when: 'Feb 2023 – Present',
+    when: 'Feb 2023 – Jul 2026',
     points: [
+      <>Delivered around <span className="cv-num">15 projects a year</span>: storyboards that landed the concept, edits that won the client over, and post-production that brought the studio new work.</>,
       <>Planned, shot and cut the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE on a <b>two-day shoot</b>: co-wrote the script, ran the schedule with a team of four, and used realtime visualisation to camera-match 3D renders of the future line into the location footage.</>,
       <>Shot on <b>The Day She Stole The Sun</b>, the studio&rsquo;s feature documentary on the Cobargo bushfires, as camera operator and videographer. Since screened at film festivals.</>,
-      <>Wrote, storyboarded, shot, edited and finished client work end to end, coordinating talent throughout; redesigned the studio&rsquo;s website for its relaunch as a podcasting and recording facility. Still collaborating on documentary work today.</>,
+      <>Redesigned the studio&rsquo;s brand and built a new website showing the work and the client list, for its relaunch as a podcasting and recording facility.</>,
+      <>Started the studio&rsquo;s in-house social content, filming behind the scenes for the <b>Crewcible VLOG</b>. Helped train the assistant editor and worked with the producers on the acting talent used across several campaigns.</>,
     ],
   },
   {
@@ -46,11 +48,11 @@ const JOBS: Job[] = [
     points: [
       <><b>National Capital Authority</b>, the federal agency that plans and manages the parliamentary triangle at the centre of Canberra. Designed the <b>National Triangle</b> identity for its tourism and promotion work: logo, style guide, wayfinding, murals, merchandise and tourism film. A member of the Authority&rsquo;s board championed the project, the board approved it, and it ran across public-facing communications for <span className="cv-num">five years</span>.</>,
       <><b>City Renewal Authority</b>, the ACT Government agency renewing Canberra&rsquo;s city centre. Their go-to photographer and videographer over several years: event coverage, campaign imagery and films for internal and external communications, including a campaign on the public servants who keep the city running and a feature on design students&rsquo; work shown in vacant shopfronts turned into a gallery.</>,
-      <>Event photography and video across Canberra&rsquo;s calendar: Winter in the City, the campaign behind <span className="cv-num">$2.72M</span> in local economic activity; <span className="cv-num">four consecutive</span> Lunar New Year festivals, edited live on site so finished imagery reached the client&rsquo;s channels the same day; Christmas in the City, Enlighten, Floriade, the National Multicultural Festival and Haig Park&rsquo;s centenary celebrations.</>,
+      <>Photography for the Authority&rsquo;s major campaigns: <b>Christmas in the City</b>, <b>Winter in the City</b>, which drove <span className="cv-num">$2.72M</span> in local economic activity, <b>Enlighten</b>, the <b>Lunar New Year festival</b> across four consecutive years, <b>Floriade</b>, the <b>National Multicultural Festival</b> and Haig Park&rsquo;s centenary. Edited live on site so finished imagery reached the client&rsquo;s channels the same day.</>,
       <><b>University of Canberra</b>. <b>ConnectUp</b> began as a university research project and now runs on its own: activities and places where young people can meet after class, and a working part of Belconnen&rsquo;s activation. Brought in for the branding and marketing, and designed and built <b>connectup.au</b>, the publishing system the team uses to run and promote every event.</>,
       <><b>This is Creative</b>, an Aboriginal-led agency in Canberra, on a nine-part publication suite commissioned by the <b>National Science and Technology Council</b>: four case studies and five fact sheets on Aboriginal and Torres Strait Islander knowledge systems. The agency led the work and the cultural engagement. I was brought in to keep the editorial design on brand and to produce every piece as an accessible version for download.</>,
       <><b>Pacific Security College</b> at the <b>Australian National University</b>. Edited the six episodes of <b>Pacific Wayfinder</b>, a vodcast marking twenty years of the Regional Assistance Mission to Solomon Islands, produced and directed by documentary maker Caitlin Welch, who brought me onto the project.</>,
-      <>Branded a <b>40-lot land development</b> in Beechford, Tasmania: identity, site map, promotional PDFs, social assets, video and photography. <span className="cv-num">Two lots sold in the first 24 hours</span> of launch.</>,
+      <>Branded a <b>40-lot land development</b> in Beechford, Tasmania: identity, site map, promotional PDFs, social assets, video and photography. <span className="cv-num">Two lots sold in the first week</span> of launch.</>,
       <>Build generative design systems and production tooling with <b>Claude Code</b> and MCP, driving Penpot, Pencil and Sketch to write components, variables and layouts, so clients get editable design files and asset engines they run themselves. Open-source work at github.com/buda-loco: <b>Oxygen Skills</b>, the first Claude Code skill for Oxygen 6 / Breakdance WordPress builds; <b>WP Static Mirror</b>, which serves a WordPress site as plain static files; and a <b>Color Palette Generator</b> for Illustrator. On my own time I am building <b>Invoicer</b>, an iOS invoicing app for freelancers, under my own label, The Pixel Forge.</>,
     ],
   },
@@ -78,7 +80,7 @@ const JOBS: Job[] = [
   {
     title: 'Senior Designer',
     org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group, two of the country\u2019s largest hospitality groups. Digital content, motion graphics and campaign production for their venue network. · Brisbane, QLD',
-    when: 'Jan 2020 – Feb 2021',
+    when: 'Jun 2020 – Feb 2021',
     points: [
       <>Produced digital content for <span className="cv-num">200+ venues</span> across <b>Australia Venue Co</b>, <b>ALH Group</b> and Hallmark Group: hundreds of animated video assets, and videos promoting venue renovations and featured events, concerts and campaigns, including Big Gay Day, which headlined a Spice Girl.</>,
       <>Wrote and ran the COVID-19 rapid-response content strategy that let the business pivot through lockdown. Every key contract held; every venue stayed visible.</>,
