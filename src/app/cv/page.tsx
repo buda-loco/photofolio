@@ -31,7 +31,7 @@ type Job = {
 const JOBS: Job[] = [
   {
     title: 'Assistant Director / Editor',
-    org: 'Crewcible · Documentary and commercial production studio · Canberra, ACT',
+    org: 'Crewcible · Documentary and commercial production studio. Directing, camera, editing, motion and post-production, from shoot through to delivery. · Canberra, ACT',
     when: 'Feb 2023 – Present',
     points: [
       <>Planned, shot and cut the <b>ALTRAC / Sydney Light Rail</b> proposal film with CRE8IVE on a <b>two-day shoot</b>: co-wrote the script, ran the schedule with a team of four, and used realtime visualisation to camera-match 3D renders of the future line into the location footage.</>,
@@ -41,7 +41,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Independent practice · Brand, campaign, film and web for government, cultural and commercial clients. · Brisbane, QLD / Canberra, ACT / Remote',
+    org: 'Independent practice · Brand identity, campaign, photography, film and web for government, cultural and commercial clients, as sole point of contact from brief through to delivery. · Brisbane, QLD / Canberra, ACT / Remote',
     when: '2020 – Present',
     points: [
       <><b>National Capital Authority</b>, the federal agency that plans and manages the parliamentary triangle at the centre of Canberra. Designed the <b>National Triangle</b> identity for its tourism and promotion work: logo, style guide, wayfinding, murals, merchandise and tourism film. A member of the Authority&rsquo;s board championed the project, the board approved it, and it ran across public-facing communications for <span className="cv-num">five years</span>.</>,
@@ -56,7 +56,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Dionysus · Placemaking agency: cultural activations and public events for the ACT Government, developers and universities · Canberra, ACT',
+    org: 'Dionysus · Placemaking agency: cultural activations and public events for the ACT Government, developers and universities. Creative direction, design, photography and video across the studio’s accounts. · Canberra, ACT',
     when: 'Apr 2021 – Jan 2023',
     points: [
       <>Led design on <span className="cv-num">25 to 50</span> events and projects a year at <span className="cv-num">$10,000 to $250,000</span> each, directly for the <b>ACT Government</b> (City Renewal Authority, Events ACT), <b>Molonglo</b> and the <b>University of Canberra</b>.</>,
@@ -67,7 +67,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Senior Graphic Designer',
-    org: 'Cre8ive · Communications and creative agency for Australian Government and corporate clients · Canberra, ACT',
+    org: 'Cre8ive · Communications and creative agency for Australian Government and corporate clients. Campaign collateral, accessible documents and website maintenance across multiple accounts. · Canberra, ACT',
     when: 'Mar 2021 – May 2021',
     points: [
       <>Produced print and digital campaign collateral for Australian Government clients and Canberra businesses including <b>Tradies</b>, the <b>Suburban Land Agency</b> and <b>BAL Lawyers</b>.</>,
@@ -77,7 +77,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Senior Designer',
-    org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group, two of the country\u2019s largest hospitality groups · Brisbane, QLD',
+    org: 'Added Value Enterprises · Content and design contractor to Australia Venue Co and ALH Group, two of the country\u2019s largest hospitality groups. Digital content, motion graphics and campaign production across their venue network. · Brisbane, QLD',
     when: 'Jan 2020 – Feb 2021',
     points: [
       <>Produced digital content for <span className="cv-num">200+ venues</span> across <b>Australia Venue Co</b>, <b>ALH Group</b> and Hallmark Group: hundreds of animated video assets, and videos promoting venue renovations and featured events, concerts and campaigns, including Big Gay Day, which headlined a Spice Girl.</>,
@@ -86,7 +86,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Lecturer',
-    org: 'Foundry · Creative industries school · Launceston and Hobart, Tasmania',
+    org: 'Foundry · Creative industries school. Teaching, curriculum and assessment across photography, video, design and new media. · Launceston and Hobart, Tasmania',
     when: '2019 – Jun 2020',
     points: [
       <>Taught photography, video production, design, podcasting and new media at Tasmania&rsquo;s dedicated school for the creative industries, which ran its design programmes in partnership with the <b>University of Tasmania</b>.</>,
@@ -94,7 +94,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Zstudios · Design, events and branding studio for government clients and for Sheraton, BMW, Ford, Michelin and Citroën · Tucumán, Argentina',
+    org: 'Zstudios · Design, events and branding studio for government clients and for Sheraton, BMW, Ford, Michelin and Citroën. Creative direction, studio and team management, brand, event design and production. · Tucumán, Argentina',
     when: '2015 – 2019',
     points: [
       <>Rebranded the studio with its founder and repositioned it for larger clients. Ran the <span className="cv-num">9-person</span> team: <span className="cv-num">100+ projects a year</span> across brand, graphic design, fabrication, event production and photography.</>,
@@ -106,7 +106,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Art Director',
-    org: 'Kipus · Communications and PR agency for Latin American technology startups, fintech to e-commerce, Mexico to Argentina · Buenos Aires, Argentina',
+    org: 'Kipus · Communications and PR agency for Latin American technology startups, fintech to e-commerce, Mexico to Argentina. Art direction, brand identity and information design. · Buenos Aires, Argentina',
     when: '2014 – 2016',
     points: [
       <>Owned the agency&rsquo;s visual identity and brand manual, and condensed current-events data into infographics for decision-makers: a newsletter delivered visually.</>,
@@ -114,7 +114,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Senior Lecturer',
-    org: 'UNSTA · Universidad del Norte Santo Tomás de Aquino · Tucumán, Argentina',
+    org: 'UNSTA · Universidad del Norte Santo Tomás de Aquino. Lecturing, curriculum design and one-to-one mentoring in audiovisual media, design and UX/UI. · Tucumán, Argentina',
     when: 'Jan 2010 – Jan 2015',
     points: [
       <>Led Senior Audiovisual Media, Senior Design Workshop and UX/UI Design classes.</>,
@@ -175,15 +175,17 @@ export default function CvPage() {
           <span className="cv-sep">·</span>
           <a href="tel:+61416865550">0416 865 550</a>
           <span className="cv-sep">·</span>
-          <TransitionLink href="/showreel">Showreel</TransitionLink>
+          <span>English / Spanish</span>
+        </p>
+
+        <p className="cv-links">
+          <TransitionLink href="/work"><b>Work</b></TransitionLink>
+          <span className="cv-sep">·</span>
+          <TransitionLink href="/showreel"><b>Video showreel</b></TransitionLink>
           <span className="cv-sep">·</span>
           <a href="https://www.linkedin.com/in/benjaminarnedo/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <span className="cv-sep">·</span>
           <a href="https://github.com/buda-loco" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <span className="cv-sep">·</span>
-          <span><b>Australian Citizen</b></span>
-          <span className="cv-sep">·</span>
-          <span>English / Spanish</span>
         </p>
 
         <a className="cv-download" href="/benjamin-arnedo-cv.pdf" download>

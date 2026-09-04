@@ -61,6 +61,24 @@
 .cv-contact b { color: var(--color-text); font-weight: 700; }
 .cv-sep { color: var(--color-border); }
 
+/* Links sit on their own line, away from the place and contact details. */
+.cv-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-size: var(--text-sm);
+}
+.cv-links a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: var(--cv-rule);
+  transition: color 0.15s var(--ease-out), border-color 0.15s var(--ease-out);
+}
+.cv-links a:hover { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+.cv-links b { color: var(--color-text); font-weight: 700; }
+
 .cv-download {
   display: inline-flex; align-items: center;
   margin-top: var(--sp-4);
