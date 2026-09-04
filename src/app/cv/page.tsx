@@ -56,7 +56,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Dionysus · Placemaking agency producing cultural activations and public events for the ACT Government, developers and universities · Canberra, ACT',
+    org: 'Dionysus · Placemaking agency: cultural activations and public events for the ACT Government, developers and universities · Canberra, ACT',
     when: 'Apr 2021 – Jan 2023',
     points: [
       <>Led design on <span className="cv-num">25 to 50</span> events and projects a year at <span className="cv-num">$10,000 to $250,000</span> each, directly for the <b>ACT Government</b> (City Renewal Authority, Events ACT), <b>Molonglo</b> and the <b>University of Canberra</b>.</>,
@@ -94,7 +94,7 @@ const JOBS: Job[] = [
   },
   {
     title: 'Creative Director',
-    org: 'Zstudios · Design, events and branding studio for national and provincial government and for Sheraton, BMW, Ford, Michelin and Citroën · Tucumán, Argentina',
+    org: 'Zstudios · Design, events and branding studio for government clients and for Sheraton, BMW, Ford, Michelin and Citroën · Tucumán, Argentina',
     when: '2015 – 2019',
     points: [
       <>Rebranded the studio with its founder and repositioned it for larger clients. Ran the <span className="cv-num">9-person</span> team: <span className="cv-num">100+ projects a year</span> across brand, graphic design, fabrication, event production and photography.</>,

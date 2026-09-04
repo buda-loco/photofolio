@@ -140,10 +140,10 @@
 .cv-job-place { font-size: var(--text-sm); font-weight: 300; color: var(--color-text-muted); }
 .cv-job-blurb {
   max-width: var(--cv-measure);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 300;
   line-height: 1.55;
-  color: var(--color-text-muted);
+  color: var(--color-text);
   margin: 0.15rem 0 var(--sp-2);
 }
 .cv-tag {
