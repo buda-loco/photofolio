@@ -366,7 +366,40 @@ Custom SVG logo-window transition in `PageTransition.tsx` with three layers:
 - **Next project** link loops through projects sorted by year desc
 - Tina live editing supported via `useTina` hook in `ProjectClient.tsx`
 
+### 3D map block (`map3d`)
+
+`Map3D.tsx` renders a GLB in a WebGL stage with a slow auto-orbit and a
+travelling "piano-key" ripple through any mesh named `Lot_<n>`. Real hover
+(raycast) wins over the ripple. Two looks, ported from the client build:
+`mode: site` (default — flat GLB, warm palette, terrain hidden under the
+`aerial` photo, which is placed from `parcels.json`'s `aerial` block) and
+`mode: blueprint` (dark, wireframe terrain, grid). Fields: `model`, `parcels`,
+`mode`, `aerial`, `width` (`half`/`full`), and `pairImage`/`pairAlt`/`pairFocus`
+to sit it in two columns beside a photo (both cells 3:2). Honours
+`prefers-reduced-motion` and stops rendering off-screen.
+
+- `three` is imported inside the effect so no other page downloads it. The
+  component uses `import type * as THREE` for types only.
+- ⚠️ **Never lerp a `Color` toward a `Vector3`.** `Color.lerp` reads `.r/.g/.b`,
+  a Vector3 has none, every channel becomes NaN and every lot renders black.
+  It cost a render cycle here.
+- The Shoreline GLB is the client's own, but **the terrain was a hill and the
+  real land is a bowl**. `beechford-bowl.glb` is the corrected export (heights
+  reflected about the surface mean in Blender, lots re-seated). The client site
+  still ships the original.
+
 ### Video blocks
+- **Any `gallery` cell can hold a video.** Set the item's `video` to a URL or a
+  `/videos/…` path and `src` becomes its poster. It autoplays muted and loops
+  with no controls, so it sits among stills as a moving still rather than a
+  player. Built for the Shoreline page (a phone story beside a business card).
+- **`video` blocks take an `aspectRatio`** (`16/9` · `1/1` · `4/5` · `9/16`).
+  The container was hard-wired 16:9 with `object-fit: cover`, which silently
+  cropped square video. Portrait ratios are also width-capped at 46% and
+  centred — a 4:5 at full column width is taller than the viewport.
+- **Self-hosted video works.** A `/videos/projects/<slug>/x.mp4` path goes
+  through the native `<video>` branch; `dropboxUrl()` passes non-Dropbox
+  strings through untouched. Autoplaying loops hide the scrubber.
 - `video` — supports YouTube, Vimeo, OneLinePlayer, or native `<video>`
 - `widescreen_video` — OneLinePlayer with poster image, autoplay support, configurable aspect ratio
 - `vertical_reel` — vertical video + 2 side images grid layout
@@ -525,6 +558,15 @@ to that map to give another category one.
 ---
 
 ## Content management (Tina CMS — local only)
+
+⚠️ **Where the site's server-side Tina query goes.** `src/lib/tinaClient.ts`
+queries **Tina Cloud** (schema built from the *committed* `tina/config.ts` on
+`main`) in production, and the **local GraphQL server on :4001** in development.
+So: a field added to `tina/config.ts` works locally under `npm run cms` straight
+away, but production only sees it after the config is pushed. If a dev page logs
+`[tina] query … failed: Cannot query field …`, either Tina isn't running (start
+`npm run cms`, not `npm run dev`) or the schema changed and the running Tina
+needs a restart. `TINA_FORCE_CLOUD=1` tests the cloud path from a dev build.
 
 ```
 npm run cms   →   Tina UI at localhost:4001/admin
@@ -828,6 +870,16 @@ Production build runs `next build` only — `tinacms build` is not included beca
 ---
 
 ## Adding a new project
+
+**Use the `/buda-new-work` skill** (`.claude/skills/buda-new-work/`). It runs the
+whole publish: intake and resize, colour and contrast, the copy interview, the
+project JSON, the homepage, the tags, then the 4:5 and 9:16 videos, the cover
+images and the post text out of `INTERNAL/02 BUDA/B-LINKEDIN/`. Its
+`references/` folder holds the five page-layout presets, the block schemas and
+the pipeline commands.
+
+By hand, if you must:
+
 
 1. Create `src/content/projects/your-slug.json` (or use CMS)
 2. Add images to `public/images/projects/your-slug/`

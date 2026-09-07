@@ -275,6 +275,7 @@ export type ProjectsBlocksHero = {
 export type ProjectsBlocksGalleryImages = {
   __typename?: 'ProjectsBlocksGalleryImages';
   src?: Maybe<Scalars['String']['output']>;
+  video?: Maybe<Scalars['String']['output']>;
   alt?: Maybe<Scalars['String']['output']>;
   aspectRatio?: Maybe<Scalars['String']['output']>;
 };
@@ -290,6 +291,7 @@ export type ProjectsBlocksVideo = {
   provider?: Maybe<Scalars['String']['output']>;
   src?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['String']['output']>;
+  aspectRatio?: Maybe<Scalars['String']['output']>;
   poster?: Maybe<Scalars['String']['output']>;
   caption?: Maybe<Scalars['String']['output']>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
@@ -348,13 +350,26 @@ export type ProjectsBlocksVertical_Grid = {
   caption?: Maybe<Scalars['String']['output']>;
 };
 
+export type ProjectsBlocksMap3d = {
+  __typename?: 'ProjectsBlocksMap3d';
+  model: Scalars['String']['output'];
+  parcels?: Maybe<Scalars['String']['output']>;
+  mode?: Maybe<Scalars['String']['output']>;
+  aerial?: Maybe<Scalars['String']['output']>;
+  pairImage?: Maybe<Scalars['String']['output']>;
+  pairAlt?: Maybe<Scalars['String']['output']>;
+  pairFocus?: Maybe<Scalars['String']['output']>;
+  width?: Maybe<Scalars['String']['output']>;
+  caption?: Maybe<Scalars['String']['output']>;
+};
+
 export type ProjectsBlocksText = {
   __typename?: 'ProjectsBlocksText';
   heading?: Maybe<Scalars['String']['output']>;
   body?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type ProjectsBlocks = ProjectsBlocksHero | ProjectsBlocksGallery | ProjectsBlocksVideo | ProjectsBlocksWidescreen_Video | ProjectsBlocksVertical_Reel | ProjectsBlocksVertical_Grid | ProjectsBlocksText;
+export type ProjectsBlocks = ProjectsBlocksHero | ProjectsBlocksGallery | ProjectsBlocksVideo | ProjectsBlocksWidescreen_Video | ProjectsBlocksVertical_Reel | ProjectsBlocksVertical_Grid | ProjectsBlocksMap3d | ProjectsBlocksText;
 
 export type Projects = Node & Document & {
   __typename?: 'Projects';
@@ -435,6 +450,7 @@ export type ProjectsBlocksHeroFilter = {
 
 export type ProjectsBlocksGalleryImagesFilter = {
   src?: InputMaybe<ImageFilter>;
+  video?: InputMaybe<StringFilter>;
   alt?: InputMaybe<StringFilter>;
   aspectRatio?: InputMaybe<StringFilter>;
 };
@@ -448,6 +464,7 @@ export type ProjectsBlocksVideoFilter = {
   provider?: InputMaybe<StringFilter>;
   src?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  aspectRatio?: InputMaybe<StringFilter>;
   poster?: InputMaybe<ImageFilter>;
   caption?: InputMaybe<StringFilter>;
   autoplay?: InputMaybe<BooleanFilter>;
@@ -500,6 +517,18 @@ export type ProjectsBlocksVertical_GridFilter = {
   caption?: InputMaybe<StringFilter>;
 };
 
+export type ProjectsBlocksMap3dFilter = {
+  model?: InputMaybe<StringFilter>;
+  parcels?: InputMaybe<StringFilter>;
+  mode?: InputMaybe<StringFilter>;
+  aerial?: InputMaybe<ImageFilter>;
+  pairImage?: InputMaybe<ImageFilter>;
+  pairAlt?: InputMaybe<StringFilter>;
+  pairFocus?: InputMaybe<StringFilter>;
+  width?: InputMaybe<StringFilter>;
+  caption?: InputMaybe<StringFilter>;
+};
+
 export type ProjectsBlocksTextFilter = {
   heading?: InputMaybe<StringFilter>;
   body?: InputMaybe<RichTextFilter>;
@@ -512,6 +541,7 @@ export type ProjectsBlocksFilter = {
   widescreen_video?: InputMaybe<ProjectsBlocksWidescreen_VideoFilter>;
   vertical_reel?: InputMaybe<ProjectsBlocksVertical_ReelFilter>;
   vertical_grid?: InputMaybe<ProjectsBlocksVertical_GridFilter>;
+  map3d?: InputMaybe<ProjectsBlocksMap3dFilter>;
   text?: InputMaybe<ProjectsBlocksTextFilter>;
 };
 
@@ -1127,6 +1157,7 @@ export type ProjectsBlocksHeroMutation = {
 
 export type ProjectsBlocksGalleryImagesMutation = {
   src?: InputMaybe<Scalars['String']['input']>;
+  video?: InputMaybe<Scalars['String']['input']>;
   alt?: InputMaybe<Scalars['String']['input']>;
   aspectRatio?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1140,6 +1171,7 @@ export type ProjectsBlocksVideoMutation = {
   provider?: InputMaybe<Scalars['String']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  aspectRatio?: InputMaybe<Scalars['String']['input']>;
   poster?: InputMaybe<Scalars['String']['input']>;
   caption?: InputMaybe<Scalars['String']['input']>;
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1192,6 +1224,18 @@ export type ProjectsBlocksVertical_GridMutation = {
   caption?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ProjectsBlocksMap3dMutation = {
+  model?: InputMaybe<Scalars['String']['input']>;
+  parcels?: InputMaybe<Scalars['String']['input']>;
+  mode?: InputMaybe<Scalars['String']['input']>;
+  aerial?: InputMaybe<Scalars['String']['input']>;
+  pairImage?: InputMaybe<Scalars['String']['input']>;
+  pairAlt?: InputMaybe<Scalars['String']['input']>;
+  pairFocus?: InputMaybe<Scalars['String']['input']>;
+  width?: InputMaybe<Scalars['String']['input']>;
+  caption?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ProjectsBlocksTextMutation = {
   heading?: InputMaybe<Scalars['String']['input']>;
   body?: InputMaybe<Scalars['JSON']['input']>;
@@ -1204,6 +1248,7 @@ export type ProjectsBlocksMutation = {
   widescreen_video?: InputMaybe<ProjectsBlocksWidescreen_VideoMutation>;
   vertical_reel?: InputMaybe<ProjectsBlocksVertical_ReelMutation>;
   vertical_grid?: InputMaybe<ProjectsBlocksVertical_GridMutation>;
+  map3d?: InputMaybe<ProjectsBlocksMap3dMutation>;
   text?: InputMaybe<ProjectsBlocksTextMutation>;
 };
 
@@ -1388,7 +1433,7 @@ export type QuotesMutation = {
   promoCode?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type ProjectsPartsFragment = { __typename: 'Projects', slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null };
+export type ProjectsPartsFragment = { __typename: 'Projects', slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, video?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, aspectRatio?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksMap3d', model: string, parcels?: string | null, mode?: string | null, aerial?: string | null, pairImage?: string | null, pairAlt?: string | null, pairFocus?: string | null, width?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null };
 
 export type AboutPartsFragment = { __typename: 'About', name?: string | null, title?: string | null, bio?: any | null, portrait?: string | null, clients?: Array<string | null> | null, email?: string | null, instagram?: string | null, vimeo?: string | null };
 
@@ -1405,7 +1450,7 @@ export type ProjectsQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null } };
+export type ProjectsQuery = { __typename?: 'Query', projects: { __typename: 'Projects', id: string, slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, video?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, aspectRatio?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksMap3d', model: string, parcels?: string | null, mode?: string | null, aerial?: string | null, pairImage?: string | null, pairAlt?: string | null, pairFocus?: string | null, width?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null } };
 
 export type ProjectsConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -1417,7 +1462,7 @@ export type ProjectsConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null } | null } | null> | null } };
+export type ProjectsConnectionQuery = { __typename?: 'Query', projectsConnection: { __typename?: 'ProjectsConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectsConnectionEdges', cursor: string, node?: { __typename: 'Projects', id: string, slug: string, title: string, category?: string | null, year?: number | null, cover?: string | null, coverAspect?: string | null, gridSize?: string | null, gridOffset?: number | null, featured?: boolean | null, backgroundColor?: string | null, backgroundColorSecondary?: string | null, textColor?: string | null, primaryColor?: string | null, secondaryColor?: string | null, invertColors?: boolean | null, services?: Array<string | null> | null, ctaLabel?: string | null, ctaUrl?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, info?: { __typename: 'ProjectsInfo', about?: any | null, date?: string | null, place?: string | null, client?: string | null } | null, blocks?: Array<{ __typename: 'ProjectsBlocksHero', src?: string | null, alt?: string | null, aspectRatio?: string | null, parallax?: number | null, caption?: string | null } | { __typename: 'ProjectsBlocksGallery', columns?: string | null, images?: Array<{ __typename: 'ProjectsBlocksGalleryImages', src?: string | null, video?: string | null, alt?: string | null, aspectRatio?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVideo', provider?: string | null, src?: string | null, id?: string | null, aspectRatio?: string | null, poster?: string | null, caption?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | { __typename: 'ProjectsBlocksWidescreen_video', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null, aspectRatio?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksVertical_reel', caption?: string | null, video?: { __typename: 'ProjectsBlocksVertical_reelVideo', url?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null, images?: Array<{ __typename: 'ProjectsBlocksVertical_reelImages', src?: string | null, alt?: string | null } | null> | null } | { __typename: 'ProjectsBlocksVertical_grid', caption?: string | null, items?: Array<{ __typename: 'ProjectsBlocksVertical_gridItems', type?: string | null, src?: string | null, alt?: string | null, videoUrl?: string | null, poster?: string | null, autoplay?: boolean | null, muted?: boolean | null, loop?: boolean | null } | null> | null } | { __typename: 'ProjectsBlocksMap3d', model: string, parcels?: string | null, mode?: string | null, aerial?: string | null, pairImage?: string | null, pairAlt?: string | null, pairFocus?: string | null, width?: string | null, caption?: string | null } | { __typename: 'ProjectsBlocksText', heading?: string | null, body?: any | null } | null> | null } | null } | null> | null } };
 
 export type AboutQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -1556,6 +1601,7 @@ export const ProjectsPartsFragmentDoc = gql`
       images {
         __typename
         src
+        video
         alt
         aspectRatio
       }
@@ -1564,6 +1610,7 @@ export const ProjectsPartsFragmentDoc = gql`
       provider
       src
       id
+      aspectRatio
       poster
       caption
       autoplay
@@ -1607,6 +1654,17 @@ export const ProjectsPartsFragmentDoc = gql`
         muted
         loop
       }
+      caption
+    }
+    ... on ProjectsBlocksMap3d {
+      model
+      parcels
+      mode
+      aerial
+      pairImage
+      pairAlt
+      pairFocus
+      width
       caption
     }
     ... on ProjectsBlocksText {
@@ -2193,7 +2251,7 @@ export const ExperimentalGetTinaClient = () =>
   getSdk(
     generateRequester(
       createClient({
-        url: "https://content.tinajs.io/2.2/content/92038ec2-d613-46af-82d5-a0a8deca27a6/github/main",
+        url: "http://localhost:4001/graphql",
         queries,
       })
     )

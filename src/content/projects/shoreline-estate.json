@@ -1,0 +1,213 @@
+{
+  "slug": "shoreline-estate",
+  "title": "Shoreline Estate",
+  "category": "Campaigns",
+  "year": 2026,
+  "cover": "/images/projects/shoreline-estate/drone-hero.jpg",
+  "coverAspect": "16/9",
+  "gridSize": "large",
+  "featured": true,
+  "backgroundColor": "#142436",
+  "textColor": "#e2cfc2",
+  "primaryColor": "#ffffff",
+  "secondaryColor": "#3d666d",
+  "invertColors": false,
+  "services": [
+    "Brand Identity",
+    "Logo Design",
+    "Web Design",
+    "Photography",
+    "Videography",
+    "Editorial Design",
+    "Social Media Ads",
+    "Art Direction"
+  ],
+  "ctaLabel": "Visit the site",
+  "ctaUrl": "https://shorelineestate.com.au",
+  "info": {
+    "about": {
+      "type": "root",
+      "children": [
+        {
+          "type": "p",
+          "id": "CEgoKCSGUH",
+          "children": [
+            {
+              "type": "text",
+              "id": "W4zDQGVlV9",
+              "text": "MBBO had just finished the drains at Beechford, on Tasmania's north coast. Getting the land to market was part of their commitment to the council, so the clock had already started. What they had was eighteen coastal blocks, a basic design, and nothing to sell them with."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "X5yJVpMGqF",
+          "children": [
+            {
+              "type": "text",
+              "id": "uB2fYp7bBu",
+              "text": "We sat down with the developers and worked through what someone buying land actually wants to know. Those questions became the content strategy, and the strategy became a single page. I redesigned the brand, shot the stills and the drone footage and cut the B-roll, all in one weekend, because a sunny day with no wind on that coast is not something you can book. The centrepiece is a 3D lot map: click a block and you get its size, its price and where it sits relative to the water. MBBO mark a lot under offer or sold in two clicks."
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "id": "esPgpvuuqQ",
+          "children": [
+            {
+              "type": "text",
+              "id": "ud70ay562t",
+              "text": "Two lots sold in the first week and dozens of calls came in. We added metal signs with QR codes on the property, so anyone driving past could open "
+            },
+            {
+              "type": "a",
+              "url": "https://shorelineestate.com.au",
+              "id": "7VLyQrgnJc",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PrX4Dn3QA2",
+                  "text": "shorelineestate.com.au"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "yWj0bvjVfd",
+              "text": " standing on the land. Stages 2 and 3 go out together next year, and they have asked me back for both."
+            }
+          ]
+        }
+      ]
+    },
+    "date": "2026",
+    "place": "Beechford, Tasmania",
+    "client": "MBBO Pty Ltd"
+  },
+  "blocks": [
+    {
+      "src": "/images/projects/shoreline-estate/brand-manual-closeup.jpg",
+      "alt": "The brand manual, open on the picnic table at Beechford",
+      "parallax": 0.2,
+      "_template": "hero"
+    },
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/shoreline-estate/beach-curve.jpg",
+          "alt": "The beach at Beechford curving north"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/dune-path.jpg",
+          "alt": "The track from the estate down to the beach"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/river-mouth.jpg",
+          "alt": "Where the Curries River meets the Tasman Sea"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "src": "/videos/projects/shoreline-estate/website-scroll-imac.mp4",
+      "poster": "/images/projects/shoreline-estate/website-scroll-imac-poster.jpg",
+      "aspectRatio": "1/1",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "caption": "The one-page site, top to bottom",
+      "_template": "video"
+    },
+    {
+      "columns": "2",
+      "images": [
+        {
+          "src": "/images/projects/shoreline-estate/mockup-website-bench.jpg",
+          "alt": "The site on a laptop, on the picnic table by the lagoon"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/mockup-brochure.jpg",
+          "alt": "The printed brochure"
+        }
+      ],
+      "_template": "gallery"
+    },
+    {
+      "heading": "The questions people actually ask",
+      "body": {
+        "type": "root",
+        "children": [
+          {
+            "type": "p",
+            "id": "McDlazlAHB",
+            "children": [
+              {
+                "type": "text",
+                "id": "El6krGFaQc",
+                "text": "Nobody buying a block asks about brand values. They ask what it costs to get out of the ground, whether it is on sewer, how far the beach really is, and how long the drive to Launceston takes. We listed every one of those questions with the developers and built the page around the answers. The FAQ is not a footnote here, it is most of the argument."
+              }
+            ]
+          }
+        ]
+      },
+      "_template": "text"
+    },
+    {
+      "_template": "map3d",
+      "model": "/models/projects/shoreline-estate/beechford-flat.glb",
+      "parcels": "/models/projects/shoreline-estate/parcels.json",
+      "mode": "site",
+      "aerial": "/models/projects/shoreline-estate/aerial.webp",
+      "pairImage": "/images/projects/shoreline-estate/sign-installed.jpg",
+      "pairAlt": "The sign installed on the land at Beechford",
+      "pairFocus": "22% center",
+      "caption": "The sign on the land, and the 3D lot map from the site. Lots lift on hover; here they take turns."
+    },
+    {
+      "columns": "2",
+      "_template": "gallery",
+      "images": [
+        {
+          "src": "/images/projects/shoreline-estate/mockup-business-card.jpg",
+          "alt": "Blind-debossed business cards",
+          "aspectRatio": "4/5"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/story-phone-poster.jpg",
+          "video": "/videos/projects/shoreline-estate/story-phone.mp4",
+          "alt": "One of twenty-five stories from the launch campaign",
+          "aspectRatio": "4/5"
+        }
+      ]
+    },
+    {
+      "src": "/videos/projects/shoreline-estate/website-scroll.mp4",
+      "poster": "/images/projects/shoreline-estate/website-scroll-poster.jpg",
+      "aspectRatio": "1/1",
+      "autoplay": true,
+      "muted": true,
+      "loop": true,
+      "caption": "Scrolling the site",
+      "_template": "video"
+    },
+    {
+      "columns": "3",
+      "images": [
+        {
+          "src": "/images/projects/shoreline-estate/shells.jpg",
+          "alt": "Shells on a deck"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/higgins-street.jpg",
+          "alt": "The Higgins Street sign"
+        },
+        {
+          "src": "/images/projects/shoreline-estate/mockup-manual-sand.jpg",
+          "alt": "The website manual, on the sand"
+        }
+      ],
+      "_template": "gallery"
+    }
+  ]
+}

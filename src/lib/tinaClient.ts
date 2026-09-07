@@ -25,8 +25,16 @@ const token = process.env.TINA_TOKEN
 // Tina GraphQL content-API major version (matches tina/config.ts + generated client).
 const TINA_API_VERSION = '2.2'
 
-const tinaClient =
-  clientId && token
+// In development, query the local GraphQL server that `npm run cms` runs.
+// Tina Cloud's schema is built from the *committed* config on `main`, so any
+// field added to tina/config.ts locally is rejected by the cloud until pushed —
+// the page then falls back to local JSON and logs a misleading schema error.
+// Set TINA_FORCE_CLOUD=1 to test against the cloud from a dev build.
+const useLocal = process.env.NODE_ENV !== 'production' && !process.env.TINA_FORCE_CLOUD
+
+const tinaClient = useLocal
+  ? createClient({ url: 'http://localhost:4001/graphql', token: 'local', queries })
+  : clientId && token
     ? createClient({
         url: `https://content.tinajs.io/${TINA_API_VERSION}/content/${clientId}/github/${branch}`,
         token,

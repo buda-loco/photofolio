@@ -6,7 +6,11 @@ import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import type { ContentBlock } from '@/lib/content'
 import type { RichNode as RichNodeType } from '@/lib/richText'
 import RichText from '@/components/RichText'
+import dynamic from 'next/dynamic'
 import { absoluteUrl, dropboxUrl, onelinerSrc } from '@/lib/videoEmbed'
+
+// WebGL only exists in the browser; this also keeps three out of every other page's bundle
+const Map3D = dynamic(() => import('./Map3D'), { ssr: false })
 
 function splitWords(text: string): string[] {
   return text.split(' ')
@@ -70,7 +74,20 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
             style={img.aspectRatio ? ({ '--aspect': img.aspectRatio } as CSSProperties) : undefined}
           >
             <div className="img-container">
-              {img.src && (
+              {img.video ? (
+                // a video in a gallery cell: the image becomes its poster, and it
+                // behaves like the stills around it rather than a player
+                <video
+                  src={dropboxUrl(img.video)}
+                  poster={img.src || undefined}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label={img.alt ?? ''}
+                />
+              ) : img.src && (
                 <Image
                   src={img.src}
                   alt={img.alt ?? ''}
@@ -89,9 +106,15 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
 
   if (blockType === 'video') {
     const videoSrc = block.src
+    // Square and portrait videos were being cropped by the fixed 16:9 frame.
+    // Portrait ones also get their width capped in CSS, or a 4:5 fills the column.
+    const vAspect: string = block.aspectRatio ?? '16/9'
+    const [vw, vh] = vAspect.split('/').map(Number)
+    const vPortrait = vw > 0 && vh > 0 && vh > vw
     return (
       <div
-        className="block-video"
+        className={`block-video${vPortrait ? ' block-video--portrait' : ''}`}
+        style={{ '--aspect': vAspect } as CSSProperties}
         {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
       >
         <div className="video-container">
@@ -127,7 +150,8 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
             <video
               src={dropboxUrl(videoSrc)}
               poster={block.poster ?? undefined}
-              controls
+              // an autoplaying loop is ambient footage; a scrubber on it reads as UI
+              controls={!(block.autoplay && block.loop)}
               playsInline
               preload="metadata"
               autoPlay={!!block.autoplay}
@@ -251,6 +275,46 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
             {block.caption}
           </p>
         )}
+      </div>
+    )
+  }
+
+  if (blockType === 'map3d') {
+    const paired = !!block.pairImage
+    const map = (
+      <Map3D
+        model={block.model}
+        parcels={block.parcels}
+        caption={paired ? undefined : block.caption}
+        mode={block.mode ?? 'site'}
+        aerial={block.aerial}
+        aspect={paired ? 1.5 : 1}
+      />
+    )
+    return (
+      <div
+        className={`block-map3d ${paired ? 'block-map3d--pair' : `block-map3d--${block.width ?? 'half'}`}`}
+        data-animate="fade-up"
+        {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
+      >
+        {paired ? (
+          <>
+            <div className="img-container img-reveal map3d-pair-image">
+              <Image
+                src={block.pairImage}
+                alt={block.pairAlt ?? ''}
+                fill
+                sizes="(max-width: 640px) 100vw, 50vw"
+                style={{ objectFit: 'cover', objectPosition: block.pairFocus ?? 'center' }}
+                loading="lazy"
+              />
+            </div>
+            {map}
+            {block.caption && (
+              <p className="block-caption label" style={{ gridColumn: '1 / -1' }}>{block.caption}</p>
+            )}
+          </>
+        ) : map}
       </div>
     )
   }

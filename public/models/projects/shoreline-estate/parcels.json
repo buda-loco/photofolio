@@ -1,0 +1,1333 @@
+{
+ "project": "Lot 1 Davis Street, Beechford TAS",
+ "owner": "MBBO Pty Ltd",
+ "permit": "DA 2023/99",
+ "source": "D1 Consulting Engineers job 99923 / Salonen 6414 plan of survey",
+ "note": "Areas are the surveyed figures from the plan. Frontage/depth are derived from the digitised parcel outline and are indicative only.",
+ "aerial": {
+  "url": "aerial.webp",
+  "fallback": "aerial.jpg",
+  "width_px": 1601,
+  "height_px": 982,
+  "show": true,
+  "m_per_px": 1.2975,
+  "origin_px": [
+   946,
+   770
+  ],
+  "rotation_deg": -18,
+  "y_offset_m": -0.15
+ },
+ "default_view": "site",
+ "terrain": {
+  "datum": "AHD83",
+  "source": "Woolcott Surveys L230608 proposal plan \u2014 0.20 m contours, AHD83",
+  "note": "interpolated from 70 whole-metre contour callouts; indicative to roughly half a metre; heights are exaggerated 2x in the model for legibility",
+  "site_min_ahd": 14.0,
+  "site_max_ahd": 30.0,
+  "z_exaggeration": 2.0
+ },
+ "totals": {
+  "lots": 40,
+  "lotAreaM2": 65167,
+  "lotAreaHa": 6.52
+ },
+ "lots": [
+  {
+   "lot": 1,
+   "area_m2": 1311,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.5,
+   "depth_m": 52.8,
+   "level_ahd": 26.1,
+   "x": 163.3,
+   "z": -60.42,
+   "polygon": [
+    [
+     155.67,
+     -94.63
+    ],
+    [
+     153.07,
+     -45.24
+    ],
+    [
+     155.85,
+     -44.87
+    ],
+    [
+     155.85,
+     -42.28
+    ],
+    [
+     178.18,
+     -41.72
+    ],
+    [
+     181.15,
+     -93.8
+    ]
+   ]
+  },
+  {
+   "lot": 2,
+   "area_m2": 1322,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.4,
+   "depth_m": 50.1,
+   "level_ahd": 26.4,
+   "x": 141.24,
+   "z": -70.26,
+   "polygon": [
+    [
+     129.91,
+     -95.37
+    ],
+    [
+     127.22,
+     -45.89
+    ],
+    [
+     152.61,
+     -45.15
+    ],
+    [
+     155.2,
+     -94.63
+    ]
+   ]
+  },
+  {
+   "lot": 3,
+   "area_m2": 1317,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.3,
+   "depth_m": 50.2,
+   "level_ahd": 26.36,
+   "x": 115.36,
+   "z": -71.0,
+   "polygon": [
+    [
+     104.06,
+     -96.11
+    ],
+    [
+     101.37,
+     -46.63
+    ],
+    [
+     126.67,
+     -45.89
+    ],
+    [
+     129.35,
+     -95.37
+    ]
+   ]
+  },
+  {
+   "lot": 4,
+   "area_m2": 1299,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.5,
+   "depth_m": 50.2,
+   "level_ahd": 26.15,
+   "x": 89.39,
+   "z": -71.77,
+   "polygon": [
+    [
+     78.11,
+     -96.95
+    ],
+    [
+     75.24,
+     -47.37
+    ],
+    [
+     100.72,
+     -46.63
+    ],
+    [
+     103.5,
+     -96.11
+    ]
+   ]
+  },
+  {
+   "lot": 5,
+   "area_m2": 1350,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.0,
+   "depth_m": 50.2,
+   "level_ahd": 25.66,
+   "x": 63.68,
+   "z": -72.48,
+   "polygon": [
+    [
+     52.54,
+     -97.69
+    ],
+    [
+     49.85,
+     -48.11
+    ],
+    [
+     74.78,
+     -47.28
+    ],
+    [
+     77.56,
+     -96.85
+    ]
+   ]
+  },
+  {
+   "lot": 6,
+   "area_m2": 1350,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 26.0,
+   "depth_m": 50.3,
+   "level_ahd": 24.56,
+   "x": 37.66,
+   "z": -73.25,
+   "polygon": [
+    [
+     26.04,
+     -98.43
+    ],
+    [
+     23.26,
+     -48.86
+    ],
+    [
+     49.29,
+     -48.11
+    ],
+    [
+     52.07,
+     -97.59
+    ]
+   ]
+  },
+  {
+   "lot": 7,
+   "area_m2": 1324,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.5,
+   "depth_m": 50.4,
+   "level_ahd": 22.74,
+   "x": 11.46,
+   "z": -73.97,
+   "polygon": [
+    [
+     0.28,
+     -99.17
+    ],
+    [
+     -2.69,
+     -49.5
+    ],
+    [
+     22.79,
+     -48.76
+    ],
+    [
+     25.48,
+     -98.43
+    ]
+   ]
+  },
+  {
+   "lot": 8,
+   "area_m2": 1343,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 28.2,
+   "depth_m": 52.4,
+   "level_ahd": 18.78,
+   "x": -34.91,
+   "z": -77.79,
+   "polygon": [
+    [
+     -43.92,
+     -105.56
+    ],
+    [
+     -51.52,
+     -53.67
+    ],
+    [
+     -23.63,
+     -49.69
+    ],
+    [
+     -20.57,
+     -102.23
+    ]
+   ]
+  },
+  {
+   "lot": 9,
+   "area_m2": 1380,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 26.6,
+   "depth_m": 52.5,
+   "level_ahd": 17.45,
+   "x": -61.32,
+   "z": -81.63,
+   "polygon": [
+    [
+     -70.7,
+     -109.46
+    ],
+    [
+     -78.21,
+     -57.57
+    ],
+    [
+     -51.98,
+     -53.77
+    ],
+    [
+     -44.39,
+     -105.75
+    ]
+   ]
+  },
+  {
+   "lot": 10,
+   "area_m2": 1380,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 26.6,
+   "depth_m": 52.6,
+   "level_ahd": 16.95,
+   "x": -88.05,
+   "z": -85.55,
+   "polygon": [
+    [
+     -97.39,
+     -113.35
+    ],
+    [
+     -104.99,
+     -61.46
+    ],
+    [
+     -78.76,
+     -57.75
+    ],
+    [
+     -71.07,
+     -109.64
+    ]
+   ]
+  },
+  {
+   "lot": 11,
+   "area_m2": 1376,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 26.4,
+   "depth_m": 52.6,
+   "level_ahd": 16.6,
+   "x": -114.79,
+   "z": -89.46,
+   "polygon": [
+    [
+     -124.07,
+     -117.24
+    ],
+    [
+     -131.58,
+     -65.35
+    ],
+    [
+     -105.54,
+     -61.64
+    ],
+    [
+     -97.94,
+     -113.62
+    ]
+   ]
+  },
+  {
+   "lot": 12,
+   "area_m2": 2662,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 67.4,
+   "depth_m": 94.8,
+   "level_ahd": 16.56,
+   "x": -174.13,
+   "z": -87.52,
+   "polygon": [
+    [
+     -223.59,
+     -94.17
+    ],
+    [
+     -220.53,
+     -63.96
+    ],
+    [
+     -134.17,
+     -50.99
+    ],
+    [
+     -130.93,
+     -74.43
+    ],
+    [
+     -171.33,
+     -80.55
+    ],
+    [
+     -165.22,
+     -123.82
+    ],
+    [
+     -170.87,
+     -124.37
+    ],
+    [
+     -176.43,
+     -87.87
+    ]
+   ]
+  },
+  {
+   "lot": 13,
+   "area_m2": 2097,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 24.9,
+   "depth_m": 92.0,
+   "level_ahd": 17.12,
+   "x": -176.38,
+   "z": -44.39,
+   "polygon": [
+    [
+     -220.44,
+     -63.5
+    ],
+    [
+     -217.38,
+     -37.83
+    ],
+    [
+     -133.16,
+     -25.69
+    ],
+    [
+     -134.54,
+     -50.52
+    ]
+   ]
+  },
+  {
+   "lot": 14,
+   "area_m2": 2060,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.1,
+   "depth_m": 89.5,
+   "level_ahd": 18.19,
+   "x": -174.2,
+   "z": -18.44,
+   "polygon": [
+    [
+     -217.29,
+     -37.27
+    ],
+    [
+     -214.14,
+     -11.51
+    ],
+    [
+     -132.23,
+     0.25
+    ],
+    [
+     -133.16,
+     -25.23
+    ]
+   ]
+  },
+  {
+   "lot": 15,
+   "area_m2": 1879,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.2,
+   "depth_m": 86.3,
+   "level_ahd": 19.96,
+   "x": -178.32,
+   "z": 5.31,
+   "polygon": [
+    [
+     -214.14,
+     -11.05
+    ],
+    [
+     -213.49,
+     -5.49
+    ],
+    [
+     -199.31,
+     16.38
+    ],
+    [
+     -132.23,
+     26.11
+    ],
+    [
+     -132.41,
+     0.62
+    ]
+   ]
+  },
+  {
+   "lot": 16,
+   "area_m2": 1664,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.0,
+   "depth_m": 88.1,
+   "level_ahd": 23.32,
+   "x": -156.53,
+   "z": 35.65,
+   "polygon": [
+    [
+     -198.29,
+     17.03
+    ],
+    [
+     -180.97,
+     44.82
+    ],
+    [
+     -114.62,
+     54.18
+    ],
+    [
+     -132.23,
+     26.57
+    ]
+   ]
+  },
+  {
+   "lot": 17,
+   "area_m2": 1515,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 25.2,
+   "depth_m": 81.7,
+   "level_ahd": 26.16,
+   "x": -132.27,
+   "z": 64.62,
+   "polygon": [
+    [
+     -180.04,
+     45.38
+    ],
+    [
+     -162.62,
+     73.36
+    ],
+    [
+     -102.11,
+     77.63
+    ],
+    [
+     -102.86,
+     71.88
+    ],
+    [
+     -113.7,
+     54.83
+    ]
+   ]
+  },
+  {
+   "lot": 18,
+   "area_m2": 1351,
+   "stage": 1,
+   "stageName": "Stage 1",
+   "status": "available",
+   "frontage_m": 26.8,
+   "depth_m": 65.0,
+   "level_ahd": 27.34,
+   "x": -126.58,
+   "z": 89.25,
+   "polygon": [
+    [
+     -161.69,
+     73.83
+    ],
+    [
+     -144.09,
+     102.0
+    ],
+    [
+     -98.59,
+     103.11
+    ],
+    [
+     -101.93,
+     78.09
+    ]
+   ]
+  },
+  {
+   "lot": 19,
+   "area_m2": 2552,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 24.0,
+   "depth_m": 109.0,
+   "level_ahd": 20.09,
+   "x": -90.29,
+   "z": -46.46,
+   "polygon": [
+    [
+     -131.86,
+     -64.79
+    ],
+    [
+     -133.8,
+     -51.82
+    ],
+    [
+     -133.25,
+     -40.79
+    ],
+    [
+     -28.54,
+     -25.69
+    ],
+    [
+     -24.0,
+     -49.23
+    ]
+   ]
+  },
+  {
+   "lot": 20,
+   "area_m2": 2888,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 34.3,
+   "depth_m": 105.5,
+   "level_ahd": 22.57,
+   "x": -81.8,
+   "z": -18.44,
+   "polygon": [
+    [
+     -133.34,
+     -40.33
+    ],
+    [
+     -131.67,
+     -5.4
+    ],
+    [
+     -33.27,
+     -2.8
+    ],
+    [
+     -28.91,
+     -25.23
+    ]
+   ]
+  },
+  {
+   "lot": 21,
+   "area_m2": 2922,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 31.3,
+   "depth_m": 98.3,
+   "level_ahd": 26.04,
+   "x": -84.3,
+   "z": 12.0,
+   "polygon": [
+    [
+     -131.86,
+     26.29
+    ],
+    [
+     -40.03,
+     28.89
+    ],
+    [
+     -33.55,
+     -2.25
+    ],
+    [
+     -131.76,
+     -4.93
+    ]
+   ]
+  },
+  {
+   "lot": 22,
+   "area_m2": 1995,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 25.1,
+   "depth_m": 90.8,
+   "level_ahd": 28.04,
+   "x": -82.72,
+   "z": 40.54,
+   "polygon": [
+    [
+     -131.02,
+     26.75
+    ],
+    [
+     -114.44,
+     51.96
+    ],
+    [
+     -45.22,
+     54.18
+    ],
+    [
+     -40.22,
+     29.26
+    ]
+   ]
+  },
+  {
+   "lot": 23,
+   "area_m2": 1371,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 25.0,
+   "depth_m": 63.2,
+   "level_ahd": 28.93,
+   "x": -84.36,
+   "z": 67.15,
+   "polygon": [
+    [
+     -114.34,
+     52.33
+    ],
+    [
+     -102.39,
+     72.25
+    ],
+    [
+     -101.56,
+     77.72
+    ],
+    [
+     -52.35,
+     79.11
+    ],
+    [
+     -51.15,
+     54.37
+    ]
+   ]
+  },
+  {
+   "lot": 24,
+   "area_m2": 1501,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 25.0,
+   "depth_m": 69.4,
+   "level_ahd": 29.24,
+   "x": -61.61,
+   "z": 89.76,
+   "polygon": [
+    [
+     -101.37,
+     78.18
+    ],
+    [
+     -97.85,
+     103.29
+    ],
+    [
+     -33.17,
+     104.87
+    ],
+    [
+     -32.25,
+     86.52
+    ],
+    [
+     -52.45,
+     85.97
+    ],
+    [
+     -52.54,
+     79.76
+    ]
+   ]
+  },
+  {
+   "lot": 25,
+   "area_m2": 1554,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 24.5,
+   "depth_m": 68.1,
+   "level_ahd": 29.99,
+   "x": -6.3,
+   "z": 91.39,
+   "polygon": [
+    [
+     -32.34,
+     86.61
+    ],
+    [
+     -33.27,
+     105.05
+    ],
+    [
+     34.0,
+     106.54
+    ],
+    [
+     35.3,
+     82.35
+    ],
+    [
+     -20.39,
+     80.87
+    ],
+    [
+     -21.13,
+     86.89
+    ]
+   ]
+  },
+  {
+   "lot": 26,
+   "area_m2": 1378,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 25.0,
+   "depth_m": 56.4,
+   "level_ahd": 29.95,
+   "x": 8.22,
+   "z": 68.68,
+   "polygon": [
+    [
+     -19.0,
+     55.57
+    ],
+    [
+     -20.3,
+     80.41
+    ],
+    [
+     35.39,
+     81.89
+    ],
+    [
+     36.78,
+     56.87
+    ]
+   ]
+  },
+  {
+   "lot": 27,
+   "area_m2": 1629,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 28.0,
+   "depth_m": 61.8,
+   "level_ahd": 29.75,
+   "x": 8.31,
+   "z": 41.58,
+   "polygon": [
+    [
+     -18.16,
+     26.94
+    ],
+    [
+     -24.0,
+     54.74
+    ],
+    [
+     36.97,
+     56.31
+    ],
+    [
+     38.45,
+     28.33
+    ]
+   ]
+  },
+  {
+   "lot": 28,
+   "area_m2": 1535,
+   "stage": 2,
+   "stageName": "Stage 2",
+   "status": "available",
+   "frontage_m": 33.4,
+   "depth_m": 53.5,
+   "level_ahd": 27.65,
+   "x": 6.44,
+   "z": -19.71,
+   "polygon": [
+    [
+     -2.87,
+     -46.35
+    ],
+    [
+     -13.72,
+     6.09
+    ],
+    [
+     19.73,
+     6.93
+    ],
+    [
+     22.61,
+     -45.52
+    ]
+   ]
+  },
+  {
+   "lot": 29,
+   "area_m2": 1355,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 25.8,
+   "depth_m": 53.1,
+   "level_ahd": 28.11,
+   "x": 34.61,
+   "z": -18.95,
+   "polygon": [
+    [
+     23.16,
+     -45.52
+    ],
+    [
+     20.29,
+     6.83
+    ],
+    [
+     46.05,
+     7.67
+    ],
+    [
+     48.92,
+     -44.78
+    ]
+   ]
+  },
+  {
+   "lot": 30,
+   "area_m2": 1302,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 24.7,
+   "depth_m": 53.1,
+   "level_ahd": 28.17,
+   "x": 60.69,
+   "z": -18.18,
+   "polygon": [
+    [
+     49.76,
+     -44.69
+    ],
+    [
+     46.88,
+     7.67
+    ],
+    [
+     71.62,
+     8.32
+    ],
+    [
+     74.5,
+     -44.04
+    ]
+   ]
+  },
+  {
+   "lot": 31,
+   "area_m2": 1328,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 25.3,
+   "depth_m": 53.1,
+   "level_ahd": 27.82,
+   "x": 86.38,
+   "z": -17.49,
+   "polygon": [
+    [
+     75.24,
+     -44.04
+    ],
+    [
+     72.27,
+     8.32
+    ],
+    [
+     97.57,
+     9.06
+    ],
+    [
+     100.44,
+     -43.3
+    ]
+   ]
+  },
+  {
+   "lot": 32,
+   "area_m2": 1319,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 25.1,
+   "depth_m": 53.1,
+   "level_ahd": 27.32,
+   "x": 112.33,
+   "z": -16.77,
+   "polygon": [
+    [
+     101.18,
+     -43.2
+    ],
+    [
+     98.4,
+     9.06
+    ],
+    [
+     123.42,
+     9.71
+    ],
+    [
+     126.29,
+     -42.65
+    ]
+   ]
+  },
+  {
+   "lot": 33,
+   "area_m2": 2279,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 57.6,
+   "depth_m": 64.5,
+   "level_ahd": 27.05,
+   "x": 138.2,
+   "z": -3.42,
+   "polygon": [
+    [
+     178.0,
+     -41.16
+    ],
+    [
+     127.03,
+     -42.55
+    ],
+    [
+     124.16,
+     10.08
+    ],
+    [
+     117.21,
+     10.26
+    ],
+    [
+     116.94,
+     19.81
+    ],
+    [
+     132.59,
+     20.18
+    ],
+    [
+     133.06,
+     14.06
+    ],
+    [
+     176.61,
+     -18.0
+    ]
+   ]
+  },
+  {
+   "lot": 34,
+   "area_m2": 1501,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 48.2,
+   "depth_m": 58.6,
+   "level_ahd": 27.18,
+   "x": 141.71,
+   "z": 16.7,
+   "polygon": [
+    [
+     176.52,
+     -16.7
+    ],
+    [
+     133.52,
+     14.25
+    ],
+    [
+     132.97,
+     20.82
+    ],
+    [
+     116.84,
+     20.45
+    ],
+    [
+     116.66,
+     29.91
+    ],
+    [
+     173.74,
+     31.48
+    ]
+   ]
+  },
+  {
+   "lot": 35,
+   "area_m2": 1581,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 27.8,
+   "depth_m": 57.3,
+   "level_ahd": 27.92,
+   "x": 144.55,
+   "z": 45.29,
+   "polygon": [
+    [
+     116.56,
+     30.65
+    ],
+    [
+     115.73,
+     58.45
+    ],
+    [
+     172.16,
+     59.93
+    ],
+    [
+     173.74,
+     32.13
+    ]
+   ]
+  },
+  {
+   "lot": 36,
+   "area_m2": 1264,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 24.9,
+   "depth_m": 51.5,
+   "level_ahd": 28.71,
+   "x": 145.96,
+   "z": 72.44,
+   "polygon": [
+    [
+     121.2,
+     59.46
+    ],
+    [
+     119.9,
+     84.11
+    ],
+    [
+     170.68,
+     85.5
+    ],
+    [
+     172.07,
+     60.67
+    ]
+   ]
+  },
+  {
+   "lot": 37,
+   "area_m2": 1522,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 24.3,
+   "depth_m": 67.3,
+   "level_ahd": 29.34,
+   "x": 130.87,
+   "z": 95.18,
+   "polygon": [
+    [
+     103.69,
+     90.51
+    ],
+    [
+     102.67,
+     108.57
+    ],
+    [
+     169.29,
+     110.33
+    ],
+    [
+     170.59,
+     86.06
+    ],
+    [
+     119.81,
+     84.76
+    ],
+    [
+     119.16,
+     90.88
+    ]
+   ]
+  },
+  {
+   "lot": 38,
+   "area_m2": 1545,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 24.3,
+   "depth_m": 67.9,
+   "level_ahd": 29.97,
+   "x": 75.08,
+   "z": 93.67,
+   "polygon": [
+    [
+     35.86,
+     82.54
+    ],
+    [
+     34.56,
+     106.72
+    ],
+    [
+     102.02,
+     108.48
+    ],
+    [
+     102.94,
+     90.51
+    ],
+    [
+     87.56,
+     89.95
+    ],
+    [
+     87.56,
+     83.83
+    ]
+   ]
+  },
+  {
+   "lot": 39,
+   "area_m2": 1285,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 24.9,
+   "depth_m": 52.3,
+   "level_ahd": 29.92,
+   "x": 62.45,
+   "z": 70.12,
+   "polygon": [
+    [
+     37.43,
+     57.15
+    ],
+    [
+     35.95,
+     81.8
+    ],
+    [
+     87.56,
+     83.19
+    ],
+    [
+     88.86,
+     58.35
+    ]
+   ]
+  },
+  {
+   "lot": 40,
+   "area_m2": 1581,
+   "stage": 3,
+   "stageName": "Stage 3",
+   "status": "available",
+   "frontage_m": 28.0,
+   "depth_m": 57.2,
+   "level_ahd": 29.64,
+   "x": 66.69,
+   "z": 43.16,
+   "polygon": [
+    [
+     39.1,
+     28.52
+    ],
+    [
+     37.52,
+     56.31
+    ],
+    [
+     94.7,
+     57.89
+    ],
+    [
+     95.44,
+     29.91
+    ]
+   ]
+  }
+ ]
+}
