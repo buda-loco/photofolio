@@ -34,3 +34,9 @@ scripts/showreel/.links.json
 Working Files/*
 !Working Files/CLAUDE.md
 !Working Files/Design specs/
+
+# new-work drop folder — originals, never shipped
+_intake/
+
+# per-machine Claude Code permissions
+.claude/settings.local.json
