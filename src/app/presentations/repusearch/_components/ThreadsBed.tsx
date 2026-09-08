@@ -96,6 +96,7 @@ const ease = (x: number) => x * x * x * (x * (x * 6 - 15) + 10)
 export default function ThreadsBed() {
   const mountRef = useRef<HTMLDivElement>(null)
   const [backend, setBackend] = useState<'loading' | 'WebGPU' | 'WebGL' | 'error'>('loading')
+  const [diag, setDiag] = useState('')
 
   useEffect(() => {
     let disposed = false
@@ -125,10 +126,9 @@ export default function ThreadsBed() {
         // (fully-pressed minus flat) and the shader scales it by one uniform.
         // Rewriting position buffers per frame does not work here — the buffer
         // is uploaded on the first needsUpdate and never again.
-        const pressU = TSL.uniform(0) as unknown as { value: number }
+        const pressU = (TSL.uniform as unknown as (v: number, t: string) => { value: number })(0, 'float')
         // TSL's typings are loose about node arithmetic; the runtime accepts it
         const tsl = TSL as unknown as {
-          uniform: (v: number) => { value: number }
           attribute: (n: string, t: string) => { mul: (o: unknown) => unknown }
           positionLocal: { add: (o: unknown) => unknown }
         }
@@ -227,6 +227,7 @@ export default function ThreadsBed() {
           place()
         }
         el0.style.cursor = 'grab'
+        el0.style.touchAction = 'none'
         el0.addEventListener('pointerdown', onDown)
         el0.addEventListener('pointermove', onMove)
         el0.addEventListener('pointerup', onUp)
@@ -258,6 +259,7 @@ export default function ThreadsBed() {
           else if (ph < 0.84) raw = 1 - (ph - 0.62) / 0.22
           else raw = 0
           setPress(ease(raw))
+          if (Math.floor(t * 2) !== Math.floor((t - dt) * 2)) setDiag(ease(raw).toFixed(2))
           if (!userSpun) { az += dt * AUTO_SPIN; place() }
           renderer.render(scene, camera)
         })
@@ -301,7 +303,7 @@ export default function ThreadsBed() {
         <span className="rs-caption">Drag to orbit &middot; scroll to zoom</span>
       </div>
       {(backend === 'WebGPU' || backend === 'WebGL') && (
-        <span className="rs-live-badge">{backend}</span>
+        <span className="rs-live-badge">{backend} {diag}</span>
       )}
     </div>
   )
