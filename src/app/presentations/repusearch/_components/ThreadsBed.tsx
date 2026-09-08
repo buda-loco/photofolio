@@ -96,7 +96,6 @@ const ease = (x: number) => x * x * x * (x * (x * 6 - 15) + 10)
 export default function ThreadsBed() {
   const mountRef = useRef<HTMLDivElement>(null)
   const [backend, setBackend] = useState<'loading' | 'WebGPU' | 'WebGL' | 'error'>('loading')
-  const [diag, setDiag] = useState('')
 
   useEffect(() => {
     let disposed = false
@@ -259,7 +258,6 @@ export default function ThreadsBed() {
           else if (ph < 0.84) raw = 1 - (ph - 0.62) / 0.22
           else raw = 0
           setPress(ease(raw))
-          if (Math.floor(t * 2) !== Math.floor((t - dt) * 2)) setDiag(ease(raw).toFixed(2))
           if (!userSpun) { az += dt * AUTO_SPIN; place() }
           renderer.render(scene, camera)
         })
@@ -303,7 +301,7 @@ export default function ThreadsBed() {
         <span className="rs-caption">Drag to orbit &middot; scroll to zoom</span>
       </div>
       {(backend === 'WebGPU' || backend === 'WebGL') && (
-        <span className="rs-live-badge">{backend} {diag}</span>
+        <span className="rs-live-badge">{backend}</span>
       )}
     </div>
   )
