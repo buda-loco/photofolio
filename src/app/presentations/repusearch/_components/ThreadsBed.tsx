@@ -103,8 +103,13 @@ export default function ThreadsBed() {
 
     ;(async () => {
       try {
+        // TSL comes out of the same namespace as the renderer on purpose.
+        // `three/tsl` and `three/webgpu` are the same build file, but importing
+        // both specifiers lets a production bundler create two module instances,
+        // and nodes from one do not work with a renderer from the other. It
+        // resolves to a single instance in dev and breaks only once built.
         const THREE: T = await import('three/webgpu')
-        const TSL = await import('three/tsl')
+        const TSL = THREE as unknown as typeof import('three/tsl')
         if (disposed || !mountRef.current) return
         const mount = mountRef.current
 
@@ -132,20 +137,32 @@ export default function ThreadsBed() {
           positionLocal: { add: (o: unknown) => unknown }
         }
         const displace = tsl.positionLocal.add(tsl.attribute('aPress', 'vec3').mul(pressU))
-        const withPress = <M extends { positionNode: unknown }>(m: M) => {
+
+        // MeshBasicNodeMaterial, not MeshBasicMaterial. The renderer auto-converts
+        // a classic material only while it carries no node properties; attaching
+        // positionNode to one throws "Material is not compatible" and the shader
+        // silently falls back, so the bed renders flat. Dev tolerated it, the
+        // production build did not.
+        const NodeMat = (THREE as unknown as {
+          MeshBasicNodeMaterial: new (p?: Record<string, unknown>) => {
+            positionNode: unknown; dispose(): void
+          }
+        }).MeshBasicNodeMaterial
+        const mat = (p: Record<string, unknown>) => {
+          const m = new NodeMat(p)
           m.positionNode = displace
-          return m
+          return m as unknown as import('three').Material
         }
 
-        const core = withPress(new THREE.MeshBasicMaterial({ color: 0xffffff }))
-        const halo1 = withPress(new THREE.MeshBasicMaterial({
+        const core = mat({ color: 0xffffff })
+        const halo1 = mat({
           color: 0xbfd8ff, transparent: true, opacity: 0.22,
           blending: THREE.AdditiveBlending, depthWrite: false,
-        }))
-        const halo2 = withPress(new THREE.MeshBasicMaterial({
+        })
+        const halo2 = mat({
           color: 0x6f9dff, transparent: true, opacity: 0.09,
           blending: THREE.AdditiveBlending, depthWrite: false,
-        }))
+        })
 
         const group = new THREE.Group()
         scene.add(group)
