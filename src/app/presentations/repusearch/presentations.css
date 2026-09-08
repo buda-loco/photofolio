@@ -1,0 +1,770 @@
+/* ──────────────────────────────────────────────────────────
+   Repusearch — client pitch (/presentations/repusearch)
+
+   Self-contained deck surface, rs- prefixed. benjaminarnedo
+   site scheme — black / white / yellow, same as the Tus CFO
+   and PlaceWorks decks — so the brand work carries all the
+   colour. Site typography (Adrianna family), none of the chrome.
+
+   Site chrome is hidden whenever a `.rs-pitch` wrapper is
+   present, via :has() — no JS, no flash on first paint.
+   ────────────────────────────────────────────────────────── */
+
+body:has(.rs-pitch) .nav-links,
+body:has(.rs-pitch) .nav-hamburger,
+body:has(.rs-pitch) .mobile-menu,
+body:has(.rs-pitch) .nav-mini,
+body:has(.rs-pitch) .site-footer,
+body:has(.rs-pitch) .skip-nav {
+  display: none !important;
+}
+
+html:has(.rs-pitch),
+body:has(.rs-pitch) {
+  background: #000000;
+}
+
+/* ── Pitch root + scoped tokens ───────────────────────────── */
+.rs-pitch {
+  --rs-paper: #000000;
+  --rs-paper-raised: #0b0b0b;
+  --rs-white: #ffffff;
+  --rs-ink: #ffffff;
+  --rs-ink-soft: rgba(255, 255, 255, 0.66);
+  --rs-stone: #767676;
+  --rs-hair: rgba(255, 255, 255, 0.1);          /* color/border — decorative */
+  --rs-border-strong: rgba(255, 255, 255, 0.4); /* color/border-strong — informational */
+  --rs-hair-dark: rgba(0, 0, 0, 0.12);
+  --rs-accent: #f4ff26;
+
+  --rs-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --rs-margin: clamp(1.5rem, 6vw, 7rem);
+  --rs-gap: clamp(0.75rem, 1.5vw, 1.25rem);
+
+  min-height: 100vh;
+  padding-top: var(--nav-height);
+  background: var(--rs-paper);
+  color: var(--rs-ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.rs-pitch ::selection {
+  background: var(--rs-accent);
+  color: var(--rs-paper);
+}
+
+/* ── Shared furniture ─────────────────────────────────────── */
+.rs-credit {
+  font-family: var(--rs-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--rs-stone);
+}
+
+.rs-eyebrow {
+  font-family: var(--rs-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rs-accent);
+  margin: 0;
+}
+
+.rs-caption {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--rs-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rs-stone);
+}
+
+.rs-hint {
+  font-size: 0.9rem;
+  color: var(--rs-stone);
+  max-width: 52ch;
+  margin: 0;
+}
+
+.rs-foot {
+  padding: var(--rs-margin);
+  border-top: 1px solid var(--rs-hair);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.rs-foot a { border-bottom: 1px solid var(--rs-hair); padding-bottom: 1px; }
+.rs-foot a:hover { border-color: var(--rs-ink); }
+
+/* ── Frame: image slot / placeholder ──────────────────────── */
+.rs-frame {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--rs-hair);
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.rs-frame--black { background: var(--rs-paper); }
+.rs-frame--raised { background: var(--rs-paper-raised); }
+.rs-frame--white { background: var(--rs-white); border-color: var(--rs-hair-dark); }
+
+.rs-frame--bleed { border: none; border-radius: 0; }
+
+.rs-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* placeholder: hatch + label, obviously not final */
+.rs-frame--empty .rs-frame-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  line-height: 1.4;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 14px,
+    var(--rs-ph-hatch) 14px 15px
+  );
+  --rs-ph-hatch: rgba(255, 255, 255, 0.07);
+}
+
+.rs-frame--white.rs-frame--empty .rs-frame-ph { --rs-ph-hatch: rgba(0, 0, 0, 0.08); }
+
+.rs-frame-ph-label {
+  font-family: var(--rs-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rs-stone);
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.rs-frame-ph-ratio {
+  font-family: var(--rs-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--rs-stone);
+  opacity: 0.6;
+}
+
+/* ════════════════════════════════════════════════════════════
+   LANDING — /presentations/repusearch
+   ════════════════════════════════════════════════════════════ */
+
+.rs-hero {
+  padding: calc(var(--rs-margin) * 1.4) var(--rs-margin) var(--rs-margin);
+}
+
+.rs-hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 10vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.rs-hero-title em {
+  font-style: normal;
+  color: var(--rs-accent);
+}
+
+.rs-hero-sub {
+  font-family: var(--rs-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rs-stone);
+  margin-top: 1.5rem;
+}
+
+.rs-hero-intro {
+  max-width: 52ch;
+  margin-top: 2.5rem;
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: var(--rs-ink-soft);
+}
+
+.rs-brief {
+  padding: var(--rs-margin);
+  border-top: 1px solid var(--rs-hair);
+  max-width: 72ch;
+  color: var(--rs-ink-soft);
+}
+
+.rs-brief strong { color: var(--rs-ink); font-weight: 600; }
+
+/* ── "How to read this" — eyebrow column beside the body ──── */
+.rs-note {
+  padding: var(--rs-margin);
+  border-top: 1px solid var(--rs-hair);
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .rs-note {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: 4rem;
+  }
+}
+
+.rs-note-body {
+  max-width: 62ch;
+  color: var(--rs-ink-soft);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.rs-note-body em { font-style: normal; color: var(--rs-accent); }
+
+/* ── Concept cards (5 → 3 + 2 on desktop) ─────────────────── */
+.rs-cards {
+  border-top: 1px solid var(--rs-hair);
+  display: grid;
+}
+
+.rs-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: calc(var(--rs-margin) * 0.75) var(--rs-margin);
+  border-bottom: 1px solid var(--rs-hair);
+  transition: background 0.25s ease;
+}
+
+/* Decorative outlined numeral, pinned bottom left, behind the copy.
+   -webkit-text-stroke is the only cross-browser way to outline live text;
+   it needs a transparent fill to stay hollow. */
+.rs-card-ghost {
+  position: absolute;
+  left: -0.05em;
+  bottom: -0.16em;
+  z-index: 0;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(7rem, 12vw, 11.5rem);
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--rs-ink);
+  opacity: 0.1;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+/* keep the real content above the numeral */
+.rs-card > *:not(.rs-card-ghost) { position: relative; z-index: 1; }
+
+.rs-card:hover .rs-card-ghost { opacity: 0.16; }
+
+@media (min-width: 900px) {
+  .rs-cards { grid-template-columns: repeat(6, 1fr); }
+  .rs-card {
+    grid-column: span 2;
+    border-bottom: none;
+    border-right: 1px solid var(--rs-hair);
+    padding: calc(var(--rs-margin) * 0.75) 2.5rem;
+    min-height: 26rem;
+  }
+  /* row 1: three cards; row 2: two cards, centred */
+  .rs-card:nth-child(3) { border-right: none; }
+  .rs-card:nth-child(-n + 3) { border-bottom: 1px solid var(--rs-hair); }
+  .rs-card:nth-child(4) { grid-column: 2 / span 2; border-left: 1px solid var(--rs-hair); }
+  .rs-card:nth-child(5) { grid-column: 4 / span 2; }
+}
+
+.rs-card:hover { background: var(--rs-paper-raised); }
+
+.rs-card-num {
+  font-family: var(--rs-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--rs-accent);
+}
+
+.rs-card-tagline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.rs-card-desc {
+  color: var(--rs-ink-soft);
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.rs-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--rs-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rs-ink);
+}
+
+.rs-card-arrow { transition: transform 0.25s ease; }
+.rs-card:hover .rs-card-arrow { transform: translateX(5px); color: var(--rs-accent); }
+
+/* ════════════════════════════════════════════════════════════
+   CONCEPT PAGES — /presentations/repusearch/01..05
+   ════════════════════════════════════════════════════════════ */
+
+.rs-concept-head {
+  padding: calc(var(--rs-margin) * 0.9) var(--rs-margin);
+}
+
+.rs-concept-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  margin: 1rem 0 0;
+}
+
+.rs-concept-tagline {
+  max-width: 52ch;
+  margin-top: 1.6rem;
+  font-size: 1.1rem;
+  color: var(--rs-ink-soft);
+}
+
+/* generic section */
+.rs-section {
+  border-top: 1px solid var(--rs-hair);
+  padding: calc(var(--rs-margin) * 0.75) var(--rs-margin);
+}
+
+.rs-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 2.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.rs-section-head .rs-eyebrow { flex-basis: 100%; }
+
+.rs-section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+/* ── Keywords: staggered pop ──────────────────────────────── */
+.rs-section--keywords {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.rs-keywords {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Design-system `Pill / Outline` (large): Adrianna 300, 20px, uppercase,
+   +6% tracking, 11×22 padding, 40% white stroke. Accent variant swaps the
+   stroke and text to yellow. */
+.rs-keyword {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  border: 1px solid var(--rs-border-strong);
+  border-radius: 999px;
+  color: var(--rs-ink);
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* house reveal: rise and settle on the ease-out curve, 80ms apart, no bounce, no scale */
+.rs-keywords.is-in .rs-keyword {
+  animation: rs-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+/* every third word takes the accent so the row has a rhythm */
+.rs-keyword:nth-child(3n + 1) { border-color: var(--rs-accent); color: var(--rs-accent); }
+
+@keyframes rs-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-keyword { opacity: 1; transform: none; }
+  .rs-keywords.is-in .rs-keyword { animation: none; }
+}
+
+/* ── Rationale ────────────────────────────────────────────── */
+.rs-rationale {
+  padding: var(--rs-margin) var(--rs-margin) calc(var(--rs-margin) * 0.5);
+  border-top: 1px solid var(--rs-hair);
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .rs-rationale {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: 4rem;
+  }
+}
+
+.rs-rationale-body {
+  max-width: 64ch;
+  color: var(--rs-ink-soft);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.rs-rationale-body strong { color: var(--rs-ink); font-weight: 600; }
+
+/* ── Three panels ─────────────────────────────────────────── */
+.rs-section--panels { border-top: none; padding-top: 0; }
+
+.rs-panels {
+  display: grid;
+  gap: var(--rs-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .rs-panels--3 { grid-template-columns: repeat(3, 1fr); }
+  /* two-panel concepts: a square and a long block beside it, on one row.
+     The square column is sized off the row height so both blocks line up. */
+  /* 1 : 2.333 matches 1:1 against 21:9, so both blocks end up the same height */
+  .rs-panels--2 { grid-template-columns: minmax(0, 1fr) minmax(0, 2.333fr); align-items: start; }
+}
+
+.rs-panel { margin: 0; }
+
+/* a wide panel's caption can run the full width, so hold it to a measure */
+.rs-panel--wide figcaption { max-width: 64ch; }
+
+.rs-panel figcaption {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--rs-ink-soft);
+}
+
+.rs-panel-num {
+  font-family: var(--rs-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--rs-accent);
+}
+
+.rs-panel strong { color: var(--rs-ink); font-weight: 600; }
+
+/* ── Live panel (3D) ──────────────────────────────────────── */
+.rs-live {
+  position: relative;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.rs-live-stage {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--rs-hair);
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.05), transparent 70%),
+    var(--rs-paper-raised);
+  line-height: 0;
+}
+
+.rs-live-stage canvas { display: block; }
+
+/* the threads bed supplies its own black; drop the raised wash behind it */
+.rs-live-stage--dark { background: #000; }
+
+.rs-live-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--rs-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rs-stone);
+  line-height: 1.4;
+}
+
+.rs-live-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.rs-live-controls .rs-caption { margin: 0; }
+
+/* hint-only variant: no slider, so let the text run the full width */
+.rs-live-controls--hint { grid-template-columns: 1fr; }
+
+.rs-live-value {
+  font-family: var(--rs-mono);
+  font-size: 0.66rem;
+  color: var(--rs-stone);
+  min-width: 2.2rem;
+  text-align: right;
+}
+
+.rs-live-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-family: var(--rs-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rs-stone);
+  opacity: 0.7;
+}
+
+.rs-pitch input[type='range'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--rs-border-strong);
+  outline: none;
+  cursor: pointer;
+}
+
+.rs-pitch input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--rs-ink);
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.rs-pitch input[type='range']::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--rs-ink);
+  border: none;
+}
+
+.rs-pitch input[type='range']:hover::-webkit-slider-thumb { background: var(--rs-accent); }
+
+/* ── Fingerprint write-on (concept 05, panel 1) ───────────── */
+.rs-fp {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--rs-hair);
+  border-radius: 8px;
+  background: #000;
+  line-height: 0;
+}
+
+.rs-fp-svg { display: block; width: 100%; height: 100%; }
+
+/* pathLength="1" above, so the dash runs in normalised units.
+   `alternate` is the ping-pong; the delay per path is the stagger. */
+.rs-fp-svg path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: rs-fp-draw;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); /* ease-in-out */
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-fill-mode: both;
+}
+
+@keyframes rs-fp-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-fp-svg path { animation: none; stroke-dashoffset: 0; }
+}
+
+/* ── Hero logo: white on black, full bleed, no border ─────── */
+.rs-hero-logo {
+  border-top: 1px solid var(--rs-hair);
+  padding: 0;
+}
+
+.rs-hero-logo .rs-frame { border-radius: 0; }
+
+/* ── Squares ──────────────────────────────────────────────── */
+.rs-squares {
+  display: grid;
+  gap: var(--rs-gap);
+  grid-template-columns: repeat(2, 1fr);
+  align-items: end;
+}
+
+@media (min-width: 900px) {
+  /* two big, two small — the small ones sit at the same baseline */
+  .rs-squares { grid-template-columns: 3fr 3fr 1fr 1fr; }
+}
+
+/* ── Mockups: a photographed scene with the mark laid into it ── */
+.rs-mock {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rs-hair);
+  border-radius: 8px;
+  background: var(--rs-paper-raised);
+  line-height: 0;
+  /* isolate so mix-blend-mode composites against the scene, not the page */
+  isolation: isolate;
+}
+
+.rs-mock-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rs-mock-logo {
+  position: absolute;
+  height: auto;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+/* ── Pairs: lockups, four mockups ─────────────────────────── */
+.rs-pair {
+  display: grid;
+  gap: var(--rs-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .rs-pair { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Logo rows: 4 + ours ──────────────────────────────────── */
+.rs-logo-row {
+  display: grid;
+  gap: var(--rs-gap);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 720px) {
+  .rs-logo-row { grid-template-columns: repeat(5, 1fr); }
+}
+
+.rs-logo-cell.is-ours .rs-frame { border-color: var(--rs-accent); }
+.rs-logo-cell.is-ours .rs-caption { color: var(--rs-accent); }
+
+/* ── Download call to action ──────────────────────────────── */
+.rs-cta {
+  border-top: 1px solid var(--rs-hair);
+  padding: var(--rs-margin);
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .rs-cta {
+    grid-template-columns: 1fr auto;
+    gap: 4rem;
+  }
+}
+
+.rs-cta-body { display: grid; gap: 0.9rem; max-width: 46ch; }
+
+.rs-cta-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.rs-cta-note { color: var(--rs-ink-soft); font-size: 1rem; margin: 0; }
+
+/* the accent block is the one loud element on the page, so it earns the yellow */
+.rs-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 1.6rem;
+  border-radius: 999px;
+  background: var(--rs-accent);
+  color: #000;
+  font-family: var(--rs-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+}
+
+.rs-cta-btn:hover { background: #f8ff5c; transform: translateY(-2px); }
+.rs-cta-btn:focus-visible { outline: 2px solid var(--rs-ink); outline-offset: 3px; }
+
+.rs-cta-meta {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  opacity: 0.65;
+  text-transform: none;
+}
+
+/* ── Big mockup: full bleed ───────────────────────────────── */
+.rs-big {
+  border-top: 1px solid var(--rs-hair);
+  padding: 0;
+}
+
+.rs-big .rs-frame { border-radius: 0; }
