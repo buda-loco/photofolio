@@ -89,6 +89,54 @@
   object-fit: cover;
 }
 
+/* Phone-framed gallery — each screenshot sits in a phone outline on a
+   larger canvas. Sizes are in cqw (canvas width) so the bezel scales with the
+   cell; 54cqw phone + 4/5 canvas leaves ~6cqw of air above and below. */
+.block-gallery--phone .phone-canvas {
+  container-type: inline-size;
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-text) 7%, var(--color-bg));
+}
+
+.phone {
+  width: 54%;
+  padding: 2.2cqw;
+  border-radius: 7.5cqw;
+  background: #0b0b0d;
+  box-shadow:
+    0 0 0 0.35cqw color-mix(in srgb, var(--color-text) 28%, transparent),
+    0 4cqw 8cqw -2cqw rgba(0, 0, 0, 0.45);
+}
+
+.phone-screen {
+  position: relative;
+  aspect-ratio: var(--screen-aspect, 9 / 19.5);
+  border-radius: 5.4cqw;
+  overflow: hidden;
+  background: #000;
+}
+
+/* dynamic island */
+.phone-screen::after {
+  content: '';
+  position: absolute;
+  top: 1.8cqw;
+  left: 50%;
+  width: 14cqw;
+  height: 4cqw;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #0b0b0d;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .block-gallery--phone[data-cols="3"] { grid-template-columns: 1fr; }
+}
+
 /* 3D map — a square WebGL stage; the canvas is sized by ResizeObserver */
 .block-map3d--half .map3d { max-width: 52%; margin-inline: auto; }
 .block-map3d--pair {

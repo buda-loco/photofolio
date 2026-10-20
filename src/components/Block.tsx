@@ -61,6 +61,40 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
   }
 
   if (blockType === 'gallery') {
+    // frame: 'phone' sets each screenshot inside a phone outline on a larger
+    // canvas, so a full-length mobile capture is shown whole instead of cropped
+    const phone = block.frame === 'phone'
+    if (phone) {
+      return (
+        <div
+          className="block-gallery block-gallery--phone"
+          data-cols={String(block.columns ?? 3)}
+          {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
+        >
+          {(block.images ?? []).map((img: Record<string, string>, i: number) => (
+            <div key={i} className="gallery-item phone-canvas img-reveal">
+              <div
+                className="phone"
+                style={img.aspectRatio ? ({ '--screen-aspect': img.aspectRatio } as CSSProperties) : undefined}
+              >
+                <div className="phone-screen">
+                  {img.src && (
+                    <Image
+                      src={img.src}
+                      alt={img.alt ?? ''}
+                      fill
+                      sizes="(max-width: 640px) 80vw, 25vw"
+                      style={{ objectFit: 'cover', objectPosition: 'top' }}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
     return (
       <div
         className="block-gallery"

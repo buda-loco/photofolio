@@ -154,6 +154,15 @@ export default defineConfig({
                     ],
                   },
                   {
+                    name: 'frame',
+                    label: 'Frame',
+                    type: 'string',
+                    options: [
+                      { value: '', label: 'None' },
+                      { value: 'phone', label: 'Phone outline on a canvas (mobile screenshots)' },
+                    ],
+                  },
+                  {
                     name: 'images',
                     label: 'Images',
                     type: 'object',

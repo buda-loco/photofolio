@@ -73,21 +73,19 @@
     {
       "_template": "gallery",
       "columns": "3",
+      "frame": "phone",
       "images": [
         {
           "src": "/images/projects/gyda/mobile-home.jpg",
-          "alt": "The gyda home page on a phone",
-          "aspectRatio": "9/19.5"
+          "alt": "The gyda home page on a phone"
         },
         {
           "src": "/images/projects/gyda/mobile-about.jpg",
-          "alt": "The gyda about page on a phone",
-          "aspectRatio": "9/19.5"
+          "alt": "The gyda about page on a phone"
         },
         {
           "src": "/images/projects/gyda/mobile-services.jpg",
-          "alt": "The gyda home buying page on a phone",
-          "aspectRatio": "9/19.5"
+          "alt": "The gyda home buying page on a phone"
         }
       ]
     },

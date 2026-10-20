@@ -32,6 +32,7 @@ export interface GalleryImage {
 export interface GalleryBlock {
   _template: 'gallery'
   columns?: string
+  frame?: string
   images: GalleryImage[]
 }
 
