@@ -21,6 +21,7 @@ export interface HeroBlock {
   aspectRatio?: string
   parallax?: number
   caption?: string
+  frame?: string
 }
 
 export interface GalleryImage {

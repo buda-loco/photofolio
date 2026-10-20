@@ -16,6 +16,33 @@ function splitWords(text: string): string[] {
   return text.split(' ')
 }
 
+// A desktop screenshot set in a browser window on a tinted canvas. The window
+// takes the screenshot's own ratio, so nothing is cropped.
+function BrowserFrame({ src, alt, aspect, sizes, parallax }: {
+  src?: string; alt?: string; aspect: string; sizes: string; parallax?: number
+}) {
+  return (
+    <div className="browser-canvas">
+      <div className="browser">
+        <div className="browser-bar" aria-hidden="true"><i /><i /><i /></div>
+        <div className="browser-screen" style={{ '--screen-aspect': aspect } as CSSProperties}>
+          {src && (
+            <Image
+              src={src}
+              alt={alt ?? ''}
+              fill
+              sizes={sizes}
+              style={{ objectFit: 'cover', objectPosition: 'top' }}
+              loading="lazy"
+              data-parallax={parallax ?? undefined}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 interface BlockProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   block: Record<string, any>
@@ -36,6 +63,17 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
 
   if (blockType === 'hero') {
     const heroAspect = block.aspectRatio ?? '16/9'
+    if (block.frame === 'browser') {
+      return (
+        <div
+          className="block-hero block-hero--browser img-reveal"
+          {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
+        >
+          <BrowserFrame src={block.src} alt={block.alt} aspect={heroAspect} sizes="100vw" />
+          {block.caption && <p className="block-caption label">{block.caption}</p>}
+        </div>
+      )
+    }
     return (
       <div
         className="block-hero img-reveal"
@@ -64,6 +102,26 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
     // frame: 'phone' sets each screenshot inside a phone outline on a larger
     // canvas, so a full-length mobile capture is shown whole instead of cropped
     const phone = block.frame === 'phone'
+    if (block.frame === 'browser') {
+      return (
+        <div
+          className="block-gallery block-gallery--browser"
+          data-cols={String(block.columns ?? 2)}
+          {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
+        >
+          {(block.images ?? []).map((img: Record<string, string>, i: number) => (
+            <div key={i} className="gallery-item img-reveal">
+              <BrowserFrame
+                src={img.src}
+                alt={img.alt}
+                aspect={img.aspectRatio ?? '3/2'}
+                sizes="(max-width: 640px) 100vw, 50vw"
+              />
+            </div>
+          ))}
+        </div>
+      )
+    }
     if (phone) {
       return (
         <div

@@ -156,20 +156,23 @@
       "images": [
         {
           "src": "/images/projects/gyda/home-guide.jpg",
-          "alt": "The gyda home page: your personal property guide"
+          "alt": "The gyda home page: your personal property guide",
+          "aspectRatio": "2400/1666"
         },
         {
           "src": "/images/projects/gyda/home-story.jpg",
-          "alt": "The gyda home page: a buyer success story"
+          "alt": "The gyda home page: a buyer success story",
+          "aspectRatio": "2400/1666"
         }
-      ]
+      ],
+      "frame": "browser"
     },
     {
       "_template": "hero",
       "src": "/images/projects/gyda/desktop-about.jpg",
       "alt": "The gyda about page on desktop",
-      "aspectRatio": "16/10",
-      "parallax": 0.2
+      "aspectRatio": "2400/1500",
+      "frame": "browser"
     },
     {
       "_template": "gallery",
@@ -177,20 +180,23 @@
       "images": [
         {
           "src": "/images/projects/gyda/home-audiences.jpg",
-          "alt": "The gyda home page: who gyda helps"
+          "alt": "The gyda home page: who gyda helps",
+          "aspectRatio": "2400/1666"
         },
         {
           "src": "/images/projects/gyda/home-waitlist.jpg",
-          "alt": "The gyda home page: the waitlist band and services"
+          "alt": "The gyda home page: the waitlist band and services",
+          "aspectRatio": "2400/1666"
         }
-      ]
+      ],
+      "frame": "browser"
     },
     {
       "_template": "hero",
       "src": "/images/projects/gyda/desktop-stories.jpg",
       "alt": "The gyda success stories page on desktop",
-      "aspectRatio": "16/10",
-      "parallax": 0.2
+      "aspectRatio": "2400/1500",
+      "frame": "browser"
     }
   ]
 }

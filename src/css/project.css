@@ -137,6 +137,50 @@
   .block-gallery--phone[data-cols="3"] { grid-template-columns: 1fr; }
 }
 
+/* Browser-framed desktop screenshots — a window on a tinted canvas. The
+   window follows the screenshot's ratio, so the canvas height is whatever
+   the window plus its padding comes to. */
+.browser-canvas {
+  container-type: inline-size;
+  padding: 4.5cqw 5.5cqw;
+  background: color-mix(in srgb, var(--color-text) 7%, var(--color-bg));
+}
+
+.browser {
+  border-radius: 1.4cqw;
+  overflow: hidden;
+  background: #0b0b0d;
+  box-shadow:
+    0 0 0 0.12cqw color-mix(in srgb, var(--color-text) 25%, transparent),
+    0 2.5cqw 6cqw -1.5cqw rgba(0, 0, 0, 0.5);
+}
+
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9cqw;
+  height: 3.4cqw;
+  padding-inline: 1.6cqw;
+  background: #1a1a1e;
+}
+
+.browser-bar i {
+  width: 1.1cqw;
+  height: 1.1cqw;
+  border-radius: 50%;
+  background: color-mix(in srgb, #fff 22%, transparent);
+}
+
+.browser-screen {
+  position: relative;
+  aspect-ratio: var(--screen-aspect, 3 / 2);
+  background: #000;
+}
+
+@media (max-width: 640px) {
+  .block-gallery--browser { grid-template-columns: 1fr !important; }
+}
+
 /* 3D map — a square WebGL stage; the canvas is sized by ResizeObserver */
 .block-map3d--half .map3d { max-width: 52%; margin-inline: auto; }
 .block-map3d--pair {

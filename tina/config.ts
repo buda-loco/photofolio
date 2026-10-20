@@ -160,6 +160,7 @@ export default defineConfig({
                     options: [
                       { value: '', label: 'None' },
                       { value: 'phone', label: 'Phone outline on a canvas (mobile screenshots)' },
+                      { value: 'browser', label: 'Browser window on a canvas (desktop screenshots)' },
                     ],
                   },
                   {
