@@ -171,7 +171,7 @@
       "_template": "hero",
       "src": "/images/projects/gyda/desktop-about.jpg",
       "alt": "The gyda about page on desktop",
-      "aspectRatio": "2400/1500",
+      "aspectRatio": "8/5",
       "frame": "browser"
     },
     {
@@ -195,7 +195,7 @@
       "_template": "hero",
       "src": "/images/projects/gyda/desktop-stories.jpg",
       "alt": "The gyda success stories page on desktop",
-      "aspectRatio": "2400/1500",
+      "aspectRatio": "8/5",
       "frame": "browser"
     }
   ]
