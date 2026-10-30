@@ -144,6 +144,13 @@
       }
     },
     {
+      "src": "/videos/projects/gyda/gyda-film.mp4",
+      "poster": "/images/projects/gyda/gyda-film-poster.jpg",
+      "aspectRatio": "16/9",
+      "caption": "The same numbers as a 31-second film",
+      "_template": "video"
+    },
+    {
       "_template": "hero",
       "src": "/images/projects/gyda/mockup-hand.jpg",
       "alt": "Someone reading the gyda home page on a phone in a living room",
