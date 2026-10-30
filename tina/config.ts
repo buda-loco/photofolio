@@ -219,6 +219,15 @@ export default defineConfig({
                   { name: 'autoplay', label: 'Autoplay', type: 'boolean' },
                   { name: 'muted', label: 'Muted', type: 'boolean' },
                   { name: 'loop', label: 'Loop', type: 'boolean' },
+                  {
+                    name: 'frame',
+                    label: 'Frame',
+                    type: 'string',
+                    options: [
+                      { value: '', label: 'None (full column width)' },
+                      { value: 'well', label: 'Centred in a darker well, with a hairline border' },
+                    ],
+                  },
                 ],
               },
               {

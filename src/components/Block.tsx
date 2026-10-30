@@ -205,7 +205,7 @@ export default function Block({ block, tinaFieldAttr, useTinaMarkdown = false }:
     const vPortrait = vw > 0 && vh > 0 && vh > vw
     return (
       <div
-        className={`block-video${vPortrait ? ' block-video--portrait' : ''}`}
+        className={`block-video${vPortrait ? ' block-video--portrait' : ''}${block.frame === 'well' ? ' block-video--well' : ''}`}
         style={{ '--aspect': vAspect } as CSSProperties}
         {...(tinaFieldAttr ? { 'data-tina-field': tinaFieldAttr } : {})}
       >

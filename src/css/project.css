@@ -232,6 +232,28 @@
   .block-video--portrait .video-container { max-width: 78%; }
 }
 
+/* frame: "well" — a smaller, centred player set into a darker tone of the
+   page background, so a film with sound reads as something to press play on
+   rather than another full-bleed image */
+.block-video--well {
+  padding: clamp(3rem, 9vw, 10rem) clamp(1.5rem, 14vw, 18rem);
+  /* --color-bg is the project's own background on project pages, so the
+     well is the same hue, darker; --widescreen-bg is derived from the site
+     black and came out neutral grey here */
+  background: color-mix(in srgb, var(--color-bg, #000000) 62%, #000000);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .block-video--well { padding: 2.5rem 1rem; }
+}
+.block-video--well .video-container {
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  border: 1px solid color-mix(in srgb, var(--color-text, #ffffff) 22%, transparent);
+}
+.block-video--well .block-caption { margin-top: 1.25rem; }
+
 /* Widescreen video */
 .block-widescreen-video {
   padding: var(--sp-12);

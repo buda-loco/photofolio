@@ -148,7 +148,8 @@
       "poster": "/images/projects/gyda/gyda-film-poster.jpg",
       "aspectRatio": "16/9",
       "caption": "The same numbers as a 31-second film",
-      "_template": "video"
+      "_template": "video",
+      "frame": "well"
     },
     {
       "_template": "hero",
